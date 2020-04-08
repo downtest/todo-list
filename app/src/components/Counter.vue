@@ -1,8 +1,8 @@
 <template>
     <div>
         Tengo! {{count}}
-        <button @click="$store.commit('decrement')">-</button>
-        <button @click="$store.commit('increment')">+</button>
+        <button @click="$store.commit('counter/decrement')">-</button>
+        <button @click="$store.commit('counter/increment')">+</button>
     </div>
 </template>
 

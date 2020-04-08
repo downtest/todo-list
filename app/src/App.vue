@@ -14,6 +14,8 @@
       <li><router-link to="/" exact>Main</router-link></li>
       <li><router-link to="/user">User</router-link></li>
       <li><router-link to="/counter">Counter</router-link></li>
+      <li><router-link to="/list">List</router-link></li>
+      <li><router-link to="/404">404</router-link></li>
     </ul>
 
     <router-view class="view"></router-view>

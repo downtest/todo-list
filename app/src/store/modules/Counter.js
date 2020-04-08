@@ -1,4 +1,6 @@
 const counter = {
+    namespaced: true,
+
     state: { count: 777 },
     mutations: {
         increment(state) {

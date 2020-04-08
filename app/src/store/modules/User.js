@@ -1,4 +1,6 @@
 const user = {
+    namespaced: true,
+
     state: {
         id: 0,
         name: '',

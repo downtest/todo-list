@@ -14,7 +14,7 @@ export default {
                 return this.$store.state.user.name
             },
             set(value) {
-                this.$store.commit('updateName', value)
+                this.$store.commit('user/updateName', value)
             }
         },
     },

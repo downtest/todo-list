@@ -5,15 +5,23 @@ services:
   nginx:
     image: nginx:1.17.8-alpine
     volumes:
-      - ./app:/var/www/html
+      - ./app:/www
       - ./docker/nginx/conf:/etc/nginx
     ports:
       - 81:80
+
+  nunit:
+    image: nginx/unit:1.16.0-minimal
+    volumes:
+      - ./app:/www
+      - ./docker/nginx-unit/conf:/docker-entrypoint.d/
+    ports:
+      - 82:80
 
   node:
     build:
       context: ./docker/node
     volumes:
-      - ./app:/var/www/html
-    working_dir: /var/www/html
+      - ./app:/www
+    working_dir: /www
     command: sh -c 'yarn install && yarn build'

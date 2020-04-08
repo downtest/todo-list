@@ -2,7 +2,7 @@
     <div>
         <h1>{{ $route.meta.title }}</h1>
 
-        <p>And some static text here</p>
+        <p>And some static text here!</p>
     </div>
 </template>
 
