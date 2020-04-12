@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="nested">
     <draggable
             v-bind="dragOptions"
             tag="div"
@@ -70,7 +70,7 @@
     };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .item-container {
     margin: 0 0 0 10px;
     padding: 0;
