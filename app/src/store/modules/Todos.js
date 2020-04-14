@@ -1,89 +1,86 @@
 const todos = {
     namespaced: true,
     state: {
-        items_old: {
-            0: [
-                {
-                    id: 1,
-                    name: "task 1",
-                    message: "",
-                },
-                {
-                    id: 3,
-                    name: "task 3",
-                    message: "",
-                },
-                {
-                    id: 5,
-                    name: "task 5",
-                    message: "",
-                }
-            ],
-            1: [
-                {
-                    id: 2,
-                    name: "task 2",
-                    message: "",
-                }
-            ],
-            3: [
-                {
-                    id: 4,
-                    name: "task 4",
-                    message: "",
-                }
-            ]
-        },
         items: {
             0: {
-                tasks: [1,3,5],
+                tasks: [1,9],
             },
             1: {
                 id: 1,
-                message: "task 1",
+                message: "Поставщики",
                 parent_id: 0,
-                tasks: [6, 2], // to save the order of children
+                tasks: [2, 6], // to save the order of children
             },
             2: {
                 id: 2,
-                message: "task 2",
+                message: "Арсений\nСын маминой подруги",
                 parent_id: 1,
-                tasks: [],
+                tasks: [3],
             },
             3: {
                 id: 3,
-                message: "task 3",
-                parent_id: 0,
-                tasks: [4],
+                message: "Согласовать график на майские праздники",
+                parent_id: 2,
+                tasks: [5, 4],
             },
             4: {
                 id: 4,
-                message: "task 4",
+                message: "Заказать овощи",
                 parent_id: 3,
                 tasks: [],
             },
             5: {
                 id: 5,
-                message: "task 5",
-                parent_id: 0,
-                tasks: [],
+                message: "Обеспечить молочные изделия",
+                parent_id: 2,
+                tasks: [7],
             },
             6: {
                 id: 6,
-                message: "task 6",
+                message: "Виталик\nШкольный друг",
                 parent_id: 1,
-                tasks: [7, 8],
+                tasks: [],
             },
             7: {
                 id: 7,
-                message: "task 7",
-                parent_id: 6,
-                tasks: [],
+                message: "Занести заказ в систему",
+                parent_id: 5,
+                tasks: [8],
             },
             8: {
                 id: 8,
-                message: "task 8",
-                parent_id: 6,
+                message: "Комп барахлит, вызвать мастера",
+                parent_id: 7,
+                tasks: [],
+            },
+            9: {
+                id: 9,
+                message: "Купить в магазине",
+                parent_id: 0,
+                tasks: [10, 11, 12, 13],
+            },
+            10: {
+                id: 10,
+                message: "Молоко",
+                parent_id: 9,
+                tasks: [],
+            },
+            11: {
+                id: 11,
+                message: "Сыр",
+                parent_id: 9,
+                tasks: [],
+            },
+            12: {
+                id: 12,
+                message: "Помидоры",
+                parent_id: 9,
+                tasks: [],
+            },
+            13: {
+                id: 13,
+                message: "Яйца",
+                parent_id: 9,
                 tasks: [],
             },
         },

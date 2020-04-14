@@ -1,8 +1,9 @@
 <template>
-    <div class="item">
-        <div class="item-row">
+    <div :class="{item: true, hover: hover}">
+        <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
             <div class="item--name" :title="item.message" @click="toggleFocus(item.id)">
-                {{ name }} #{{item.id}}
+                {{ name }}
+                <span v-if="isActive">#{{item.id}}</span>
             </div>
 
             <div class="item--buttons">
@@ -33,6 +34,7 @@
         data() {
             return {
                 localData: {},
+                hover: false,
             };
         },
         computed: {
@@ -102,8 +104,7 @@
             createChild() {
                 console.log(`creating child for ${this.item.id}`)
                 this.$store.dispatch('todos/createItem', {parentId: this.item.id, payload: {
-                    name: '',
-                    message: '',
+                    message: 'New',
                 }})
             },
         },
@@ -134,8 +135,9 @@
 .item {
     border: 1px solid #2c3e50;
     background: rgba(30, 30, 30, 0.15);
-    margin: 5px 0;
+    margin: 5px -1px 5px 0;
     padding: 3px 0 3px 5px;
+    transition: .1s;
 
     .item-row {
         display: flex;
@@ -160,6 +162,13 @@
 
     &__ghost {
         border: 2px dotted red;
+    }
+
+    &.hover {
+        transition: .1s;
+        box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+        margin-left: -1px;
+        margin-right: 0;
     }
 
     &:first-child {
