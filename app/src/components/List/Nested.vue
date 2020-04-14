@@ -13,6 +13,7 @@
         <item
                 :key="el.id"
                 :item="el"
+                :focusId="focusId"
                 v-for="el in value"
                 @focus="focusHandler"
         />
@@ -64,6 +65,11 @@
             value: {
                 required: false,
                 type: Array,
+                default: null
+            },
+            'focusId': {
+                required: false,
+                type: Number,
                 default: null
             },
         }

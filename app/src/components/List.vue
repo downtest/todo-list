@@ -1,7 +1,7 @@
 <template>
     <div class="list">
         <div class="justify-content-between row">
-            <nested v-model="elements" @focus="focusHandler" @change="onChange" />
+            <nested v-model="elements" @focus="focusHandler" @change="onChange" :focusId="focusId" />
 
             <div class="logs">
                 <div :key="index" v-for="(log, index) in $store.state.todos.logs">{{log}}</div>
@@ -32,6 +32,11 @@
         components: {
             nested,
         },
+        data() {
+            return {
+                focusId: null,
+            }
+        },
         computed: {
             elements: {
                 get() {
@@ -48,7 +53,9 @@
         methods: {
             focusHandler(value) {
                 console.log(`Новый активный ${value}`);
-                this.$router.push({ name: 'task-detail', params: { id: value.id, data: value } })
+                // this.$store.commit('todos/makeUnactive')
+                this.focusId = value ?? null
+                // this.$router.push({ name: 'task-detail', params: { id: value.id, data: value } })
             },
             onChange(value) {
                 if (value.added) {

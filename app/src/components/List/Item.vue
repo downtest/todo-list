@@ -1,15 +1,29 @@
 <template>
     <div class="item">
-        <span class="item--name" :title="item.message" @click="toggleFocus">
-            {{ item.name }} #{{item.id}}
-        </span>
+        <div class="item-row">
+            <div class="item--name" :title="item.message" @click="toggleFocus(item.id)">
+                {{ name }} #{{item.id}}
+            </div>
 
-        <span class="delete-btn" @click="deleteTask">---------</span>
+            <div class="item--buttons">
+                <span class="add-btn" @click="createChild">
+                    <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="add" title="Add task">
+                </span>
+                <span class="delete-btn" @click="deleteTask">
+                    <img class="btn-icon" src="../../../assets/icons/trash.svg" alt="delete" title="Delete">
+                </span>
+            </div>
+        </div>
 
-        <textarea v-if="isActive" rows="1" v-model="message"></textarea>
-        <nested v-model="children" @input="emitter" @focus="focusHandler" @change="onChange" />
+        <div class="item--edit" v-if="isActive">
+            <textarea rows="5" v-model="message"></textarea>
 
-        <div class="add-btn" @click="createChild">+++++</div>
+            <span class="close-btn" @click="toggleFocus(null)">
+                <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="close" title="Close edit window">
+            </span>
+        </div>
+
+        <nested v-model="children" @input="emitter" @focus="focusHandler" @change="onChange" :focusId="focusId" />
     </div>
 </template>
 
@@ -18,11 +32,16 @@
         name: "item",
         data() {
             return {
-                isActive: false,
-                message: '',
+                localData: {},
             };
         },
         computed: {
+            isActive() {
+                return this.focusId === this.item.id
+            },
+            name() {
+                return this.message.split("\n")[0]
+            },
             children: {
                 get() {
                     return this.$store.getters['todos/children'](this.item.id);
@@ -35,6 +54,20 @@
                     });
                 },
             },
+            message: {
+                get() {
+                    return this.item.message
+                },
+                set(value) {
+                    console.log(value.split("\n"))
+                    this.localData.name = value.split("\n")[0]
+                    this.localData.message = value
+                    this.$store.dispatch('todos/updateItem', {
+                        id: this.item.id,
+                        payload: this.localData
+                    })
+                },
+            }
         },
         methods: {
             onChange(value) {
@@ -57,9 +90,8 @@
             focusHandler(value) {
                 this.$emit('focus', value);
             },
-            toggleFocus () {
-                this.$emit('focus', this.item);
-                this.isActive = true;
+            toggleFocus (value) {
+                this.$emit('focus', (value) ? value : null);
             },
             deleteTask() {
                 // Удаление пункта из родительского списка дочерей
@@ -88,16 +120,39 @@
                 required: false,
                 type: Boolean,
                 default: false,
-            }
+            },
+            focusId: {
+                required: false,
+                type: Number,
+                default: null,
+            },
         }
     };
 </script>
 
 <style lang="scss">
 .item {
-    border: 1px solid saddlebrown;
-    background: rgba(202,202,202,0.5);
-    margin: 10px 0;
+    border: 1px solid #2c3e50;
+    background: rgba(30, 30, 30, 0.15);
+    margin: 5px 0;
+    padding: 3px 0 3px 5px;
+
+    .item-row {
+        display: flex;
+        justify-content: space-between;
+
+        .item--name {
+
+        }
+
+        .item--buttons {
+
+        }
+
+        .item--edit {
+
+        }
+    }
 
     .add-btn {
         display: inline-block;
@@ -117,7 +172,17 @@
 
 .nested {
     text-align: center;
-
-
 }
+
+.btn-icon {
+    cursor: pointer;
+    max-height: 20px;
+    width: 20px;
+}
+.close-btn {
+    .btn-icon {
+        transform: rotate(45deg);
+    }
+}
+
 </style>
