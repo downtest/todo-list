@@ -9,78 +9,91 @@ const todos = {
                 id: 1,
                 message: "Поставщики",
                 parent_id: 0,
+                datetime: null,
                 tasks: [2, 6], // to save the order of children
             },
             2: {
                 id: 2,
                 message: "Арсений\nСын маминой подруги",
                 parent_id: 1,
+                datetime: null,
                 tasks: [3],
             },
             3: {
                 id: 3,
                 message: "Согласовать график на майские праздники",
                 parent_id: 2,
+                datetime: null,
                 tasks: [5, 4],
             },
             4: {
                 id: 4,
                 message: "Заказать овощи",
                 parent_id: 3,
+                datetime: null,
                 tasks: [],
             },
             5: {
                 id: 5,
                 message: "Обеспечить молочные изделия",
-                parent_id: 2,
+                parent_id: 3,
+                datetime: null,
                 tasks: [7],
             },
             6: {
                 id: 6,
                 message: "Виталик\nШкольный друг",
                 parent_id: 1,
+                datetime: null,
                 tasks: [],
             },
             7: {
                 id: 7,
                 message: "Занести заказ в систему",
                 parent_id: 5,
+                datetime: null,
                 tasks: [8],
             },
             8: {
                 id: 8,
                 message: "Комп барахлит, вызвать мастера",
                 parent_id: 7,
+                datetime: null,
                 tasks: [],
             },
             9: {
                 id: 9,
                 message: "Купить в магазине",
                 parent_id: 0,
+                datetime: null,
                 tasks: [10, 11, 12, 13],
             },
             10: {
                 id: 10,
                 message: "Молоко",
                 parent_id: 9,
+                datetime: null,
                 tasks: [],
             },
             11: {
                 id: 11,
                 message: "Сыр",
                 parent_id: 9,
+                datetime: null,
                 tasks: [],
             },
             12: {
                 id: 12,
                 message: "Помидоры",
                 parent_id: 9,
+                datetime: null,
                 tasks: [],
             },
             13: {
                 id: 13,
                 message: "Яйца",
                 parent_id: 9,
+                datetime: null,
                 tasks: [],
             },
         },
@@ -117,7 +130,18 @@ const todos = {
             }
 
             return result
-        }
+        },
+        parents: (state, getters) => id =>  {
+            let result = [null]
+
+            if (state.items[id]['parent_id']) {
+                result = getters.parents(state.items[id]['parent_id'])
+            }
+
+            result.push(getters.getById(id))
+
+            return result
+        },
     },
     mutations: {
         log(state, message) {
@@ -146,6 +170,7 @@ const todos = {
             }
         },
         deleteItem(state, id) {
+            // Реактивно удаляем элемент из массива (чтобы vue реактивно удалил бы его)
             this._vm.$delete(state.items, id)
         },
     },
@@ -154,6 +179,7 @@ const todos = {
             console.log(`Creating item for parent ${parentId}`)
             payload.id = Math.max( ...Object.keys(state.items)) + 1
             payload.parent_id = parentId
+            payload.datetime = null
             payload.tasks = []
 
             commit('addChild', {
@@ -177,10 +203,12 @@ const todos = {
             // Рекурсивно удаляем детей
             if (state.items[id].tasks) {
                 for (let childId of state.items[id].tasks) {
+                    // Вызываем себя же
                     dispatch('deleteItem', childId)
                 }
             }
 
+            // Вызываем мутатор
             commit('deleteItem', id)
         }
     }

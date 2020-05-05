@@ -15,7 +15,7 @@ const routes = [
     { path: '/', component: MainPage, meta: {title: 'Main page'}},
     { path: '/user', component: User, meta: {title: 'User'}},
     { path: '/counter', component: Counter, meta: {title: 'Count me'} },
-    { path: '/list', name: 'task-list', component: List, meta: {title: 'List'} },
+    { path: '/list/:parentId?', name: 'task-list', component: List, props: true, meta: {title: 'List'} },
     { path: '/task/:id', name: 'task-detail', component: Task, props: true, meta: {title: 'Task'} },
 ]
 

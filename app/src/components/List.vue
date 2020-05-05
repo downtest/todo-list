@@ -1,6 +1,19 @@
 <template>
     <div class="list">
         <div class="justify-content-between row">
+
+            <tasks-breadcrumb v-if="parentId" :id="parseInt(parentId)"></tasks-breadcrumb>
+
+            <div v-if="parent">
+                <h1>{{parent.message.split('\n')[0]}}</h1>
+                <textarea
+                    class="parent--input"
+                    v-model="parentMessage"
+                    :rows="parentMessage.split('\n').length"
+                ></textarea>
+                <input class="parent--input" type="datetime-local" v-model="parentDatetime">
+            </div>
+
             <nested v-model="elements" @focus="focusHandler" @change="onChange" :focusId="focusId" />
 
             <div class="logs">
@@ -15,6 +28,7 @@
 
 <script>
     import nested from "./List/Nested";
+    import tasksBreadcrumb from "./List/Breadcrumb";
 
     export default {
         props: {
@@ -22,6 +36,10 @@
                 required: false,
                 type: String,
                 default: ''
+            },
+            parentId: {
+                required: false,
+                type: [String, Number],
             },
             value: {
                 required: false,
@@ -31,6 +49,7 @@
         },
         components: {
             nested,
+            tasksBreadcrumb,
         },
         data() {
             return {
@@ -38,13 +57,56 @@
             }
         },
         computed: {
+            parent: {
+                get() {
+                    if (this.parentId) {
+                        return this.$store.getters['todos/getById'](this.parentId);
+                    } else {
+                        return null;
+                    }
+                },
+            },
+            parentMessage: {
+                get() {
+                    if (this.parent) {
+                        return this.parent.message;
+                    } else {
+                        return null;
+                    }
+                },
+                set(message) {
+                    this.$store.dispatch('todos/updateItem', {
+                        id: this.parent.id,
+                        payload: {message},
+                    })
+                },
+            },
+            parentDatetime: {
+                get() {
+                    if (this.parent) {
+                        return this.parent.datetime;
+                    } else {
+                        return null;
+                    }
+                },
+                set(datetime) {
+                    this.$store.dispatch('todos/updateItem', {
+                        id: this.parent.id,
+                        payload: {datetime},
+                    })
+                },
+            },
             elements: {
                 get() {
-                    return this.$store.getters['todos/firstLevel'];
+                    if (this.parentId) {
+                        return this.$store.getters['todos/children'](this.parentId);
+                    } else {
+                        return this.$store.getters['todos/firstLevel'];
+                    }
                 },
                 set(payload) {
                     this.$store.dispatch("todos/updateChildren", {
-                        parentId: 0,
+                        parentId: parseInt(this.parent.id),
                         children: payload.map(child => child.id)
                     });
                 },
@@ -72,5 +134,11 @@
 </script>
 
 <style lang="scss">
+.parent {
 
+    &--input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
 </style>

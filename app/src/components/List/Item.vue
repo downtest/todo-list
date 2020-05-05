@@ -4,13 +4,19 @@
             <div class="item--name" :title="item.message" @click="toggleFocus(item.id)">
                 {{ name }}
                 <span v-if="isActive">#{{item.id}}</span>
+                <span v-if="item.datetime">
+                    <img class="btn-icon" src="../../../assets/icons/calendar.svg" alt="datetime" :title="item.datetime">
+                </span>
             </div>
 
             <div class="item--buttons">
-                <span class="add-btn" @click="createChild">
+                <span class="btn go-btn" @click="goto" v-if="$route.params.parentId != item.id">
+                    <img class="btn-icon" src="../../../assets/icons/right_arrow.svg" alt="go" title="Focus on task">
+                </span>
+                <span class="btn add-btn" @click="createChild">
                     <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="add" title="Add task">
                 </span>
-                <span class="delete-btn" @click="deleteTask">
+                <span class="btn delete-btn" @click="deleteTask">
                     <img class="btn-icon" src="../../../assets/icons/trash.svg" alt="delete" title="Delete">
                 </span>
             </div>
@@ -18,6 +24,8 @@
 
         <div class="item--edit" v-if="isActive">
             <textarea rows="5" v-model="message"></textarea>
+            <br>
+            Дата: <input type="datetime-local" v-model="datetime">
 
             <span class="close-btn" @click="toggleFocus(null)">
                 <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="close" title="Close edit window">
@@ -61,15 +69,26 @@
                     return this.item.message
                 },
                 set(value) {
-                    console.log(value.split("\n"))
-                    this.localData.name = value.split("\n")[0]
-                    this.localData.message = value
                     this.$store.dispatch('todos/updateItem', {
                         id: this.item.id,
-                        payload: this.localData
+                        payload: {
+                            name: value.split("\n")[0],
+                            message: value,
+                        }
                     })
                 },
-            }
+            },
+            datetime: {
+                get() {
+                    return this.item.datetime
+                },
+                set(datetime) {
+                    this.$store.dispatch('todos/updateItem', {
+                        id: this.item.id,
+                        payload: {datetime}
+                    })
+                },
+            },
         },
         methods: {
             onChange(value) {
@@ -94,6 +113,9 @@
             },
             toggleFocus (value) {
                 this.$emit('focus', (value) ? value : null);
+            },
+            goto() {
+                this.$router.push({name: 'task-list', params: {parentId: this.item.id}})
             },
             deleteTask() {
                 // Удаление пункта из родительского списка дочерей
@@ -156,8 +178,9 @@
         }
     }
 
-    .add-btn {
+    .btn {
         display: inline-block;
+        margin: 0 5px;
     }
 
     &__ghost {
