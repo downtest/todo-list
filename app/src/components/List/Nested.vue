@@ -57,7 +57,11 @@
                     animation: 0,
                     group: "description",
                     disabled: false,
-                    ghostClass: "item__ghost"
+                    ghostClass: "item__ghost",
+                    chosenClass: "item__chosen",
+                    dragClass: "item__drag",
+                    delay: 200,
+                    delayOnTouchOnly: true,
                 };
             },
         },

@@ -10,6 +10,7 @@ const todos = {
                 message: "Поставщики",
                 parent_id: 0,
                 datetime: null,
+                labels: [],
                 tasks: [2, 6], // to save the order of children
             },
             2: {
@@ -17,6 +18,7 @@ const todos = {
                 message: "Арсений\nСын маминой подруги",
                 parent_id: 1,
                 datetime: null,
+                labels: [],
                 tasks: [3],
             },
             3: {
@@ -24,6 +26,7 @@ const todos = {
                 message: "Согласовать график на майские праздники",
                 parent_id: 2,
                 datetime: null,
+                labels: [],
                 tasks: [5, 4],
             },
             4: {
@@ -31,6 +34,7 @@ const todos = {
                 message: "Заказать овощи",
                 parent_id: 3,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
             5: {
@@ -38,6 +42,7 @@ const todos = {
                 message: "Обеспечить молочные изделия",
                 parent_id: 3,
                 datetime: null,
+                labels: [],
                 tasks: [7],
             },
             6: {
@@ -45,6 +50,7 @@ const todos = {
                 message: "Виталик\nШкольный друг",
                 parent_id: 1,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
             7: {
@@ -52,6 +58,7 @@ const todos = {
                 message: "Занести заказ в систему",
                 parent_id: 5,
                 datetime: null,
+                labels: ['Срочно', 'Важно'],
                 tasks: [8],
             },
             8: {
@@ -59,6 +66,7 @@ const todos = {
                 message: "Комп барахлит, вызвать мастера",
                 parent_id: 7,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
             9: {
@@ -66,6 +74,7 @@ const todos = {
                 message: "Купить в магазине",
                 parent_id: 0,
                 datetime: null,
+                labels: [],
                 tasks: [10, 11, 12, 13],
             },
             10: {
@@ -73,6 +82,7 @@ const todos = {
                 message: "Молоко",
                 parent_id: 9,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
             11: {
@@ -80,6 +90,7 @@ const todos = {
                 message: "Сыр",
                 parent_id: 9,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
             12: {
@@ -87,6 +98,7 @@ const todos = {
                 message: "Помидоры",
                 parent_id: 9,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
             13: {
@@ -94,6 +106,7 @@ const todos = {
                 message: "Яйца",
                 parent_id: 9,
                 datetime: null,
+                labels: [],
                 tasks: [],
             },
         },
@@ -173,20 +186,29 @@ const todos = {
             // Реактивно удаляем элемент из массива (чтобы vue реактивно удалил бы его)
             this._vm.$delete(state.items, id)
         },
+        addLabel (state, {id, label}) {
+            state.items[id]['labels'].push(label)
+        },
+        deleteLabel (state, {id, index}) {
+            state.items[id]['labels'].splice(index, 1)
+        },
     },
     actions: {
-        createItem ({commit, state}, {parentId, payload}) {
-            console.log(`Creating item for parent ${parentId}`)
+        async createItem ({commit, state}, {parentId, payload}) {
             payload.id = Math.max( ...Object.keys(state.items)) + 1
             payload.parent_id = parentId
             payload.datetime = null
+            payload.labels = []
             payload.tasks = []
 
             commit('addChild', {
                 parentId,
                 childId: payload.id
             })
+
             commit('createItem', {parentId, payload})
+
+            return payload.id
         },
         updateParent ({commit}, {id, parentId, newIndex}) {
             console.log(`Acting updateParent on #${id} to ${parentId} to index ${newIndex}`)
@@ -210,7 +232,13 @@ const todos = {
 
             // Вызываем мутатор
             commit('deleteItem', id)
-        }
+        },
+        addLabel ({commit}, {id, label}) {
+            commit('addLabel', {id, label})
+        },
+        deleteLabel ({commit}, {id, index}) {
+            commit('deleteLabel', {id, index})
+        },
     }
 };
 

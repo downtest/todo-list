@@ -1,5 +1,5 @@
 <template>
-    <div :class="{item: true, hover: hover}">
+    <div :class="{item: true, hover: hover}" :data-id="item.id">
         <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
             <div class="item--name" :title="item.message" @click="toggleFocus(item.id)">
                 {{ name }}
@@ -7,6 +7,15 @@
                 <span v-if="item.datetime">
                     <img class="btn-icon" src="../../../assets/icons/calendar.svg" alt="datetime" :title="item.datetime">
                 </span>
+            </div>
+
+            <div class="item--labels" v-if="item.labels">
+                <div class="label" :key="index" v-for="(label, index) in item.labels">
+                    {{label}}
+                    <span v-if="isActive" class="close-btn" @click="deleteLabel(index)">
+                        <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="delete" title="Delete label">
+                    </span>
+                </div>
             </div>
 
             <div class="item--buttons">
@@ -23,9 +32,11 @@
         </div>
 
         <div class="item--edit" v-if="isActive">
-            <textarea rows="5" v-model="message"></textarea>
+            <textarea class="edit--message" rows="5" v-model="message"></textarea>
             <br>
             Дата: <input type="datetime-local" v-model="datetime">
+            <br>
+            Новый лейбл: <input type="text" v-model="labelInput">
 
             <span class="close-btn" @click="toggleFocus(null)">
                 <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="close" title="Close edit window">
@@ -43,7 +54,21 @@
             return {
                 localData: {},
                 hover: false,
+                labelInput: '',
             };
+        },
+        watch: {
+            labelInput(value) {
+                if (value.split(' ').length > 1) {
+                    // Юзер поставил пробел и надо добавить новый лейбл
+                    this.$store.dispatch('todos/addLabel', {
+                        id: this.item.id,
+                        label: value.split(' ')[0],
+                    })
+
+                    this.labelInput = ''
+                }
+            }
         },
         computed: {
             isActive() {
@@ -123,11 +148,16 @@
 
                 this.$store.dispatch('todos/deleteItem', this.item.id)
             },
+            deleteLabel(index) {
+                this.$store.dispatch('todos/deleteLabel', {
+                    id: this.item.id,
+                    index: index,
+                })
+            },
             createChild() {
-                console.log(`creating child for ${this.item.id}`)
                 this.$store.dispatch('todos/createItem', {parentId: this.item.id, payload: {
-                    message: 'New',
-                }})
+                    message: '',
+                }}).then(newId => this.toggleFocus(newId))
             },
         },
         components: {
@@ -169,6 +199,19 @@
 
         }
 
+        .item--labels {
+
+            .label {
+                display: inline-block;
+                margin: 0 5px;
+                padding: 0 3px;
+                border: 1px solid #2c3e50;
+                background: rebeccapurple;
+                color: antiquewhite;
+                border-radius: 5px;
+            }
+        }
+
         .item--buttons {
 
         }
@@ -185,6 +228,10 @@
 
     &__ghost {
         border: 2px dotted red;
+    }
+
+    &__chosen {
+        animation: shaker .5s ease-in-out;
     }
 
     &.hover {
@@ -215,6 +262,16 @@
     .btn-icon {
         transform: rotate(45deg);
     }
+}
+
+@keyframes shaker {
+    from,
+    to {
+        transform: none
+    }
+    25% {transform: rotate(+1deg)}
+    50% {transform: rotate(-.7deg)}
+    75% {transform: rotate(.4deg)}
 }
 
 </style>

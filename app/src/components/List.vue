@@ -16,11 +16,15 @@
 
             <nested v-model="elements" @focus="focusHandler" @change="onChange" :focusId="focusId" />
 
+            <span class="btn add-btn" @click="createChild">
+                <img class="btn-icon" src="../../assets/icons/plus.svg" alt="add" title="Add task">
+            </span>
+
             <div class="logs">
                 <div :key="index" v-for="(log, index) in $store.state.todos.logs">{{log}}</div>
             </div>
 
-            <pre style="text-align: left">{{this.$store.state.todos.items}}</pre>
+<!--            <pre style="text-align: left">{{this.$store.state.todos.items}}</pre>-->
 
         </div>
     </div>
@@ -113,10 +117,26 @@
             },
         },
         methods: {
+            createChild () {
+                this.$store.dispatch('todos/createItem', {parentId: this.parentId, payload: {
+                    message: '',
+                }}).then(newId => this.focusHandler(newId))
+            },
             focusHandler(value) {
-                console.log(`Новый активный ${value}`);
-                // this.$store.commit('todos/makeUnactive')
-                this.focusId = value ?? null
+                let focusId;
+
+                if (value) {
+                    focusId = value
+
+                    setTimeout(() =>
+                        document.querySelector(`[data-id="${this.focusId}"] > .item--edit > .edit--message`)
+                            .focus()
+                    )
+                } else {
+                    focusId = null
+                }
+
+                this.focusId = focusId
                 // this.$router.push({ name: 'task-detail', params: { id: value.id, data: value } })
             },
             onChange(value) {
