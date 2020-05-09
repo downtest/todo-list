@@ -7,8 +7,8 @@
             :value="value"
             @input="emitter"
             @change="change"
+            @start="onStart"
             @end="onEnd"
-            @update="update"
     >
         <item
                 :key="el.id"
@@ -25,22 +25,16 @@
     export default {
         name: "nested",
         methods: {
-            update(value) {
-                console.log(value, 'update event')
-            },
             change(value) {
-                // console.log(value, 'change event')
                 this.$emit("change", value)
+            },
+            onStart() {
+                this.focusHandler(null)
             },
             onEnd(value) {
                 this.$emit("end", value)
-
-                console.log(value, `onEnd event, emit on parent`)
-
-
             },
             emitter(value) {
-                console.log(value, 'input event')
                 this.$emit("input", value);
             },
             focusHandler(value) {
@@ -51,19 +45,20 @@
             draggable: () => import('vuedraggable'),
             item: () => import('./Item'),
         },
-        computed: {
-            dragOptions() {
-                return {
+        data() {
+            return {
+                dragOptions: {
                     animation: 0,
                     group: "description",
                     disabled: false,
                     ghostClass: "item__ghost",
                     chosenClass: "item__chosen",
                     dragClass: "item__drag",
-                    delay: 200,
+                    delay: 100,
                     delayOnTouchOnly: true,
-                };
-            },
+                    forceFallback: true,
+                },
+            }
         },
         props: {
             value: {
@@ -71,7 +66,7 @@
                 type: Array,
                 default: null
             },
-            'focusId': {
+            focusId: {
                 required: false,
                 type: Number,
                 default: null

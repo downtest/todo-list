@@ -6,15 +6,26 @@
 
             <div v-if="parent">
                 <h1>{{parent.message.split('\n')[0]}}</h1>
-                <textarea
-                    class="parent--input"
-                    v-model="parentMessage"
-                    :rows="parentMessage.split('\n').length"
-                ></textarea>
-                <input class="parent--input" type="datetime-local" v-model="parentDatetime">
+
+                <label>
+                    <textarea
+                        class="parent--input"
+                        v-model="parentMessage"
+                        :rows="parentMessage.split('\n').length"
+                    ></textarea>
+                </label>
+
+                <label>
+                    <input class="parent--input" type="datetime-local" v-model="parentDatetime">
+                </label>
             </div>
 
-            <nested v-model="elements" @focus="focusHandler" @change="onChange" :focusId="focusId" />
+            <nested
+                v-model="elements"
+                @focus="focusHandler"
+                @change="onChange"
+                :focusId="focusId"
+            />
 
             <span class="btn add-btn" @click="createChild">
                 <img class="btn-icon" src="../../assets/icons/plus.svg" alt="add" title="Add task">
@@ -24,7 +35,7 @@
                 <div :key="index" v-for="(log, index) in $store.state.todos.logs">{{log}}</div>
             </div>
 
-<!--            <pre style="text-align: left">{{this.$store.state.todos.items}}</pre>-->
+            <pre style="text-align: left">{{this.$store.state.todos.items}}</pre>
 
         </div>
     </div>
@@ -110,7 +121,7 @@
                 },
                 set(payload) {
                     this.$store.dispatch("todos/updateChildren", {
-                        parentId: parseInt(this.parent.id),
+                        parentId: this.parentId ? this.parentId  : 0,
                         children: payload.map(child => child.id)
                     });
                 },
@@ -118,9 +129,10 @@
         },
         methods: {
             createChild () {
-                this.$store.dispatch('todos/createItem', {parentId: this.parentId, payload: {
-                    message: '',
-                }}).then(newId => this.focusHandler(newId))
+                this.$store.dispatch('todos/createItem', {
+                    parentId: this.parentId ? this.parentId  : 0,
+                    payload: {message: '',}
+                }).then(newId => this.focusHandler(newId))
             },
             focusHandler(value) {
                 let focusId;
@@ -128,23 +140,21 @@
                 if (value) {
                     focusId = value
 
-                    setTimeout(() =>
-                        document.querySelector(`[data-id="${this.focusId}"] > .item--edit > .edit--message`)
+                    setTimeout(() =>{
+                        document.querySelector(`[data-id="${focusId}"] > .item--edit > .edit--label > .edit--message`)
                             .focus()
-                    )
+                    })
                 } else {
                     focusId = null
                 }
 
                 this.focusId = focusId
-                // this.$router.push({ name: 'task-detail', params: { id: value.id, data: value } })
             },
             onChange(value) {
                 if (value.added) {
-                    // console.log(`set parentId=0 on #${value.added.element.id}`)
                     this.$store.dispatch("todos/updateParent", {
                         id: value.added.element.id,
-                        parentId: 0,
+                        parentId: this.parentId ? this.parentId  : 0,
                         newIndex: value.added.newIndex,
                     });
                 }

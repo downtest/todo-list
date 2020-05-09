@@ -32,18 +32,29 @@
         </div>
 
         <div class="item--edit" v-if="isActive">
-            <textarea class="edit--message" rows="5" v-model="message"></textarea>
-            <br>
-            Дата: <input type="datetime-local" v-model="datetime">
-            <br>
-            Новый лейбл: <input type="text" v-model="labelInput">
+            <label class="edit--label">
+                <textarea class="edit--message" rows="5" v-model="message"></textarea>
+            </label>
+
+            <label class="edit--label">
+                Дата: <input type="datetime-local" v-model="datetime">
+            </label>
+
+            <label class="edit--label">
+                Новый лейбл: <input type="text" v-model="labelInput">
+            </label>
 
             <span class="close-btn" @click="toggleFocus(null)">
                 <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="close" title="Close edit window">
             </span>
         </div>
 
-        <nested v-model="children" @input="emitter" @focus="focusHandler" @change="onChange" :focusId="focusId" />
+        <nested v-model="children"
+                @input="emitter"
+                @focus="focusHandler"
+                @change="onChange"
+                :focusId="focusId"
+        />
     </div>
 </template>
 
@@ -83,6 +94,7 @@
                 },
                 set(payload) {
                     // Обновляем дочерние пункты
+                    console.log(payload, 'children set in Item');
                     this.$store.dispatch("todos/updateChildren", {
                         parentId: this.item.id,
                         children: payload.map(child => child.id)
@@ -131,6 +143,7 @@
                 console.log(value, `onEnd on ${this.item.id}`)
             },
             emitter(value) {
+                // console.log(value, `emitter in ${this.item.id}`)
                 this.$emit("input", value);
             },
             focusHandler(value) {
@@ -215,9 +228,12 @@
         .item--buttons {
 
         }
+    }
 
-        .item--edit {
+    .item--edit {
 
+        .edit--label {
+            display: block;
         }
     }
 
@@ -232,6 +248,10 @@
 
     &__chosen {
         animation: shaker .5s ease-in-out;
+    }
+
+    &__drag {
+        display: none;
     }
 
     &.hover {
