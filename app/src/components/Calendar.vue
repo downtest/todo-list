@@ -113,9 +113,9 @@
         },
         methods: {
             handleWheel: function (evt) {
-                if (evt.deltaY > 0) {
+                if (evt.deltaY > 40) {
                     this.focus = new Date(this.focus.getFullYear(), this.focus.getMonth() + 1)
-                } else {
+                } else if (evt.deltaY < -40) {
                     this.focus = new Date(this.focus.getFullYear(), this.focus.getMonth() - 1)
                 }
             }

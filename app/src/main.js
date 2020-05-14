@@ -9,12 +9,25 @@ import store from './store';
 Vue.directive('wheel', {
   // Когда привязанный элемент вставлен в DOM...
   inserted: function (el, binding) {
-    let f = function (evt) {
+    el.addEventListener('wheel', function (evt) {
       if (binding.value(evt, el)) {
-        el.removeEventListener('wheel', f)
+        el.removeEventListener('wheel', this)
       }
-    }
-    el.addEventListener('wheel', f)
+    })
+
+    var startPosition, endPosition;
+
+    el.addEventListener('touchstart', function (evt) {
+      startPosition = evt.changedTouches[0].pageY
+    })
+    el.addEventListener('touchend', function (evt) {
+      endPosition = evt.changedTouches[0].pageY
+      evt.deltaY = endPosition - startPosition
+
+      if (binding.value(evt, el)) {
+        el.removeEventListener('touchend', this)
+      }
+    })
   }
 })
 
