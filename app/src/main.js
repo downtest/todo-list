@@ -6,6 +6,18 @@ import App from './App'
 import router from './router';
 import store from './store';
 
+Vue.directive('wheel', {
+  // Когда привязанный элемент вставлен в DOM...
+  inserted: function (el, binding) {
+    let f = function (evt) {
+      if (binding.value(evt, el)) {
+        el.removeEventListener('wheel', f)
+      }
+    }
+    el.addEventListener('wheel', f)
+  }
+})
+
 new Vue({
   router,
   store,
