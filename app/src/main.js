@@ -10,6 +10,8 @@ Vue.directive('wheel', {
   // Когда привязанный элемент вставлен в DOM...
   inserted: function (el, binding) {
     el.addEventListener('wheel', function (evt) {
+      evt.preventDefault()
+      
       if (binding.value(evt, el)) {
         el.removeEventListener('wheel', this)
       }
@@ -18,9 +20,13 @@ Vue.directive('wheel', {
     var startPosition, endPosition;
 
     el.addEventListener('touchstart', function (evt) {
+      evt.preventDefault()
+
       startPosition = evt.changedTouches[0].pageY
     })
     el.addEventListener('touchend', function (evt) {
+      evt.preventDefault()
+
       endPosition = evt.changedTouches[0].pageY
       evt.deltaY = endPosition - startPosition
 
