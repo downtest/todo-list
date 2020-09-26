@@ -7,13 +7,13 @@
             <div v-if="parent">
                 <h1>{{parent.message.split('\n')[0]}}</h1>
 
-                <label>
-                    <textarea
-                        class="parent--input"
-                        v-model="parentMessage"
-                        :rows="parentMessage.split('\n').length"
-                    ></textarea>
-                </label>
+                <div>
+                    <contenteditable
+                        :content="parentMessage"
+                        :handleWordFunction="handleWordFunction"
+                        @input="parentMessageChange"
+                    ></contenteditable>
+                </div>
 
                 <label>
                     <input class="parent--input" type="datetime-local" v-model="parentDatetime">
@@ -35,7 +35,7 @@
                 <div :key="index" v-for="(log, index) in $store.state.todos.logs">{{log}}</div>
             </div>
 
-            <pre style="text-align: left">{{this.$store.state.todos.items}}</pre>
+<!--            <pre style="text-align: left">{{this.$store.state.todos.items}}</pre>-->
 
         </div>
     </div>
@@ -44,6 +44,7 @@
 <script>
     import nested from "./List/Nested";
     import tasksBreadcrumb from "./List/Breadcrumb";
+    import contenteditable from "./Contenteditable";
 
     export default {
         props: {
@@ -65,10 +66,13 @@
         components: {
             nested,
             tasksBreadcrumb,
+            contenteditable,
         },
         data() {
             return {
                 focusId: null,
+                messageEditable: true,
+                highlightedMessage: 'asffas',
             }
         },
         computed: {
@@ -90,6 +94,7 @@
                     }
                 },
                 set(message) {
+                    message = message.replace(/<\/?[^>]+(>|$)/g, "")
                     this.$store.dispatch('todos/updateItem', {
                         id: this.parent.id,
                         payload: {message},
@@ -150,6 +155,11 @@
 
                 this.focusId = focusId
             },
+            handleWordFunction(node) {
+                if (node.firstChild.length > 3) {
+                    node.classList.add(`green`)
+                }
+            },
             onChange(value) {
                 if (value.added) {
                     this.$store.dispatch("todos/updateParent", {
@@ -158,6 +168,10 @@
                         newIndex: value.added.newIndex,
                     });
                 }
+            },
+            parentMessageChange(value) {
+                // console.log(value, 'new value on contenteditable')
+                this.parentMessage = value
             },
         },
     }

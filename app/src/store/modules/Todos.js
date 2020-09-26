@@ -210,15 +210,13 @@ const todos = {
 
             return payload.id
         },
-        updateParent ({commit}, {id, parentId, newIndex}) {
-            console.log(`Acting updateParent on #${id} to ${parentId} to index ${newIndex}`)
+        updateParent ({commit}, {id, parentId}) {
             commit('updateParent', {id, parentId})
         },
         updateChildren ({commit}, {parentId, children}) {
             commit('updateChildren', {parentId, children})
         },
         updateItem ({commit}, {id, payload}) {
-            console.log(payload, 'payload in action update')
             commit('updateItem', {id, payload})
         },
         deleteItem ({commit, dispatch, state}, id) {

@@ -54,7 +54,7 @@
                     ghostClass: "item__ghost",
                     chosenClass: "item__chosen",
                     dragClass: "item__drag",
-                    delay: 100,
+                    delay: 200,
                     delayOnTouchOnly: true,
                     forceFallback: true,
                 },

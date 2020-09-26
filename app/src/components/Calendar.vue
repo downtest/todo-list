@@ -17,7 +17,7 @@
                 </tr>
 
                 <tr :key="index" v-for="(week, index) in month">
-                    <td v-if="index === 0" v-for="i in emptyDays(week.length)"></td>
+                    <td v-if="index === 0 && week.length < 7" :colspan="emptyDays(week.length)"></td>
 
                     <td :key="index" v-for="(day, index) in week">
                         <div v-if="day" :class="{
@@ -144,7 +144,6 @@
             },
             emptyDays(filledDays) {
                 // Заполняем пустые места null`ом в начале недели(это дни предыдущего месяца)
-                console.log(filledDays, `filledDays in fntion`)
                 return 7 - filledDays
             },
         },
