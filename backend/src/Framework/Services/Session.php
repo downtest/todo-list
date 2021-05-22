@@ -16,7 +16,7 @@ class Session extends Service
     /**
      * @var self
      */
-    protected static self $instance;
+    protected static $instance;
 
     /**
      * @var array
