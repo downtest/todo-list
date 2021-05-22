@@ -1,0 +1,31 @@
+{
+    "name": "downtest/adr-framework",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Roman Morozov",
+            "email": "ramirez2006@mail.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "ext-PDO": "^7.1",
+        "ext-json": "*",
+        "ext-mongodb": "*",
+        "mongodb/mongodb": "^1.8",
+        "doctrine/migrations": "^1.8",
+        "monolog/monolog": "^1.23",
+        "psr/container": "^1.0",
+        "psr/http-message": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/log": "^1.0",
+        "zendframework/zend-diactoros": "^2.2",
+        "narrowspark/http-emitter": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Framework\\": "src/Framework/",
+            "App\\": "App"
+        }
+    }
+}

@@ -1,4 +1,9 @@
-.idea
+*.log
 
-/app/node_modules
-/app/dist
+.idea
+.env
+
+/frontend/node_modules
+/frontend/dist
+
+/backend/vendor
