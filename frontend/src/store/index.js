@@ -17,7 +17,9 @@ const store = createStore({
 })
 
 store.axios = axios.create({
-    withCredentials: true
+    baseURL: 'http://localhost:82',
+    withCredentials: true,
+    // headers: {'Origin': 'localhost:81'}, // Передаётся самим браузером автоматически, вроде
 })
 
 export default store

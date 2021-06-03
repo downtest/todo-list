@@ -4,6 +4,7 @@ services:
 
   nginx_frontend:
     image: nginx:1.17.8-alpine
+    restart: always
     volumes:
       - ./frontend:/www
       - ./docker/nginx/conf:/etc/nginx
@@ -15,6 +16,7 @@ services:
   nginx_backend:
     build:
       context: ./docker/backend
+    restart: always
     volumes:
       - ./docker/backend/conf/nginx.conf:/etc/nginx/nginx.conf
     depends_on:
@@ -23,12 +25,12 @@ services:
       - 82:80
 
   php:
-    restart: always
     build:
       context: ./docker/php
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
+    restart: always
     volumes:
       - ./backend:/www
     env_file:

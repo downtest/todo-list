@@ -7,7 +7,7 @@ namespace Framework\Http\Validation\Rules;
 use Exception;
 use Framework\Http\Validation\Rules\Interfaces\Rule;
 
-class Size extends Rule
+class SizeRule extends Rule
 {
 
     /**

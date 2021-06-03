@@ -26,7 +26,7 @@
     export default {
         name: "tasks-breadcrumb",
         props: {
-            id: Number,
+            id: String,
         },
         data() {
             return {

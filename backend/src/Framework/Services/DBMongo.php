@@ -5,7 +5,7 @@ namespace Framework\Services;
 
 use Exception;
 use Framework\Services\Interfaces\Service;
-use PDO;
+use Framework\Tools\Arr;
 
 /**
  * Class DBPostgres
@@ -63,15 +63,60 @@ class DBMongo extends Service
         );
     }
 
-    public function find(string $collectionName, array $conditions = []): array
+    public function find(string $collectionName, array $conditions = [], array $options = []): array
     {
         $result = [];
-        $cursor = $this->client->$collectionName->find($conditions);
+        $cursor = $this->client->$collectionName->find($conditions, $options);
 
         foreach ($cursor as $value) {
-            $result[] = $value;
+            $result[] = ['id' => (string)$value['_id']] + $value->getArrayCopy();
         }
 
         return $result;
+    }
+
+    public function findById(string $collectionName, string $id): ?array
+    {
+        $cursor = $this->client->$collectionName->find(['_id' => new \MongoDB\BSON\ObjectId($id)])->toArray()[0];
+
+        if (!$cursor) {
+            return null;
+        }
+
+        $resultArray = $cursor->getArrayCopy();
+
+        return ['id' => (string)$resultArray['_id']] + $resultArray;
+    }
+
+    public function insertOne(string $collectionName, array $conditions = []): string
+    {
+        return (string)$this->client->$collectionName->insertOne($conditions)->getInsertedId();
+    }
+
+    public function updateOne(string $collectionName, array $payload): bool
+    {
+        $taskId = $payload['taskId'] ?? $payload['id'] ?? null;
+
+        if (!$taskId) {
+            throw new Exception('Не передан ID таски');
+        }
+
+        return $this->client->$collectionName->updateOne(
+            ['_id' => new \MongoDB\BSON\ObjectId($taskId)],
+            ['$set' => Arr::except($payload, ['taskId', 'collectionId'])]
+        )->getModifiedCount() > 0;
+    }
+
+    public function updateMany(string $collectionName, array $filter, array $payload): int
+    {
+        return $this->client->$collectionName->updateMany(
+            $filter,
+            $payload
+        )->getModifiedCount();
+    }
+
+    public function deleteMany(string $collectionName, array $filter, array $options = []): int
+    {
+        return $this->client->$collectionName->deleteMany($filter, $options)->getDeletedCount();
     }
 }

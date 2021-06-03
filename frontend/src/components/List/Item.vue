@@ -2,7 +2,7 @@
     <div :class="{item: true, hover: hover, confirmed: modelValue.confirmed}" :data-id="modelValue.id">
         <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
-                #{{ modelValue.id }} {{ name }} (i:{{modelValue.index}}, parent:{{modelValue.parent_id}})
+                #{{ modelValue.id }} {{ name }} (i:{{modelValue.index}}, parent:{{modelValue.parentId}})
 
                 <span v-if="!modelValue.confirmed">НЕТ на бэке</span>
                 <span v-else>есть на бэке</span>
@@ -82,7 +82,7 @@
             },
             focusId: {
                 required: false,
-                type: Number,
+                type: String,
                 default: null,
             },
         },
@@ -127,7 +127,7 @@
             },
             message: {
                 get() {
-                    return this.modelValue.message
+                    return this.modelValue.message || ''
                 },
                 set(value) {
                     this.$store.dispatch('todos/updateItem', {
@@ -187,8 +187,6 @@
             },
             deleteTask() {
                 // Удаление пункта из родительского списка дочерей
-                this.$store.commit('todos/removeChild', {parentId: this.modelValue.parent_id, childId: this.modelValue.id})
-
                 this.$store.dispatch('todos/deleteItem', this.modelValue.id)
             },
             deleteLabel(index) {
@@ -199,9 +197,11 @@
             },
             createChild() {
                 this.$store.dispatch('todos/createItem', {
-                    parent_id: this.modelValue.id,
+                    parentId: this.modelValue.id,
                     message: '',
-                }).then(task => this.toggleFocus(task.id))
+                })
+                    // TODO: Исправить фокусировку после создания
+                    .then(task => this.toggleFocus(task.id))
             },
         },
     };

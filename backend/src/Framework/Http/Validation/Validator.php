@@ -38,7 +38,7 @@ class Validator implements MiddlewareInterface
                     $result = $rule($request->getAttribute($field));
                 } else {
                     $ruleParts = explode(':', $rule);
-                    $ruleName = ucfirst(array_shift($ruleParts));
+                    $ruleName = ucfirst(array_shift($ruleParts)) . 'Rule';
                     $arguments = explode(',', array_shift($ruleParts));
                     $ruleClassName = "\Framework\Http\Validation\Rules\\{$ruleName}";
 

@@ -16,7 +16,7 @@
         beforeRouteEnter (to, from, next) {
             // обрабатываем изменение параметров маршрута...
             if (!to.params.data) {
-                let id = parseInt(to.params.id)
+                let id = to.params.id
 
                 if (localStorage.focusedTask) {
                     to.params.data = JSON.parse(localStorage.focusedTask)

@@ -53,4 +53,18 @@ class Arr
 
         return $result ?? $default;
     }
+
+    /**
+     * Возвращает многомерный массив без указанных ключей
+     *
+     * @param array $array
+     * @param array $exceptValues
+     * @return array
+     */
+    public static function except(array $array, array $exceptValues): array
+    {
+        return array_filter($array, function ($key) use ($exceptValues) {
+            return !in_array($key, $exceptValues);
+        }, ARRAY_FILTER_USE_KEY);
+    }
 }

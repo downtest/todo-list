@@ -83,7 +83,7 @@
         },
         computed: {
             parentId() {
-                return parseInt(this.$route.params.parentId)
+                return this.$route.params.parentId || null
             },
             parent() {
                 if (this.parentId) {
@@ -146,7 +146,7 @@
         methods: {
             createChild () {
                 this.$store.dispatch('todos/createItem', {
-                    parent_id: this.parentId,
+                    parentId: this.parentId,
                     message: '',
                 }).then(task => this.focusHandler(task.id))
             },

@@ -21,16 +21,16 @@ abstract class Action implements RequestHandlerInterface
 
     public function successResponse(array $data = []): JsonResponse
     {
-        return new JsonResponse($data);
+        return new JsonResponse(['success' => true, 'data' => $data]);
     }
 
     public function errorResponse(array $data = []): JsonResponse
     {
-        return new JsonResponse($data, 400);
+        return new JsonResponse(['success' => false, 'errors' => $data], 400);
     }
 
     public function validationErrorResponse(array $errors = []): JsonResponse
     {
-        return new JsonResponse($errors, 422);
+        return new JsonResponse(['success' => false, 'errors' => $errors], 422);
     }
 }

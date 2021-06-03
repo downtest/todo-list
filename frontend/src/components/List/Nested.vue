@@ -38,13 +38,13 @@ import draggable from "vuedraggable"
                 default: null
             },
             parentId: {
-                required: true,
-                type: Number,
+                required: false,
+                type: String,
                 default: null
             },
             focusId: {
                 required: false,
-                type: Number,
+                type: String,
                 default: null
             },
         },
@@ -70,10 +70,10 @@ import draggable from "vuedraggable"
                 if (value.added || value.moved) {
                     let eventElem = value.added || value.moved
 
-                    this.$store.dispatch("todos/updateItem", {
+                    this.$store.dispatch('todos/updateItem', {
                         id: eventElem.element.id,
                         payload: {
-                            parent_id: this.parentId,
+                            parentId: this.parentId,
                             index: eventElem.newIndex,
                         },
                     });
@@ -91,14 +91,14 @@ import draggable from "vuedraggable"
             },
             onEnd(value) {
                 this.$store.dispatch("todos/updateChildren", {
-                    parentId: parseInt(value.from.dataset.parentId),
+                    parentId: value.from.dataset.parentId,
                     children: this.modelValue,
                 });
 
                 if (value.from.dataset.parentId !== value.to.dataset.parentId) {
                     this.$store.dispatch("todos/updateChildren", {
-                        parentId: parseInt(value.to.dataset.parentId),
-                        children: Array.from(value.to.childNodes).map(node => this.$store.getters['todos/getById'](parseInt(node.dataset.id))),
+                        parentId: value.to.dataset.parentId,
+                        children: Array.from(value.to.childNodes).map(node => this.$store.getters['todos/getById'](node.dataset.id)),
                     });
                 }
 
