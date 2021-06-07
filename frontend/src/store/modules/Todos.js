@@ -76,12 +76,16 @@ const todos = {
         addLabel (state, {id, label}) {
             let task = state.items.find(item => item.id === id)
 
-            task['labels'].push(label)
+            if (!task.labels) {
+                task.labels = []
+            }
+
+            task.labels.push(label)
         },
         deleteLabel (state, {id, index}) {
             let task = state.items.find(item => item.id === id)
 
-            task['labels'].splice(index, 1)
+            task.labels.splice(index, 1)
         },
         setFocusId (state, id) {
             state.focusId = id
@@ -216,11 +220,45 @@ const todos = {
                     console.error(response, `error on Delete Task Response`)
                 })
         },
-        addLabel ({commit}, {id, label}) {
+        addLabel ({state, commit, getters}, {id, label}) {
             commit('addLabel', {id, label})
+
+            let task = getters.getById(id)
+
+            this.axios.post('api/tasks/update', {
+                collectionId: null,
+                taskId: task.id,
+                labels: task.labels,
+            })
+                .then(async ({data}) => {
+                    if (!data.success) {
+                        console.error(data, `error in Adding Label response`)
+                        return
+                    }
+                })
+                .catch((response) => {
+                    console.error(response, `error on Adding Label Response`)
+                })
         },
-        deleteLabel ({commit}, {id, index}) {
+        deleteLabel ({commit, getters}, {id, index}) {
             commit('deleteLabel', {id, index})
+
+            let task = getters.getById(id)
+
+            this.axios.post('api/tasks/update', {
+                collectionId: null,
+                taskId: task.id,
+                labels: task.labels,
+            })
+                .then(async ({data}) => {
+                    if (!data.success) {
+                        console.error(data, `error in Deletting Label response`)
+                        return
+                    }
+                })
+                .catch((response) => {
+                    console.error(response, `error on Deletting Label Response`)
+                })
         },
     }
 };

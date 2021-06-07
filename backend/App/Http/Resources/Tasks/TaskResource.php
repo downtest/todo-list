@@ -17,6 +17,7 @@ class TaskResource extends Resource
             'confirmed' => true, // Флаг, что загружено на сервер(что фронт совпадает с бэком)
             'parentId' => $this->resource['parentId'] ?? null, // родительский id
             'children' => $this->resource['children'] ?? [], // Массив дочерних id
+            'labels' => $this->resource['labels'] ?? [],
         ];
     }
 }

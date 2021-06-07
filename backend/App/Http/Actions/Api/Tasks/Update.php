@@ -21,6 +21,7 @@ class Update extends Action
             'index' => ['nullable', 'number'],
             'parentId' => ['nullable', 'string'],
             'message' => ['nullable', 'string'],
+            'labels' => ['nullable', 'array'],
         ];
     }
 
