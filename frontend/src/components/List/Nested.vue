@@ -9,14 +9,11 @@
         :data-parent-id="parentId"
         @input="emitter"
         @change="onChange"
-        @start="onStart"
         @end="onEnd"
     >
         <template #item="{element}">
             <item
                 :modelValue="element"
-                :focusId="focusId"
-                @focus="focusHandler"
             />
         </template>
     </draggable>
@@ -38,11 +35,6 @@ import draggable from "vuedraggable"
                 default: null
             },
             parentId: {
-                required: false,
-                type: String,
-                default: null
-            },
-            focusId: {
                 required: false,
                 type: String,
                 default: null
@@ -85,10 +77,6 @@ import draggable from "vuedraggable"
                     // });
                 }
             },
-            onStart() {
-                // console.log(`onStart`)
-                this.focusHandler(null)
-            },
             onEnd(value) {
                 this.$store.dispatch("todos/updateChildren", {
                     parentId: value.from.dataset.parentId,
@@ -107,9 +95,6 @@ import draggable from "vuedraggable"
             emitter(value) {
                 // console.log(value, `emitter`)
                 this.$emit("input", value);
-            },
-            focusHandler(value) {
-                this.$emit("focus", value);
             },
         },
     };

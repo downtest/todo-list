@@ -56,9 +56,7 @@
 
         <nested v-model="children"
                 @input="emitter"
-                @focus="focusHandler"
                 @change="onChange"
-                :focusId="focusId"
                 :parentId="modelValue.id"
         />
     </div>
@@ -79,11 +77,6 @@
                 required: false,
                 type: Boolean,
                 default: false,
-            },
-            focusId: {
-                required: false,
-                type: String,
-                default: null,
             },
         },
         data() {
@@ -108,7 +101,7 @@
         },
         computed: {
             isActive() {
-                return this.focusId === this.modelValue.id
+                return this.$store.state.todos.focusId === this.modelValue.id
             },
             children: {
                 get() {
@@ -176,11 +169,8 @@
                 // console.log(value, `emitter in ${this.modelValue.id}`)
                 this.$emit("input", value);
             },
-            focusHandler(value) {
-                this.$emit('focus', value);
-            },
             toggleFocus (value) {
-                this.$emit('focus', (value) ? value : null);
+                this.$store.commit('todos/setFocusId', value)
             },
             goto() {
                 this.$router.push({name: 'task-list', params: {parentId: this.modelValue.id}})
@@ -200,8 +190,6 @@
                     parentId: this.modelValue.id,
                     message: '',
                 })
-                    // TODO: Исправить фокусировку после создания
-                    .then(task => this.toggleFocus(task.id))
             },
         },
     };

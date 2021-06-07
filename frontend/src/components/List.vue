@@ -24,9 +24,7 @@
 
             <nested
                 v-model="elements"
-                @focus="focusHandler"
                 @change="onChange"
-                :focusId="focusId"
                 :parentId="parentId"
             />
 
@@ -76,7 +74,6 @@
         data() {
             return {
                 allItems: [],
-                focusId: null,
                 messageEditable: true,
                 highlightedMessage: 'asffas',
             }
@@ -148,26 +145,7 @@
                 this.$store.dispatch('todos/createItem', {
                     parentId: this.parentId,
                     message: '',
-                }).then(task => this.focusHandler(task.id))
-            },
-            focusHandler(value) {
-                let focusId;
-
-                if (value) {
-                    focusId = value
-
-                    setTimeout(() =>{
-                        let DOMSelector = document.querySelector(`[data-id="${focusId}"] > .item--edit > .edit--label > .edit--message`)
-
-                        if (DOMSelector) {
-                            DOMSelector.focus()
-                        }
-                    })
-                } else {
-                    focusId = null
-                }
-
-                this.focusId = focusId
+                })
             },
             handleWordFunction(node) {
                 if (node.firstChild.length > 3) {

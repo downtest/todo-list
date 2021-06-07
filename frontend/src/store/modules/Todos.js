@@ -2,6 +2,7 @@ const todos = {
     namespaced: true,
     state: {
         items: [],
+        focusId: null,
         logs: ['Init'],
     },
     getters: {
@@ -82,6 +83,10 @@ const todos = {
 
             task['labels'].splice(index, 1)
         },
+        setFocusId (state, id) {
+            state.focusId = id
+            console.log(state.focusId, `current focus Id from ${id}`)
+        },
     },
     actions: {
         async load ({state, commit}, {clientId}) {
@@ -100,7 +105,7 @@ const todos = {
             })
         },
         async createItem ({commit, state}, payload) {
-            let tempId = Date.now() + Math.random()
+            payload.id = new String(Date.now() + Math.random()) // Временный id, настоящий придёт с сервера
             payload.datetime = null
             payload.labels = []
             payload.children = []
@@ -116,9 +121,11 @@ const todos = {
                 })
                 .then(async ({data}) => {
                     await commit('updateItem', {
-                        id: tempId,
+                        id: payload.id,
                         payload: {confirmed: true, ...data},
                     })
+
+                    commit('setFocusId', data.id)
                 })
                 .catch((response) => {
                     console.error(response, `error on Create Task`)
