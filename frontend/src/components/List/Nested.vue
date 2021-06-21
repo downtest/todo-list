@@ -5,10 +5,12 @@
         item-key="id"
         v-bind="dragOptions"
         tag="div"
+        handle=".handle"
         class="item-container"
         :data-parent-id="parentId"
         @input="emitter"
         @change="onChange"
+        @start="onStart"
         @end="onEnd"
     >
         <template #item="{element}">
@@ -75,6 +77,12 @@ import draggable from "vuedraggable"
                     //     parentId: this.parentId ? this.parentId  : 0,
                     //     newIndex: value.added.newIndex,
                     // });
+                }
+            },
+            onStart(value) {
+                if (this.$store.state.todos.focusId) {
+                    // При начале перетаскивания сворачиваем редактирование таски
+                    this.$store.commit('todos/setFocusId', null)
                 }
             },
             onEnd(value) {

@@ -88,9 +88,9 @@ class DBMongo extends Service
         return ['id' => (string)$resultArray['_id']] + $resultArray;
     }
 
-    public function insertOne(string $collectionName, array $conditions = []): string
+    public function insertOne(string $collectionName, array $payload = []): string
     {
-        return (string)$this->client->$collectionName->insertOne($conditions)->getInsertedId();
+        return (string)$this->client->$collectionName->insertOne($payload)->getInsertedId();
     }
 
     public function updateOne(string $collectionName, array $payload): bool

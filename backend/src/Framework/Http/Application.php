@@ -55,7 +55,7 @@ class Application
         $action = $this->router->resolve();
 
         if ($validationErrors = $action->validationRules($this->request)) {
-            $this->pipeline->pipe(new Validator($validationErrors));
+            $this->pipeline->pipe(new Validator($validationErrors, $action));
         }
 
         $response = $this->pipeline->process($this->request, $action);

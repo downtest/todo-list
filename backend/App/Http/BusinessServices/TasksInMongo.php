@@ -159,4 +159,23 @@ class TasksInMongo extends Service
         return $result;
     }
 
+    /**
+     * @param string $collectionName
+     * @param string $parentId
+     * @return int
+     */
+    public function getMaxId(string $collectionName, string $parentId): int
+    {
+        return $this->db->find(
+                $collectionName,
+                ['parentId' => ['$eq' => $parentId]],
+                [
+                    //  Возвращаем только index
+                    'projection' => ['index' => 1],
+                    'sort' =>  ['index' => -1],
+                    'limit' => 1,
+                ]
+            )[0]['index'] ?? 0;
+    }
+
 }

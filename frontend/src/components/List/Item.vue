@@ -1,11 +1,12 @@
 <template>
-    <div :class="{item: true, hover: hover, confirmed: modelValue.confirmed}" :data-id="modelValue.id">
+    <div :class="{item: true, hover: hover, updated: !modelValue.updated}" :data-id="modelValue.id">
         <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
+                <div class="handle" style="width: 20px; height: 20px; background-color: #2c3e50; color: aliceblue; float: left;">=</div>
                 #{{ modelValue.id }} {{ name }} (i:{{modelValue.index}}, parent:{{modelValue.parentId}})
 
-                <span v-if="!modelValue.confirmed">НЕТ на бэке</span>
-                <span v-else>есть на бэке</span>
+                <span v-if="modelValue.updated">Изменено</span>
+                <span v-else>Без изменений</span>
 
                 <span v-if="isActive">#{{modelValue.id}}</span>
 
@@ -14,8 +15,8 @@
                 </span>
             </div>
 
-            <div class="item--labels" v-if="modelValue.labels">
-                <div class="label" :key="index" v-for="(label, index) in modelValue.labels">
+            <div class="item--labels" v-if="labels">
+                <div class="label" :key="index" v-for="(label, index) in labels">
                     {{label}}
                     <span v-if="isActive" class="close-btn" @click="deleteLabel(index)">
                         <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="delete" title="Delete label">
@@ -33,6 +34,7 @@
                 <span class="btn delete-btn" @click="deleteTask">
                     <img class="btn-icon" src="../../../assets/icons/trash.svg" alt="delete" title="Delete">
                 </span>
+                <span class="btn" @click="reset">Reset</span>
             </div>
         </div>
 
@@ -118,15 +120,25 @@
                     // });
                 },
             },
+            labels() {
+                if (this.modelValue.updated && this.modelValue.updated.labels) {
+                    return this.modelValue.updated.labels
+                }
+
+                return this.modelValue.labels || []
+            },
             message: {
                 get() {
+                    if (this.modelValue.updated && this.modelValue.updated.message) {
+                        return this.modelValue.updated.message
+                    }
+
                     return this.modelValue.message || ''
                 },
                 set(value) {
                     this.$store.dispatch('todos/updateItem', {
                         id: this.modelValue.id,
                         payload: {
-                            name: value.split("\n")[0],
                             message: value,
                         },
                     })
@@ -137,6 +149,10 @@
             },
             datetime: {
                 get() {
+                    if (this.modelValue.updated && this.modelValue.updated.datetime) {
+                        return this.modelValue.updated.datetime
+                    }
+
                     return this.modelValue.datetime
                 },
                 set(datetime) {
@@ -171,6 +187,9 @@
             },
             toggleFocus (value) {
                 this.$store.commit('todos/setFocusId', value)
+            },
+            reset () {
+                this.$store.dispatch('todos/resetChanges', this.modelValue.id)
             },
             goto() {
                 this.$router.push({name: 'task-list', params: {parentId: this.modelValue.id}})
@@ -245,7 +264,7 @@
         border: 2px dotted red;
     }
 
-    &.confirmed {
+    &.updated {
         background-color: rgba(30, 30, 30, 0.15);
     }
 

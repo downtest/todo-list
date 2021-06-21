@@ -1,3 +1,5 @@
+const LS_TODOS_UNCONFIRMED_ITEMS = 'ls_todos_unconfirmed_items'
+
 const todos = {
     namespaced: true,
     state: {
@@ -27,6 +29,23 @@ const todos = {
 
             return result
         },
+        unconfirmed: (state) => {
+            return state.items.filter(task => task.updated || task.isNew)
+        },
+        getChanges: (state, getters) => {
+            return getters.unconfirmed.map(task => {
+                return {...task.updated, id: task.id}
+            })
+        },
+        prepareUnconfirmedForServer: (state) => {
+            return state.items.filter(task => task.updated || task.isNew).map(task => {
+                let formedTask = {...task, ...task.updated}
+
+                delete formedTask.updated
+
+                return formedTask
+            })
+        },
     },
     mutations: {
         log(state, message) {
@@ -55,12 +74,27 @@ const todos = {
         //     let index = state.items[parentId]['children'].indexOf(childId)
         //     state.items[parentId]['children'].splice(index, 1)
         // },
-        updateItem(state, {id, payload}) {
+        updateItems(state, items) {
+            for (let task of items) {
+                let currentTask = state.items.find(item => item.id === (task.oldId || task.id))
+                let index = state.items.findIndex(item => item.id === (task.oldId || task.id))
+
+                // Обновляем, чтобы vue реактивно обновил бы компонент, отображающий таску(если обновлять свойства, то реактивности не будет)
+                state.items.splice(index, 1, {...currentTask, ...task})
+            }
+        },
+        updateItem(state, {id, payload, fromServer}) {
             let task = state.items.find(item => item.id === id)
             let index = state.items.findIndex(item => item.id === id)
 
+            // Сохраняем изменения в отдельное свойство, чтобы все изменения можно было бы сбросить
+
             // Обновляем, чтобы vue реактивно обновил бы компонент, отображающий таску(если обновлять свойства, то реактивности не будет)
-            state.items.splice(index, 1, {...task, ...payload})
+            if (fromServer) {
+                state.items.splice(index, 1, payload)
+            } else {
+                state.items.splice(index, 1, {...task, updated: payload})
+            }
         },
         /**
          * Mutation deleteItem
@@ -73,33 +107,32 @@ const todos = {
 
             state.items.splice(index, 1)
         },
-        addLabel (state, {id, label}) {
-            let task = state.items.find(item => item.id === id)
-
-            if (!task.labels) {
-                task.labels = []
-            }
-
-            task.labels.push(label)
-        },
-        deleteLabel (state, {id, index}) {
-            let task = state.items.find(item => item.id === id)
-
-            task.labels.splice(index, 1)
-        },
         setFocusId (state, id) {
             state.focusId = id
             console.log(state.focusId, `current focus Id from ${id}`)
         },
     },
     actions: {
-        async load ({state, commit}, {clientId}) {
+        async load ({state, commit, dispatch}, {clientId}) {
             return new Promise((resolve, reject) => {
                 this.axios.get('api/tasks/get', {params: {
                     collectionId: null,
                 }})
                     .then(({data}) => {
                         commit('setItems', data)
+
+                        if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
+                            for (let task of JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS))) {
+                                if (task.isNew) {
+                                    dispatch('createItem', task)
+                                } else {
+                                    dispatch('updateItem', {
+                                        id: task.id,
+                                        payload: task,
+                                    })
+                                }
+                            }
+                        }
 
                         return resolve(data)
                     })
@@ -108,32 +141,20 @@ const todos = {
                     })
             })
         },
-        async createItem ({commit, state}, payload) {
-            payload.id = new String(Date.now() + Math.random()) // Временный id, настоящий придёт с сервера
+        async createItem ({commit, state, getters}, payload) {
+            payload.id = (new String(Date.now() + Math.random())).toString() // Временный id, настоящий придёт с сервера
             payload.datetime = null
             payload.labels = []
             payload.children = []
             // Этот флаг говорит о том, что на фронте item создан, а на бэке ещё нет
             payload.confirmed = false
+            payload.isNew = true
 
             commit('createItem', payload)
 
-            this.axios.post('api/tasks/insert', {
-                    collectionId: null,
-                    parentId: payload.parentId,
-                    message: payload.message,
-                })
-                .then(async ({data}) => {
-                    await commit('updateItem', {
-                        id: payload.id,
-                        payload: {confirmed: true, ...data},
-                    })
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
-                    commit('setFocusId', data.id)
-                })
-                .catch((response) => {
-                    console.error(response, `error on Create Task`)
-                })
+            commit('setFocusId', payload.id)
 
             return payload
         },
@@ -154,40 +175,23 @@ const todos = {
         /**
          * Action updateItem
          * @param commit
+         * @param state
+         * @param getters
          * @param id
          * @param payload
          */
-        updateItem ({commit}, {id, payload}) {
+        updateItem ({commit, state, getters}, {id, payload}) {
             if (!id) {
                 console.warn(payload, `В action updateItem не передан id`)
                 return
             }
 
-            console.log(payload, `updating ${id}`)
-
             commit('updateItem', {
                 id: id,
-                payload: {confirmed: true, ...payload},
+                payload: payload,
             })
 
-            this.axios.post('api/tasks/update', {
-                    collectionId: null,
-                    taskId: id,
-                    ...payload
-                })
-                .then(({data}) => {
-                    console.log(data, `item updated`)
-
-                    commit('updateItem', {
-                        id: id,
-                        payload: {confirmed: true},
-                    })
-
-                    return data
-                })
-                .catch((response) => {
-                    console.error(response, `error on Update Task`)
-                })
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
         },
         /**
          * Action deleteItem
@@ -204,12 +208,12 @@ const todos = {
                 taskId: id,
             })
                 .then(async ({data}) => {
-                    if (!data.data || !data.data.deletedTasks) {
+                    if (!data.deletedTasks) {
                         console.error(data, `error in Delete Task response`)
                         return
                     }
 
-                    for (let deletedId of data.data.deletedTasks) {
+                    for (let deletedId of data.deletedTasks) {
                         // Рекурсивно удаляем детей
                         commit('deleteItem', deletedId)
                     }
@@ -221,43 +225,83 @@ const todos = {
                 })
         },
         addLabel ({state, commit, getters}, {id, label}) {
-            commit('addLabel', {id, label})
-
             let task = getters.getById(id)
+            let labels = task.updated ? task.updated.labels : task.labels
 
-            this.axios.post('api/tasks/update', {
-                collectionId: null,
-                taskId: task.id,
-                labels: task.labels,
+            commit('updateItem', {
+                id: id,
+                payload: {labels: [...labels, label]},
             })
-                .then(async ({data}) => {
-                    if (!data.success) {
-                        console.error(data, `error in Adding Label response`)
-                        return
-                    }
-                })
-                .catch((response) => {
-                    console.error(response, `error on Adding Label Response`)
-                })
+
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
         },
-        deleteLabel ({commit, getters}, {id, index}) {
-            commit('deleteLabel', {id, index})
+        /**
+         * Action deleteLabel
+         * @param commit
+         * @param getters
+         * @param id
+         * @param index
+         */
+        deleteLabel ({dispatch, commit, getters}, {id, index}) {
+            // TODO: Тут ошибка, нельзя менять state не в мутации
+            let task = getters.getById(id)
+            let labels = task.updated ? task.updated.labels : task.labels
+            let copiedLabels = [...labels]
 
+
+            if (!labels) {
+                copiedLabels = []
+            }
+
+            copiedLabels.splice(index, 1)
+
+            commit('updateItem', {
+                id: id,
+                payload: {labels: copiedLabels},
+            })
+
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+        },
+        resetChanges ({commit, state, getters}, id) {
             let task = getters.getById(id)
 
-            this.axios.post('api/tasks/update', {
-                collectionId: null,
-                taskId: task.id,
-                labels: task.labels,
+            commit('updateItem', {
+                id: id,
+                payload: {...task, updated: null},
+                fromServer: true, // Обновляем task, а не свойство updated внутри
             })
-                .then(async ({data}) => {
-                    if (!data.success) {
-                        console.error(data, `error in Deletting Label response`)
-                        return
+
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+        },
+        save({commit, state, getters}) {
+            console.log(getters.unconfirmed, `getters.unconfirmed`)
+            if (!getters.unconfirmed.length) {
+                return
+            }
+
+            this.axios.post('api/tasks/mass/update', {
+                collectionId: null,
+                tasks: getters.prepareUnconfirmedForServer
+            })
+                .then(({data}) => {
+                    // commit('updateItems', data.tasks)
+
+                    for (let task of data.tasks) {
+                        console.log(task, `updating ${task.id}`)
+
+                        commit('updateItem', {
+                            id: task.oldId || task.id,
+                            payload: task,
+                            fromServer: true,
+                        })
                     }
+
+                    window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+
+                    return data.tasks
                 })
                 .catch((response) => {
-                    console.error(response, `error on Deletting Label Response`)
+                    console.error(response, `error on Update Task`)
                 })
         },
     }

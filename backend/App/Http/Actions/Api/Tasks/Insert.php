@@ -8,6 +8,7 @@ use App\Http\BusinessServices\TasksInMongo;
 use App\Http\Interfaces\Action;
 use App\Models\User;
 use Framework\Services\DBMongo;
+use Framework\Tools\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -37,22 +38,9 @@ class Insert extends Action
             $request->getAttribute('index')
         );
 
-        $maxIndex = $db->find(
-            $collectionName,
-            ['parentId' => ['$eq' => $request->getAttribute('parentId')]],
-            [
-                //  Возвращаем только index
-                'projection' => ['index' => 1],
-                'sort' =>  ['index' => -1],
-                'limit' => 1,
-            ]
-        )[0]['index'] ?? 0;
+        $maxIndex = TasksInMongo::getInstance()->getMaxId($collectionName, $request->getAttribute('parentId'));
 
-        $newId = $db->insertOne($collectionName, [
-            'parentId' => $request->getAttribute('parentId'),
-            'index' => $maxIndex + 1,
-            'text' => $request->getAttribute('text'),
-        ]);
+        $newId = $db->insertOne($collectionName, Arr::except($request->getAttributes(), ['isNew', 'id', 'confirmed', 'isNew']));
 
         return new JsonResponse($db->findById($collectionName, $newId));
     }

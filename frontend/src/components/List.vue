@@ -4,6 +4,8 @@
 
             <tasks-breadcrumb v-if="parentId" :id="parentId"></tasks-breadcrumb>
 
+            <div @click="this.$store.dispatch('todos/save')">save!</div>
+
             <div v-if="parent">
                 <h1>{{parent.message.split('\n')[0]}}</h1>
 
@@ -19,8 +21,6 @@
                     <input class="parent--input" type="datetime-local" v-model="parentDatetime">
                 </label>
             </div>
-
-            <pre>parentId={{parentId}}</pre>
 
             <nested
                 v-model="elements"

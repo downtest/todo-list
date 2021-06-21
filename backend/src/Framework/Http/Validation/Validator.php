@@ -19,41 +19,19 @@ use Zend\Diactoros\Response\JsonResponse;
 class Validator implements MiddlewareInterface
 {
     protected array $validationRules;
+    protected RequestHandlerInterface $action;
 
-    public function __construct(array $validationRules = [])
+    public function __construct(array $validationRules = [], RequestHandlerInterface $action)
     {
         $this->validationRules = $validationRules;
+        $this->action = $action;
     }
 
     /**
-     * @throws ValidationException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $errors = [];
-
-        foreach ($this->validationRules as $field => $rules) {
-            foreach ($rules as $rule) {
-                if (is_callable($rule)) {
-                    $result = $rule($request->getAttribute($field));
-                } else {
-                    $ruleParts = explode(':', $rule);
-                    $ruleName = ucfirst(array_shift($ruleParts)) . 'Rule';
-                    $arguments = explode(',', array_shift($ruleParts));
-                    $ruleClassName = "\Framework\Http\Validation\Rules\\{$ruleName}";
-
-                    if (!class_exists($ruleClassName)) {
-                        throw new ValidationException("Нет правила валидации {$rule}");
-                    }
-
-                    $result = (new $ruleClassName($request->getAttribute($field), $arguments))->isValid();
-                }
-
-                if (!$result) {
-                    $errors[$field][] = "Поле {$field} не прошло правило {$rule}";
-                }
-            }
-        }
+        $errors = $this->action->getValidationErrors($request);
 
         if ($errors) {
             return new JsonResponse([
@@ -64,5 +42,39 @@ class Validator implements MiddlewareInterface
         }
 
         return $handler->handle($request);
+    }
+
+    /**
+     * @param array $rules
+     * @param $field
+     * @return array
+     * @throws ValidationException
+     */
+    public static function getValidationErrors(array $rules, $field): array
+    {
+        $errors = [];
+
+        foreach ($rules as $rule) {
+            if (is_callable($rule)) {
+                $result = $rule($field);
+            } else {
+                $ruleParts = explode(':', $rule);
+                $ruleName = ucfirst(array_shift($ruleParts)) . 'Rule';
+                $arguments = explode(',', array_shift($ruleParts));
+                $ruleClassName = "\Framework\Http\Validation\Rules\\{$ruleName}";
+
+                if (!class_exists($ruleClassName)) {
+                    throw new ValidationException("Нет правила валидации {$rule}");
+                }
+
+                $result = (new $ruleClassName($field, $arguments))->isValid();
+            }
+
+            if (!$result) {
+                $errors[] = "Не прошла проверка правилом {$rule}";
+            }
+        }
+
+        return $errors;
     }
 }
