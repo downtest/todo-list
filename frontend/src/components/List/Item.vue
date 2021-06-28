@@ -1,5 +1,5 @@
 <template>
-    <div :class="{item: true, hover: hover, updated: !modelValue.updated}" :data-id="modelValue.id">
+    <div :class="{item: true, hover: hover, updated: !modelValue.updated && !modelValue.isNew}" :data-id="modelValue.id">
         <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
                 <div class="handle" style="width: 20px; height: 20px; background-color: #2c3e50; color: aliceblue; float: left;">=</div>

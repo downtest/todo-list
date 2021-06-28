@@ -34,6 +34,10 @@ const todos = {
         },
         getChanges: (state, getters) => {
             return getters.unconfirmed.map(task => {
+                if (task.isNew) {
+                    return task
+                }
+
                 return {...task.updated, id: task.id}
             })
         },
@@ -83,16 +87,16 @@ const todos = {
                 state.items.splice(index, 1, {...currentTask, ...task})
             }
         },
-        updateItem(state, {id, payload, fromServer}) {
+        updateItem(state, {id, payload, instant}) {
             let task = state.items.find(item => item.id === id)
             let index = state.items.findIndex(item => item.id === id)
 
-            // Сохраняем изменения в отдельное свойство, чтобы все изменения можно было бы сбросить
-
             // Обновляем, чтобы vue реактивно обновил бы компонент, отображающий таску(если обновлять свойства, то реактивности не будет)
-            if (fromServer) {
-                state.items.splice(index, 1, payload)
+            if (instant) {
+                // Со свойством instant сразу вносим изменения в таску, без свойства updated
+                state.items.splice(index, 1, {...task, ...payload})
             } else {
+                // Сохраняем изменения в отдельное свойство, чтобы все изменения можно было бы сбросить
                 state.items.splice(index, 1, {...task, updated: payload})
             }
         },
@@ -142,19 +146,21 @@ const todos = {
             })
         },
         async createItem ({commit, state, getters}, payload) {
-            payload.id = (new String(Date.now() + Math.random())).toString() // Временный id, настоящий придёт с сервера
-            payload.datetime = null
-            payload.labels = []
-            payload.children = []
-            // Этот флаг говорит о том, что на фронте item создан, а на бэке ещё нет
-            payload.confirmed = false
-            payload.isNew = true
+            // Временный id, настоящий придёт с сервера
+            let tempId = (new String(Date.now() + Math.random())).toString()
 
-            commit('createItem', payload)
+            commit('createItem', {
+                id: tempId,
+                datetime: null,
+                labels: [],
+                children: [],
+                isNew: true,
+                ...payload
+            })
 
             window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
-            commit('setFocusId', payload.id)
+            commit('setFocusId', tempId)
 
             return payload
         },
@@ -169,7 +175,7 @@ const todos = {
             let i = 0
 
             children.forEach(child => {
-                commit('updateItem', {id: child.id, payload: {index: i++}})
+                commit('updateItem', {id: child.id, payload: {index: i++, parentId}, instant: true})
             })
         },
         /**
@@ -192,6 +198,31 @@ const todos = {
             })
 
             window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+        },
+        /**
+         * Action dragItem
+         * Вызывается для отправки запроса при перетаскивании таски
+         *
+         * @param commit
+         * @param state
+         * @param getters
+         * @param payload
+         */
+        dragItem({commit, state, getters}, payload) {
+            this.axios.post('api/tasks/update', {
+                collectionId: null,
+                id: payload.taskId,
+                parentId: payload.parentId,
+                index: payload.index,
+            })
+                .then(async ({data}) => {
+                    if (!data.id) {
+                        console.error(data, `error in Drag Task response`)
+                        return
+                    }
+
+                    return data
+                })
         },
         /**
          * Action deleteItem
@@ -219,9 +250,6 @@ const todos = {
                     }
 
                     return data
-                })
-                .catch((response) => {
-                    console.error(response, `error on Delete Task Response`)
                 })
         },
         addLabel ({state, commit, getters}, {id, label}) {
@@ -268,7 +296,7 @@ const todos = {
             commit('updateItem', {
                 id: id,
                 payload: {...task, updated: null},
-                fromServer: true, // Обновляем task, а не свойство updated внутри
+                instant: true, // Обновляем task, а не свойство updated внутри
             })
 
             window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
@@ -292,7 +320,7 @@ const todos = {
                         commit('updateItem', {
                             id: task.oldId || task.id,
                             payload: task,
-                            fromServer: true,
+                            instant: true,
                         })
                     }
 

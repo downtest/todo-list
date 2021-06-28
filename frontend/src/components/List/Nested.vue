@@ -64,12 +64,10 @@ import draggable from "vuedraggable"
                 if (value.added || value.moved) {
                     let eventElem = value.added || value.moved
 
-                    this.$store.dispatch('todos/updateItem', {
-                        id: eventElem.element.id,
-                        payload: {
-                            parentId: this.parentId,
-                            index: eventElem.newIndex,
-                        },
+                    this.$store.dispatch('todos/dragItem', {
+                        taskId: eventElem.element.id, // ID таски
+                        parentId: this.parentId, // ID родителя
+                        index: eventElem.newIndex // индекс в новом родителе
                     });
 
                     // this.$store.dispatch("todos/updateParent", {
@@ -86,6 +84,7 @@ import draggable from "vuedraggable"
                 }
             },
             onEnd(value) {
+                // Обновляем старого родителя
                 this.$store.dispatch("todos/updateChildren", {
                     parentId: value.from.dataset.parentId,
                     children: this.modelValue,

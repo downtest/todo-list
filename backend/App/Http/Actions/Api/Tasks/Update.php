@@ -37,7 +37,7 @@ class Update extends Action
         }
 
         // Если изменён родитель, но не передан индекс в новом родителе
-        if ($request->getAttribute('parentId') && !$request->getAttribute('index')) {
+        if ($request->getAttribute('parentId') && !is_int($request->getAttribute('index'))) {
             $maxIndex = TasksInMongo::getInstance()->getMaxId($collectionName, $request->getAttribute('parentId'));
 
             $request = $request->withAttribute('index', $maxIndex);
