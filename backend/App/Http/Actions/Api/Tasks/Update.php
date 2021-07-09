@@ -53,7 +53,9 @@ class Update extends Action
             );
         }
 
-        if (!$db->updateOne($collectionName, Arr::except($request->getAttributes(), ['isNew', 'confirmed']))) {
+        try {
+            $db->updateOne($collectionName, Arr::except($request->getAttributes(), ['collectionId', 'isNew', 'confirmed']));
+        } catch (\Throwable $exception) {
             return $this->errorResponse(['Не удалось обновить запись']);
         }
 

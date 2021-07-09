@@ -9,8 +9,6 @@
         class="item-container"
         :data-parent-id="parentId"
         @input="emitter"
-        @change="onChange"
-        @start="onStart"
         @end="onEnd"
     >
         <template #item="{element}">
@@ -58,34 +56,6 @@ import draggable from "vuedraggable"
             }
         },
         methods: {
-            onChange(value) {
-                // console.log(value, `changes in nested`)
-                // this.$emit("change in Nested", value)
-                if (value.added || value.moved) {
-                    let eventElem = value.added || value.moved
-
-                    if (!eventElem.element.isNew) {
-                        // Отправляем запрос на сервер для изменения позиции таски только если таска уже сохранена на сервере
-                        this.$store.dispatch('todos/dragItem', {
-                            taskId: eventElem.element.id, // ID таски
-                            parentId: this.parentId, // ID родителя
-                            index: eventElem.newIndex // индекс в новом родителе
-                        });
-                    }
-
-                    // this.$store.dispatch("todos/updateParent", {
-                    //     id: value.added.element.id,
-                    //     parentId: this.parentId ? this.parentId  : 0,
-                    //     newIndex: value.added.newIndex,
-                    // });
-                }
-            },
-            onStart(value) {
-                if (this.$store.state.todos.focusId) {
-                    // При начале перетаскивания сворачиваем редактирование таски
-                    this.$store.commit('todos/setFocusId', null)
-                }
-            },
             onEnd(value) {
                 // Обновляем старого родителя
                 this.$store.dispatch("todos/updateChildren", {
@@ -100,14 +70,7 @@ import draggable from "vuedraggable"
                     });
                 }
 
-                let element = this.$store.getters['todos/getById'](value.clone.dataset.id)
-
-                if (element.isNew) {
-                    // Для новых елементов сохраняем порядок сортировки
-                    this.saveChangesToLS()
-                }
-
-                this.$emit("end", value)
+                this.saveChangesToLS()
             },
             saveChangesToLS() {
                 window.localStorage.setItem('ls_todos_unconfirmed_items', JSON.stringify(this.$store.getters['todos/getChanges']))

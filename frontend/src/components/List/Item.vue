@@ -1,8 +1,9 @@
 <template>
     <div :class="{item: true, hover: hover, updated: !modelValue.updated && !modelValue.isNew}" :data-id="modelValue.id">
         <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
+            <div class="item--handle">=</div>
+
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
-                <div class="handle" style="width: 20px; height: 20px; background-color: #2c3e50; color: aliceblue; float: left;">=</div>
                 #{{ modelValue.id }} {{ name }} (i:{{modelValue.index}}, parent:{{modelValue.parentId}})
 
                 <span v-if="modelValue.updated">Изменено</span>
@@ -25,7 +26,7 @@
             </div>
 
             <div class="item--buttons">
-                <span class="btn go-btn" @click="goto" v-if="$route.params.parentId != modelValue.id">
+                <span class="btn go-btn" @click="goto" v-if="$route && $route.params.parentId != modelValue.id">
                     <img class="btn-icon" src="../../../assets/icons/right_arrow.svg" alt="go" title="Focus on task">
                 </span>
                 <span class="btn add-btn" @click="createChild">
@@ -192,6 +193,10 @@
                 this.$store.dispatch('todos/resetChanges', this.modelValue.id)
             },
             goto() {
+                if (!this.$router) {
+                    return
+                }
+
                 this.$router.push({name: 'task-list', params: {parentId: this.modelValue.id}})
             },
             deleteTask() {
@@ -215,105 +220,5 @@
 </script>
 
 <style lang="scss">
-.item {
-    border: 1px solid #2c3e50;
-    background-color: rgba(250, 250, 0, 0.15);
-    margin: 5px -1px 5px 0;
-    padding: 3px 0 3px 5px;
-    transition: .1s;
-
-    .item-row {
-        display: flex;
-        justify-content: space-between;
-
-        .item--name {
-
-        }
-
-        .item--labels {
-
-            .label {
-                display: inline-block;
-                margin: 0 5px;
-                padding: 0 3px;
-                border: 1px solid #2c3e50;
-                background: rebeccapurple;
-                color: antiquewhite;
-                border-radius: 5px;
-            }
-        }
-
-        .item--buttons {
-
-        }
-    }
-
-    .item--edit {
-
-        .edit--label {
-            display: block;
-        }
-    }
-
-    .btn {
-        display: inline-block;
-        margin: 0 5px;
-    }
-
-    &__ghost {
-        border: 2px dotted red;
-    }
-
-    &.updated {
-        background-color: rgba(30, 30, 30, 0.15);
-    }
-
-    &__chosen {
-        animation: shaker .5s ease-in-out;
-    }
-
-    &__drag {
-        display: none;
-    }
-
-    &.hover {
-        transition: .1s;
-        box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
-        margin-left: -1px;
-        margin-right: 0;
-    }
-
-    &:first-child {
-        margin-top: 0;
-    }
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.nested {
-    text-align: center;
-}
-
-.btn-icon {
-    cursor: pointer;
-    max-height: 20px;
-    width: 20px;
-}
-.close-btn {
-    .btn-icon {
-        transform: rotate(45deg);
-    }
-}
-
-@keyframes shaker {
-    from,
-    to {
-        transform: none
-    }
-    25% {transform: rotate(+1deg)}
-    50% {transform: rotate(-.7deg)}
-    75% {transform: rotate(.4deg)}
-}
-
+    @import "src/scss/List/item";
 </style>

@@ -77,7 +77,13 @@ class DBMongo extends Service
 
     public function findById(string $collectionName, string $id): ?array
     {
-        $cursor = $this->client->$collectionName->find(['_id' => new \MongoDB\BSON\ObjectId($id)])->toArray()[0];
+        try {
+            $id = \MongoDB\BSON\ObjectId($id);
+        } catch (\Throwable $exception) {
+            throw new Exception("ID $id не является корректным");
+        }
+
+        $cursor = $this->client->$collectionName->find(['_id' => $id])->toArray()[0];
 
         if (!$cursor) {
             return null;

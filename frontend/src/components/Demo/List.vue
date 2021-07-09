@@ -4,8 +4,6 @@
 
             <tasks-breadcrumb v-if="parentId" :id="parentId"></tasks-breadcrumb>
 
-            <div @click="this.$store.dispatch('todos/save')">save!</div>
-
             <div v-if="parent">
                 <h1>{{parent.message.split('\n')[0]}}</h1>
 
@@ -28,7 +26,7 @@
             />
 
             <span class="btn add-btn" @click="createChild">
-                <img class="btn-icon" src="../../assets/icons/plus.svg" alt="add" title="Add task">
+                <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="add" title="Add task">
             </span>
 
             <div class="logs">
@@ -39,9 +37,9 @@
 </template>
 
 <script>
-    import nested from "./List/Nested";
-    import tasksBreadcrumb from "./List/Breadcrumb";
-    import contenteditable from "./Contenteditable";
+    import nested from "../List/Nested";
+    import tasksBreadcrumb from "../List/Breadcrumb";
+    import contenteditable from "../Contenteditable";
     import draggable from "vuedraggable"
 
     export default {
@@ -122,11 +120,7 @@
             },
             elements: {
                 get() {
-                    if (this.parentId) {
-                        return this.$store.getters['todos/children'](this.parentId);
-                    } else {
-                        return this.$store.getters['todos/firstLevel'];
-                    }
+                    return this.$store.getters['todos/children'](this.parentId);
                 },
                 set(payload) {
                     // this.$store.dispatch("todos/updateChildren", {
@@ -154,7 +148,7 @@
             },
         },
         created() {
-            this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+            this.$store.dispatch('todos/loadFromStorage')
         },
     }
 </script>

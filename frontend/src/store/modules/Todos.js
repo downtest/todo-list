@@ -8,14 +8,17 @@ const todos = {
         logs: ['Init'],
     },
     getters: {
+        all(state){
+            return state.items
+        },
+        children: (state, getters) => id => {
+            return state.items.filter(item => ((id === null && item.parentId === undefined) || item.parentId === id)).sort((a,b) => a.index - b.index)
+        },
         firstLevel: state => {
             return state.items.filter(item => !item.parentId)
         },
         getById: state => id => {
             return state.items.find(item => item.id === id)
-        },
-        children: (state, getters) => id => {
-            return state.items.filter(item => item.parentId === id)
         },
         parents: (state, getters) => id =>  {
             let result = []
@@ -117,7 +120,7 @@ const todos = {
         },
     },
     actions: {
-        async load ({state, commit, dispatch}, {clientId}) {
+        async load ({state, commit, dispatch}) {
             return new Promise((resolve, reject) => {
                 this.axios.get('api/tasks/get', {params: {
                     collectionId: null,
@@ -143,6 +146,15 @@ const todos = {
                     .catch((response) => {
                         console.error(response, `error on Tasks Load`)
                     })
+            })
+        },
+        async loadFromStorage ({state, commit}) {
+            return new Promise((resolve, reject) => {
+                if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
+                    commit('setItems', JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)))
+                }
+
+                return resolve(state.items)
             })
         },
         async createItem ({commit, state, getters}, payload) {
