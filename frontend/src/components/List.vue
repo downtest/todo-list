@@ -4,6 +4,8 @@
 
             <tasks-breadcrumb v-if="parentId" :id="parentId"></tasks-breadcrumb>
 
+            <search></search>
+
             <div @click="this.$store.dispatch('todos/save')">save!</div>
 
             <div v-if="parent">
@@ -43,6 +45,7 @@
     import tasksBreadcrumb from "./List/Breadcrumb";
     import contenteditable from "./Contenteditable";
     import draggable from "vuedraggable"
+    import search from "./List/Search"
 
     export default {
         components: {
@@ -50,6 +53,7 @@
             tasksBreadcrumb,
             contenteditable,
             draggable,
+            search,
         },
         props: {
             title: {

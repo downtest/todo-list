@@ -6,6 +6,7 @@ namespace Framework\Services;
 use Exception;
 use Framework\Services\Interfaces\Service;
 use Framework\Tools\Arr;
+use MongoDB\BSON\ObjectId;
 
 /**
  * Class DBPostgres
@@ -78,7 +79,7 @@ class DBMongo extends Service
     public function findById(string $collectionName, string $id): ?array
     {
         try {
-            $id = \MongoDB\BSON\ObjectId($id);
+            $id = new ObjectId($id);
         } catch (\Throwable $exception) {
             throw new Exception("ID $id не является корректным");
         }
@@ -108,7 +109,7 @@ class DBMongo extends Service
         }
 
         return $this->client->$collectionName->updateOne(
-            ['_id' => new \MongoDB\BSON\ObjectId($taskId)],
+            ['_id' => new ObjectId($taskId)],
             ['$set' => Arr::except($payload, ['taskId', 'collectionId'])]
         )->getModifiedCount() > 0;
     }

@@ -37,7 +37,7 @@
 </template>
 
 <script>
-    import nested from "../List/Nested";
+    import nested from "../List/Demo/Nested";
     import tasksBreadcrumb from "../List/Breadcrumb";
     import contenteditable from "../Contenteditable";
     import draggable from "vuedraggable"
