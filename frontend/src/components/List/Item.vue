@@ -4,36 +4,32 @@
             <div class="item--handle">=</div>
 
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
-                #{{ modelValue.id }} {{ name }} (i:{{modelValue.index}}, parent:{{modelValue.parentId}})
+                {{ name }}
 
-                <span v-if="modelValue.updated">Изменено</span>
-                <span v-else>Без изменений</span>
-
-                <span v-if="isActive">#{{modelValue.id}}</span>
-
-                <span v-if="modelValue.datetime">
-                    <img class="btn-icon" src="../../../assets/icons/calendar.svg" alt="datetime" :title="modelValue.datetime">
+                <span v-if="formattedDatetime">
+                    {{formattedDatetime.format('YYYY \\mon:MM DD c\\loc\\k:HH:mm')}}
+                    <img class="btn-icon" :src="require('/assets/icons/calendar.svg')" alt="datetime" :title="modelValue.datetime">
                 </span>
             </div>
 
             <div class="item--labels" v-if="labels">
-                <div class="label" :key="index" v-for="(label, index) in labels">
+                <div class="label" key="index" v-for="(label, index) in labels">
                     {{label}}
                     <span v-if="isActive" class="close-btn" @click="deleteLabel(index)">
-                        <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="delete" title="Delete label">
+                        <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="delete" title="Delete label">
                     </span>
                 </div>
             </div>
 
             <div class="item--buttons">
                 <span class="btn go-btn" @click="goto" v-if="$route && $route.params.parentId != modelValue.id">
-                    <img class="btn-icon" src="../../../assets/icons/right_arrow.svg" alt="go" title="Focus on task">
+                    <img class="btn-icon" :src="require('/assets/icons/right_arrow.svg')" alt="go" title="Focus on task">
                 </span>
                 <span class="btn add-btn" @click="createChild">
-                    <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="add" title="Add task">
+                    <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="add" title="Add task">
                 </span>
                 <span class="btn delete-btn" @click="deleteTask">
-                    <img class="btn-icon" src="../../../assets/icons/trash.svg" alt="delete" title="Delete">
+                    <img class="btn-icon" :src="require('/assets/icons/trash.svg')" alt="delete" title="Delete">
                 </span>
                 <span class="btn" @click="reset">Reset</span>
             </div>
@@ -53,7 +49,7 @@
             </label>
 
             <span class="close-btn" @click="toggleFocus(null)">
-                <img class="btn-icon" src="../../../assets/icons/plus.svg" alt="close" title="Close edit window">
+                <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="close" title="Close edit window">
             </span>
         </div>
 
@@ -164,6 +160,17 @@
                         },
                     })
                 },
+            },
+            formattedDatetime() {
+                if (this.modelValue.updated && this.modelValue.updated.datetime) {
+                    return this.$moment(this.modelValue.updated.datetime, 'YYYY-MM-DDTHH:mm')
+                }
+
+                if (this.modelValue.datetime) {
+                    return this.$moment(this.modelValue.datetime, 'YYYY-MM-DDTHH:mm')
+                }
+
+                return null
             },
         },
         methods: {

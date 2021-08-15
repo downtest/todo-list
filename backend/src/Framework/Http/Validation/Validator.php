@@ -21,7 +21,7 @@ class Validator implements MiddlewareInterface
     protected array $validationRules;
     protected RequestHandlerInterface $action;
 
-    public function __construct(array $validationRules = [], RequestHandlerInterface $action)
+    public function __construct(RequestHandlerInterface $action, array $validationRules = [])
     {
         $this->validationRules = $validationRules;
         $this->action = $action;

@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine3.12
+FROM php:8.0.9-fpm-alpine3.14
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -11,7 +11,7 @@ RUN apk update \
     # Создаём такого же пользователя, как и на хосте
     && addgroup -S $GROUP_ID && adduser -S $USER_ID -G $GROUP_ID \
 
-    # Устанавливаем расишрения php
+    # Устанавливаем расширения php
     && apk --no-cache add postgresql-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && pecl install redis-5.3.2 mongodb \
@@ -24,7 +24,7 @@ RUN apk update \
 
     # Устанавливаем composer
     && echo "Устанавливаем composer" \
-    && wget https://getcomposer.org/download/2.0.7/composer.phar -O /usr/local/bin/composer \
+    && wget https://getcomposer.org/download/2.1.5/composer.phar -O /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
 
 USER $USER_ID

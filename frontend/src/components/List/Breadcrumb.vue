@@ -1,21 +1,19 @@
 <template>
     <div class="breadcrumb">
-        <div class="breadcrumb--item" :key="index" v-for="(parent, index) in $store.getters['todos/parents'](id)">
-            <div v-if="parent === null">
-                <router-link :to="{name: 'task-list', params: {parentId: null}}">
-                    Главная
-                </router-link>
-            </div>
+        <div class="breadcrumb--item" v-if="$store.getters['todos/parents'].length">
+            <router-link :to="{name: 'task-list'}">
+                Главная
+            </router-link>
+        </div>
 
-            <div v-else-if="index + 1 < $store.getters['todos/parents'](id).length">
+        <div class="breadcrumb--item" :key="index" v-for="(parent, index) in $store.getters['todos/parents'](id)">
+            <div v-if="index + 1 < $store.getters['todos/parents'](id).length">
                 <router-link :to="{name: 'task-list', params: {parentId: parent.id}}">
-                    #{{parent.id}}
                     {{parent.message.split("\n")[0]}}
                 </router-link>
             </div>
 
             <div v-else-if="parent">
-                #{{parent.id}}
                 {{parent.message.split("\n")[0]}}
             </div>
         </div>

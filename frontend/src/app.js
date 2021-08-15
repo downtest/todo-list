@@ -4,6 +4,7 @@ import axios from 'axios'
 import VueAxios from "vue-axios";
 import Item from "./components/List/Item"
 import Nested from './components/List/Nested'
+import moment from 'moment';
 
 // Vue.config.productionTip = false;
 
@@ -51,6 +52,7 @@ app.use(router)
 
 app.use(VueAxios, axios)
 
+app.config.globalProperties.$moment=moment
 
 // effectively adding the router to every component instance
 // app.config.globalProperties.$router = router

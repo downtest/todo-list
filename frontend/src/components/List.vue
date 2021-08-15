@@ -30,7 +30,7 @@
             />
 
             <span class="btn add-btn" @click="createChild">
-                <img class="btn-icon" src="../../assets/icons/plus.svg" alt="add" title="Add task">
+                <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="add" title="Add task">
             </span>
 
             <div class="logs">

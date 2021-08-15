@@ -3,6 +3,7 @@
 namespace Framework\Http;
 
 
+use Framework\Http\ExceptionsHandler as FrameworkExceptionHandler;
 use Framework\Http\Middleware\Interfaces\Pipeline;
 use Framework\Http\Middleware\PipelineHttp;
 use Framework\Http\Requests\GlobalRequest;
@@ -11,6 +12,7 @@ use Framework\Http\Router\RouterHttp;
 use Framework\Http\Validation\Validator;
 use Narrowspark\HttpEmitter\SapiEmitter;
 use Psr\Http\Message\RequestInterface;
+use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\ServerRequestFactory;
 
@@ -46,25 +48,33 @@ class Application
 
     public function run()
     {
-        $middlewares = $this->pipeline->findMiddlewaresByUri($this->request->getUri()->getPath());
+        try {
+            $middlewares = $this->pipeline->findMiddlewaresByUri($this->request->getUri()->getPath());
 
-        foreach ($middlewares as $middleware) {
-            $this->pipeline->pipe(new $middleware);
+            foreach ($middlewares as $middleware) {
+                $this->pipeline->pipe(new $middleware);
+            }
+
+            $action = $this->router->resolve();
+
+            if ($validationErrors = $action->validationRules($this->request)) {
+                $this->pipeline->pipe(new Validator($action, $validationErrors));
+            }
+
+            $response = $this->pipeline->process($this->request, $action);
+
+            $this->emitter->emit($response);
+        } catch (\Throwable $exception) {
+            if (class_exists('\App\Http\ExceptionsHandler')) {
+                $exceptionHandler = (new \App\Http\ExceptionsHandler($this->request))->handle($exception);
+            } else {
+                $exceptionHandler = (new FrameworkExceptionHandler($this->request))->handle($exception);
+            }
+
+            http_response_code($exceptionHandler->getStatusCode());
+
+            echo $exceptionHandler->getBody();
         }
-
-        $action = $this->router->resolve();
-
-        if ($validationErrors = $action->validationRules($this->request)) {
-            $this->pipeline->pipe(new Validator($validationErrors, $action));
-        }
-
-        $response = $this->pipeline->process($this->request, $action);
-
-//        echo"<pre>";print_r($request->getUri()->getPath());echo"</pre>";
-//        echo"<pre>";print_r(get_class_methods($response));echo"</pre>";
-//        echo"<pre>";print_r($response->getBody());echo"</pre>";
-
-        $this->emitter->emit($response);
     }
 
     /**
@@ -82,32 +92,34 @@ class Application
             $request = $request->withAttribute($key, $value);
         }
 
-        switch (explode(';', $request->getHeader('content-type')[0])[0]) {
-            case 'application/json':
-                $arr = json_decode(file_get_contents('php://input'),  true);
+        if ($request->getHeader('content-type')) {
+            switch (explode(';', $request->getHeader('content-type')[0])[0]) {
+                case 'application/json':
+                    $arr = json_decode(file_get_contents('php://input'),  true);
 
-                if (json_last_error()) {
-                    throw new \Exception(json_last_error_msg());
-                }
+                    if (json_last_error()) {
+                        throw new \Exception(json_last_error_msg());
+                    }
 
-                foreach($arr as $key => $value) {
-                    $request = $request->withAttribute($key, $value);
-                }
+                    foreach($arr as $key => $value) {
+                        $request = $request->withAttribute($key, $value);
+                    }
 
-                break;
-            case 'text/plain;charset=UTF-8':
-            case 'application/x-www-form-urlencoded':
-                parse_str(file_get_contents('php://input'), $arr);
+                    break;
+                case 'text/plain;charset=UTF-8':
+                case 'application/x-www-form-urlencoded':
+                    parse_str(file_get_contents('php://input'), $arr);
 
-                foreach($arr as $key => $value) {
-                    $request = $request->withAttribute($key, $value);
-                }
+                    foreach($arr as $key => $value) {
+                        $request = $request->withAttribute($key, $value);
+                    }
 
-                break;
-            case 'multipart/form-data':
-                // Пока не работает, не могу распарсить запрос
+                    break;
+                case 'multipart/form-data':
+                    // Пока не работает, не могу распарсить запрос
 
-                break;
+                    break;
+            }
         }
 
         return $request;

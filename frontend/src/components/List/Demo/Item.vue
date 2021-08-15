@@ -4,7 +4,7 @@
             <div class="item--handle">=</div>
 
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
-                {{ name }} (i: {{modelValue.index}}, parent: {{modelValue.parentId}})
+                {{ name }}
 
                 <span v-if="modelValue.datetime">
                     <img class="btn-icon" :src="require('/assets/icons/calendar.svg')" alt="datetime" :title="modelValue.datetime">

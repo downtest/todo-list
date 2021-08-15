@@ -1,3 +1,5 @@
+import moment from "moment"
+
 const LS_TODOS_UNCONFIRMED_ITEMS = 'ls_todos_unconfirmed_items'
 
 const todos = {
@@ -52,6 +54,30 @@ const todos = {
 
                 return formedTask
             })
+        },
+        groupedByDates: (state) => {
+            let result = {}
+
+            if (!state.items.length) {
+                return result
+            }
+
+            state.items.forEach(item => {
+                if (!item.datetime) {
+                    return
+                }
+
+                let date = moment(item.datetime)
+                let dateIndex = `${date.year()}.${date.month()}.${date.date()}`
+
+                if (!result[dateIndex]) {
+                    result[dateIndex] = []
+                }
+
+                result[dateIndex].push(item)
+            })
+
+            return result
         },
     },
     mutations: {

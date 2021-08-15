@@ -60,7 +60,7 @@ class DBMongo extends Service
             $connectionData['database'],
             $connectionData['username'],
             $connectionData['password'],
-            $connectionData['options']
+            $connectionData['options'] ?? []
         );
     }
 

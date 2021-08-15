@@ -3,7 +3,8 @@ version: '3'
 services:
 
   nginx_frontend:
-    image: nginx:1.17.8-alpine
+    build:
+      context: ./docker/nginx
     restart: always
     volumes:
       - ./frontend:/www
@@ -49,7 +50,8 @@ services:
 
   nodejs:
     build:
-      context: ./docker/node
+      context: .
+      dockerfile: ./docker/node/Dockerfile
     volumes:
       - ./frontend:/www
     working_dir: /www
