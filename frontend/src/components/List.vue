@@ -6,7 +6,7 @@
 
             <search></search>
 
-            <div @click="this.$store.dispatch('todos/save')">save!</div>
+            <div v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">save ({{$store.getters['todos/getChanges'].length}})</div>
 
             <div v-if="parent">
                 <h1>{{parent.message.split('\n')[0]}}</h1>

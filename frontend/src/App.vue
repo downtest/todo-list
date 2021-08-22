@@ -10,8 +10,8 @@
 
     <ul>
       <li><router-link to="/user">User</router-link></li>
-      <li><router-link to="/calendar">Calendar</router-link></li>
-      <li><router-link to="/list">List</router-link></li>
+      <li><router-link :to="{name: 'calendarMonth'}">Calendar</router-link></li>
+      <li><router-link :to="{name: 'task-list'}">List</router-link></li>
       <li><router-link to="/collections">Collections</router-link></li>
       <li><router-link to="/404">404</router-link></li>
     </ul>

@@ -85,7 +85,6 @@ import draggable from "vuedraggable"
 
 <style lang="scss">
 .item-container {
-    margin: 0 0 0 10px;
     padding: 0;
     text-align: left;
 }

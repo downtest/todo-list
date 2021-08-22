@@ -38,7 +38,7 @@ class Insert extends Action
             $request->getAttribute('index')
         );
 
-        $maxIndex = TasksInMongo::getInstance()->getMaxId($collectionName, $request->getAttribute('parentId'));
+        $maxIndex = TasksInMongo::getInstance()->getMaxId($collectionName, $request->getAttribute('parentId') ?? null);
 
         $newId = $db->insertOne($collectionName, Arr::except($request->getAttributes(), ['isNew', 'id', 'confirmed', 'isNew']));
 

@@ -63,11 +63,11 @@ const todos = {
             }
 
             state.items.forEach(item => {
-                if (!item.datetime) {
+                if (!item.date) {
                     return
                 }
 
-                let date = moment(item.datetime)
+                let date = moment(item.date)
                 let dateIndex = `${date.year()}.${date.month()}.${date.date()}`
 
                 if (!result[dateIndex]) {
@@ -97,16 +97,6 @@ const todos = {
             // Обновляем, чтобы vue реактивно обновил бы компонент, отображающий таску(если обновлять свойства, то реактивности не будет)
             state.items.splice(index, 1, {...task, children: children})
         },
-        // addChild (state, {parentId, childId}) {
-        //     // TODO: Переписать все мутации на индексы, а не id в ключе
-        //     state.items[parentId]['children'].push(childId)
-        // },
-        // removeChild (state, {parentId, childId}) {
-        //     // TODO: Переписать все мутации на индексы, а не id в ключе
-        //     // Удаляем ребёнка у родителя
-        //     let index = state.items[parentId]['children'].indexOf(childId)
-        //     state.items[parentId]['children'].splice(index, 1)
-        // },
         updateItems(state, items) {
             for (let task of items) {
                 let currentTask = state.items.find(item => item.id === (task.oldId || task.id))
@@ -121,7 +111,7 @@ const todos = {
             let index = state.items.findIndex(item => item.id === id)
 
             // Обновляем, чтобы vue реактивно обновил бы компонент, отображающий таску(если обновлять свойства, то реактивности не будет)
-            if (instant) {
+            if (task.isNew || instant) {
                 // Со свойством instant сразу вносим изменения в таску, без свойства updated
                 state.items.splice(index, 1, {...task, ...payload})
             } else {
@@ -189,7 +179,8 @@ const todos = {
 
             commit('createItem', {
                 id: tempId,
-                datetime: null,
+                date: null,
+                time: null,
                 labels: [],
                 children: [],
                 isNew: true,
@@ -272,6 +263,14 @@ const todos = {
          * @param id
          */
         async deleteItem ({commit, dispatch, state, getters}, id) {
+            if (getters.getById(id).isNew) {
+                commit('deleteItem', id)
+
+                window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+
+                return
+            }
+
             this.axios.post('api/tasks/delete', {
                 collectionId: null,
                 taskId: id,
@@ -286,6 +285,8 @@ const todos = {
                         // Рекурсивно удаляем детей
                         commit('deleteItem', deletedId)
                     }
+
+                    window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
                     return data
                 })
@@ -339,8 +340,34 @@ const todos = {
 
             window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
         },
+        /**
+         * Action resetAllChanges -
+         * @param commit
+         * @param state
+         * @param getters
+         */
+        resetAllChanges ({commit, state, getters}) {
+            getters.getChanges.forEach(task => {
+                if (task.isNew) {
+                    commit('deleteItem', task.id)
+                } else {
+                    commit('updateItem', {
+                        id: task.id,
+                        payload: {...task, updated: null},
+                        instant: true, // Обновляем task, а не свойство updated внутри
+                    })
+                }
+            })
+
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+        },
+        /**
+         * Action save - сохранение всех изменений на сервере
+         * @param commit
+         * @param state
+         * @param getters
+         */
         save({commit, state, getters}) {
-            console.log(getters.unconfirmed, `getters.unconfirmed`)
             if (!getters.unconfirmed.length) {
                 return
             }
@@ -357,7 +384,7 @@ const todos = {
 
                         commit('updateItem', {
                             id: task.oldId || task.id,
-                            payload: task,
+                            payload: {...task, updated: null, isNew: false,},
                             instant: true,
                         })
                     }

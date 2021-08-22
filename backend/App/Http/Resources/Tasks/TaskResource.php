@@ -18,7 +18,8 @@ class TaskResource extends Resource
             'parentId' => $this->resource['parentId'] ?? null, // родительский id
             'children' => $this->resource['children'] ?? [], // Массив дочерних id
             'labels' => $this->resource['labels'] ?? [],
-            'datetime' => $this->resource['datetime'] ?? null,
+            'date' => $this->resource['date'] ?? null,
+            'time' => $this->resource['time'] ?? null,
         ];
     }
 }

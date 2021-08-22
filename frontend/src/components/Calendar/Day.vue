@@ -1,41 +1,45 @@
 <template>
 <div>
     <h1>
-        <span class="month-header" @click="$router.push({name: 'calendarMonth', params: {month: day.format('YYYY-MM')}})">{{monthsTitleEng[day.month()]}}</span>
-        {{day.year()}}
+        <span class="month-header" @click="$router.push({name: 'calendarMonth', params: {month: today.format('YYYY-MM')}})">{{monthsTitleEng[today.month()]}}</span>
+        {{today.year()}}
     </h1>
 
-    <div class="days-row">
-        <div :class="{
-                'day': true,
-                'weekend': [6, 0].includes(neighborDay.day()),
-            }"
-             :key="index" v-for="(neighborDay, index) in calendarDays"
-             @click="$router.push({name: 'calendarDay', params: {day: neighborDay.format('YYYY-MM-DD')}})"
-        >
-            <div :class="{
-                    'day__date': true,
-                    'weekend': [6, 0].includes(neighborDay.day()),
-                 }"
-            >
-                {{neighborDay.date()}}
-            </div>
-            <div class="day__month">{{monthsTitleEng[neighborDay.month()]}}</div>
+    <button @click="scrollToCurrent(false)">Scroll</button>
 
-            <label class="day__tasksLabel" v-if="groupedByDatesTasks[`${neighborDay.year()}.${neighborDay.month()}.${neighborDay.date()}`]">
-                {{groupedByDatesTasks[`${neighborDay.year()}.${neighborDay.month()}.${neighborDay.date()}`].length}}
-            </label>
+    <template v-if="this.$store.getters['todos/getChanges'].length">
+        <button @click="this.$store.dispatch('todos/resetAllChanges')">Сброс изменений ({{$store.getters['todos/getChanges'].length}})</button>
+        <button @click="this.$store.dispatch('todos/save')">Сохранение ({{$store.getters['todos/getChanges'].length}})</button>
+    </template>
+
+    <div class="days-row" @scroll="handleWheel">
+        <div class="days-wrapper" id="days">
+            <div :class="{
+                    'day': true,
+                    'current-day': today.isSame(neighborDay) ? true : false,
+                    'weekend': [6, 0].includes(neighborDay.day()),
+                }"
+                 :key="index" v-for="(neighborDay, index) in calendarDays"
+                 @click="$router.push({name: 'calendarDay', params: {day: neighborDay.format('YYYY-MM-DD')}})"
+            >
+                <div :class="{
+                        'day__date': true,
+                        'weekend': [6, 0].includes(neighborDay.day()),
+                     }"
+                >
+                    {{neighborDay.date()}}
+                </div>
+                <div class="day__month">{{monthsTitleEng[neighborDay.month()]}}</div>
+
+                <label class="day__tasksLabel" v-if="groupedByDatesTasks[`${neighborDay.year()}.${neighborDay.month()}.${neighborDay.date()}`]">
+                    {{groupedByDatesTasks[`${neighborDay.year()}.${neighborDay.month()}.${neighborDay.date()}`].length}}
+                </label>
+            </div>
         </div>
     </div>
 
     <div class="day-content">
-        <pre>{{`${day.year()}.${day.month()}.${day.date()}`}}</pre>
-        <label class="tasksAmount" v-if="groupedByDatesTasks[`${day.year()}.${day.month()}.${day.date()}`]" v-for="task in groupedByDatesTasks[`${day.year()}.${day.month()}.${day.date()}`]">
-            {{task}}
-            <br>
-            <a @click="$router.push({name: 'task-list', params: {parentId: task.id}})"></a>
-            {{task.message}}
-        </label>
+        <todos-list :value="groupedByDatesTasks[`${today.year()}.${today.month()}.${today.date()}`]" :createChild="createChild"></todos-list>
     </div>
 
 </div>
@@ -43,9 +47,13 @@
 
 <script>
 import moment from "moment"
+import TodosList from "../List/TodosList"
 
 export default {
     name: "Day",
+    components: {
+        TodosList,
+    },
     props: {
         day: {
             type: String,
@@ -85,7 +93,7 @@ export default {
         }
     },
     computed: {
-        day() {
+        today() {
             let moment = this.$moment(this.day, 'YYYY-MM-DD')
 
             return moment.isValid() ? moment : this.$moment()
@@ -112,11 +120,81 @@ export default {
             return result
         },
     },
+    watch: {
+        day() {
+            this.scrollToCurrent()
+        },
+    },
     methods: {
+        handleWheel: function (evt) {
+            if (this.scrollingEvent) {
+                return
+            }
 
+            let wrapperBlock = document.getElementById('days')
+            let calendarOffsetLeft = wrapperBlock.getBoundingClientRect().left * -1
+            let calendarOffsetRight = wrapperBlock.getBoundingClientRect().right
+
+            let todayBlock = document.querySelector('.current-day')
+            let dayWidth = todayBlock.clientWidth // Ширина одного дня
+            //
+            // // let fromLeftEdge = (todayBlock.getBoundingClientRect().left - calendarOffsetTop) * -1
+            let todayFromLeftEdge = todayBlock.getBoundingClientRect().left
+            let todayFromRightEdge = todayBlock.getBoundingClientRect().right
+            // let startOffsetTop = todayBlock.offsetLeft - wrapperBlock.offsetLeft
+
+            document.getElementById('days').scrollLeft = todayFromLeftEdge
+
+            return
+
+            if (calendarOffsetLeft < 500) {
+                // При добавлении пунктов в начало скролинг от верха не меняется, поэтому его надо увеличивать на высоту добавленных элементов
+                this.subDays += 30
+
+                this.scrollingEvent = setTimeout(() => {
+                    let scroll = todayFromLeftEdge + (30 * dayWidth)
+
+                    wrapperBlock.scrollTo({
+                        // Текущий скролинг + добавленные месяцы
+                        top: scroll,
+                        behavior: 'auto'
+                    })
+
+                    this.scrollingEvent = false
+                }, 100)
+            }
+
+            if (calendarOffsetRight < 500) {
+                this.addDays += 30
+            }
+        },
+        scrollToCurrent(fast) {
+            let todayBlock = document.querySelector('.current-day')
+            let dayWidth = todayBlock.clientWidth // Ширина одного дня
+            let scroll = todayBlock.offsetLeft - window.innerWidth / 2 + dayWidth / 2
+
+            document.getElementById('days').scrollLeft = scroll
+            document.getElementById('days').scrollTo({
+                left: scroll,
+                behavior: fast ? 'auto' : 'smooth' // auto
+            })
+        },
+        createChild: function() {
+            let realToday = this.$moment()
+            let moment = this.today.clone().hours(realToday.hours()).minutes(realToday.minutes())
+
+            this.$store.dispatch('todos/createItem', {
+                parentId: null,
+                date: moment.format('YYYY-MM-DD'),
+                message: '',
+            })
+        },
     },
     mounted() {
         this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+            .then(() => {
+                this.scrollToCurrent(true)
+            })
     },
 }
 </script>
@@ -132,34 +210,50 @@ export default {
 }
 
 .days-row {
-    display: flex;
 
-    .day {
-        border: 1px solid black;
-        position: relative;
-        cursor: pointer;
+    .days-wrapper {
+        overflow-x: scroll;
+        display: flex;
 
-        .day__date {
+        .day {
+            cursor: pointer;
+            border: 1px solid black;
+            position: relative;
+            flex: none;
+            width: 120px;
 
-        }
+            .day__date {
 
-        &.weekend {
-            background-color: red;
-        }
+            }
 
-        &__tasksLabel {
-            position: absolute;
-            right: -5px;
-            top: -5px;
-            background-color: #22bd22;
-            border-radius: 50%;
-            width: 15px;
-            height: 15px;
-        }
+            &.weekend {
+                background-color: red;
+            }
 
-        &:hover {
-            border-color: red;
+            &.current-day {
+                cursor: inherit;
+                border-color: inherit;
+            }
+
+            &__tasksLabel {
+                position: absolute;
+                right: 5px;
+                top: -3px;
+                background-color: #22bd22;
+                border-radius: 50%;
+                width: 15px;
+                height: 15px;
+            }
+
+            &:hover:not(.current-day) {
+                border-color: red;
+            }
         }
     }
 }
+
+.day-content {
+    margin: 20px 0;
+}
+
 </style>

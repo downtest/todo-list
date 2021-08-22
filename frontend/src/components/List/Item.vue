@@ -6,9 +6,14 @@
             <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
                 {{ name }}
 
-                <span v-if="formattedDatetime">
-                    {{formattedDatetime.format('YYYY \\mon:MM DD c\\loc\\k:HH:mm')}}
-                    <img class="btn-icon" :src="require('/assets/icons/calendar.svg')" alt="datetime" :title="modelValue.datetime">
+                <span v-if="date">
+                    {{date}}
+                    <img class="btn-icon" :src="require('/assets/icons/calendar.svg')" alt="datetime" :title="date">
+                </span>
+
+                <span v-if="time">
+                    {{time}}
+                    <img class="btn-icon" :src="require('/assets/icons/clock.svg')" alt="datetime" :title="time">
                 </span>
             </div>
 
@@ -41,7 +46,8 @@
             </label>
 
             <label class="edit--label">
-                Дата: <input type="datetime-local" v-model="datetime">
+                Дата: <input type="date" v-model="date">
+                Время: <input type="time" v-model="time">
             </label>
 
             <label class="edit--label">
@@ -144,33 +150,39 @@
             name() {
                 return this.message.split("\n")[0]
             },
-            datetime: {
+            date: {
                 get() {
-                    if (this.modelValue.updated && this.modelValue.updated.datetime) {
-                        return this.modelValue.updated.datetime
+                    if (this.modelValue.updated && this.modelValue.updated.date) {
+                        return this.modelValue.updated.date
                     }
 
-                    return this.modelValue.datetime
+                    return this.modelValue.date
                 },
-                set(datetime) {
+                set(date) {
                     this.$store.dispatch('todos/updateItem', {
                         id: this.modelValue.id,
                         payload: {
-                            datetime: datetime,
+                            date: date,
                         },
                     })
                 },
             },
-            formattedDatetime() {
-                if (this.modelValue.updated && this.modelValue.updated.datetime) {
-                    return this.$moment(this.modelValue.updated.datetime, 'YYYY-MM-DDTHH:mm')
-                }
+            time: {
+                get() {
+                    if (this.modelValue.updated && this.modelValue.updated.time) {
+                        return this.modelValue.updated.time
+                    }
 
-                if (this.modelValue.datetime) {
-                    return this.$moment(this.modelValue.datetime, 'YYYY-MM-DDTHH:mm')
-                }
-
-                return null
+                    return this.modelValue.time
+                },
+                set(time) {
+                    this.$store.dispatch('todos/updateItem', {
+                        id: this.modelValue.id,
+                        payload: {
+                            time: time,
+                        },
+                    })
+                },
             },
         },
         methods: {

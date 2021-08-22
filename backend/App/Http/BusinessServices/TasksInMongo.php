@@ -161,10 +161,10 @@ class TasksInMongo extends Service
 
     /**
      * @param string $collectionName
-     * @param string $parentId
+     * @param ?string $parentId
      * @return int
      */
-    public function getMaxId(string $collectionName, string $parentId): int
+    public function getMaxId(string $collectionName, ?string $parentId): int
     {
         return $this->db->find(
                 $collectionName,
