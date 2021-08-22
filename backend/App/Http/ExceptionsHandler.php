@@ -14,10 +14,10 @@ use Zend\Diactoros\Response\JsonResponse;
 class ExceptionsHandler extends FrameworkDefaultExceptionHandler
 {
     /**
-     * @param Throwable $exception
+     * @param ?Throwable $exception
      * @return ResponseInterface
      */
-    public function handle(Throwable $exception): ResponseInterface
+    public function handle(?Throwable $exception): ResponseInterface
     {
         if ($exception instanceof ValidationException) {
             return new JsonResponse([

@@ -35,7 +35,7 @@ class Update extends Action
                 $oneTaskRequest = $oneTaskRequest->withAttribute($param, $value);
             }
 
-            if ($task['isNew']) {
+            if (!empty($task['isNew']) && $task['isNew']) {
                 // Нужно создать
                 if ($errors = $insertAction->getValidationErrors($oneTaskRequest)) {
                     return $this->validationErrorResponse($errors);

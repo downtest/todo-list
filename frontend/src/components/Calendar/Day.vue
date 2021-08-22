@@ -7,9 +7,9 @@
 
     <button @click="scrollToCurrent(false)">Scroll</button>
 
-    <template v-if="this.$store.getters['todos/getChanges'].length">
-        <button @click="this.$store.dispatch('todos/resetAllChanges')">Сброс изменений ({{$store.getters['todos/getChanges'].length}})</button>
-        <button @click="this.$store.dispatch('todos/save')">Сохранение ({{$store.getters['todos/getChanges'].length}})</button>
+    <template v-if="$store.getters['todos/getChanges'].length">
+        <button @click="$store.dispatch('todos/resetAllChanges')">Сброс изменений ({{$store.getters['todos/getChanges'].length}})</button>
+        <button @click="$store.dispatch('todos/save')">Сохранение ({{$store.getters['todos/getChanges'].length}})</button>
     </template>
 
     <div class="days-row" @scroll="handleWheel">
@@ -126,7 +126,7 @@ export default {
         },
     },
     methods: {
-        handleWheel: function (evt) {
+        handleWheel: function () {
             if (this.scrollingEvent) {
                 return
             }

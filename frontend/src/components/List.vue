@@ -20,7 +20,11 @@
                 </div>
 
                 <label>
-                    <input class="parent--input" type="datetime-local" v-model="parentDatetime">
+                    <input class="parent--input" type="date" v-model="parentDate">
+                </label>
+
+                <label>
+                    <input class="parent--input" type="time" v-model="parentTime">
                 </label>
             </div>
 
@@ -107,19 +111,36 @@
                     })
                 },
             },
-            parentDatetime: {
+            parentDate: {
                 get() {
                     if (this.parent) {
-                        return this.parent.datetime;
+                        return this.parent.date;
                     } else {
                         return null;
                     }
                 },
-                set(datetime) {
+                set(date) {
                     this.$store.dispatch('todos/updateItem', {
                         id: this.parent.id,
                         payload: {
-                            datetime: datetime,
+                            date: date,
+                        },
+                    })
+                },
+            },
+            parentTime: {
+                get() {
+                    if (this.parent) {
+                        return this.parent.time;
+                    } else {
+                        return null;
+                    }
+                },
+                set(time) {
+                    this.$store.dispatch('todos/updateItem', {
+                        id: this.parent.id,
+                        payload: {
+                            time: time,
                         },
                     })
                 },

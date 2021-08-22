@@ -11,11 +11,11 @@ use Zend\Diactoros\Response\HtmlResponse;
 class ExceptionsHandler
 {
     /**
-     * @var RequestInterface
+     * @var ?RequestInterface
      */
-    protected RequestInterface $request;
+    protected ?RequestInterface $request;
 
-    public function __construct(RequestInterface $request)
+    public function __construct(?RequestInterface $request = null)
     {
         $this->request = $request;
     }
