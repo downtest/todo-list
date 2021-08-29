@@ -7,7 +7,17 @@ return [
             'primary' => true,
             'autoincrement' => true,
         ],
+        'name' => [
+            'type' => 'varchar',
+            'is_nullable' => true,
+            'max_length' => '200',
+        ],
         'email' => [
+            'type' => 'varchar',
+            'is_nullable' => true,
+            'max_length' => '200',
+        ],
+        'password' => [
             'type' => 'varchar',
             'is_nullable' => true,
             'max_length' => '200',

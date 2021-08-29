@@ -9,6 +9,7 @@
     </div>
 
     <ul>
+      <li><router-link to="/registration">Register</router-link></li>
       <li><router-link to="/user">User</router-link></li>
       <li><router-link :to="{name: 'calendarMonth'}">Calendar</router-link></li>
       <li><router-link :to="{name: 'task-list'}">List</router-link></li>

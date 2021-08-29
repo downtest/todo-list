@@ -26,6 +26,10 @@
                 <label>
                     <input class="parent--input" type="time" v-model="parentTime">
                 </label>
+
+                <router-link v-if="parentDate" :to="{name: 'calendarDay', params: {day: parentDate}}">
+                    Посмотреть в календаре
+                </router-link>
             </div>
 
             <nested

@@ -46,7 +46,7 @@ class SqlColumn
             $props = $this->state;
         }
 
-        $sql = '';
+        $sql = 'ADD COLUMN ';
         $columnType = $props['type'];
 
         if (!empty($props['max_length'])) {
@@ -165,7 +165,7 @@ class SqlColumn
         if (!$this->currentState) {
             // Совершенно новая колонка
             if ($createColumnsArr = $this->getCreateQuery()) {
-                $result['create'][] = 'ALTER TABLE ' . $this->tableName . PHP_EOL . implode(PHP_EOL . ',', $createColumnsArr);
+                $result['create'][] = 'ALTER TABLE ' . $this->tableName . PHP_EOL . $createColumnsArr;
             }
         } elseif ($this->isChanged()) {
             // Колонку надо изменить

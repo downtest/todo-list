@@ -47,7 +47,7 @@ class SqlTable
             $columnsArr[] = (new SqlColumn($columnName, $column))->getCreateQuery();
         }
 
-        return $sql.PHP_EOL.'('.PHP_EOL.implode(PHP_EOL, $columnsArr).')';
+        return $sql.PHP_EOL.'('.$columnsArr.')';
     }
 
     public function getModifyQueries(): ?array

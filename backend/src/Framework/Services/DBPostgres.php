@@ -90,6 +90,46 @@ class DBPostgres extends Service
         return $result;
     }
 
+    /**
+     * Выполняет подготовленный запрос
+     * В подготовленных запросах нужно в качестве параметров передавать ?(если массив параметров обычных) либо :param(если массив  параметров ассоциативный)
+     *
+     * @param string $sql
+     * @param array $params
+     * @return bool
+     */
+    public function prepare(string $sql, array $params = []): bool
+    {
+        $query = $this->pdo->prepare($sql);
+
+        if (!$query) {
+            throw new Exception("Не удалось подготовить запроc {$sql}");
+        }
+
+        return $query->execute($params);
+    }
+
+    /**
+     *  Возвращает данные из БД по подготовленному запросу
+     *
+     * @param string $sql
+     * @param array $params
+     * @return array
+     * @throws Exception
+     */
+    public function get(string $sql, array $params = []): array
+    {
+        $query = $this->pdo->prepare($sql);
+
+        if (!$query) {
+            throw new Exception("Не удалось подготовить запроc {$sql}");
+        }
+
+        $query->execute($params);
+
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function quote(string $arg): string
     {
         return $this->pdo->quote($arg);

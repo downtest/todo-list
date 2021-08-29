@@ -1,14 +1,16 @@
+const defaultUser = {
+    id: null,
+    phone: '',
+    name: '',
+    email: '',
+    permissions: [],
+}
+
 const user = {
     namespaced: true,
 
     state: {
-        current: {
-            id: null,
-            phone: '',
-            name: '',
-            email: '',
-            permissions: [],
-        },
+        current: defaultUser,
     },
     mutations: {
         update(state, payload) {
@@ -27,21 +29,70 @@ const user = {
     },
 
     actions: {
-        login({commit}, payload) {
-            this.axios.post('http://localhost:82/api/user/login', payload)
-                .then(({data}) => {
-                    commit('update', data.user)
-                })
+        register({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('http://localhost:82/api/user/register', payload)
+                    .then(({data}) => {
+                        commit('update', data.user)
 
-            // commit('update')
+                        resolve(data.user)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
         },
-        current({commit}) {
-            this.axios.post('http://localhost:82/api/user/current')
-                .then(({data}) => {
-                    commit('update', {...data.user, permissions: data.permissions})
-                })
+        login({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('http://localhost:82/api/user/login', payload)
+                    .then(({data}) => {
+                        commit('update', data.user)
 
-            // commit('update')
+                        resolve(data.user)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
+        },
+        logout({commit}) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('http://localhost:82/api/user/logout')
+                    .then(({data}) => {
+                        commit('update', defaultUser)
+
+                        resolve(defaultUser)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
+        },
+        update({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('http://localhost:82/api/user/update', payload)
+                    .then(({data}) => {
+                        commit('update', data.user)
+
+                        resolve(data.user)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
+        },
+        current({commit, getters}) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('http://localhost:82/api/user/current')
+                    .then(({data}) => {
+                        commit('update', {...data.user, permissions: data.permissions})
+
+                        resolve(getters.current)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
         },
     },
 };

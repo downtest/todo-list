@@ -3,9 +3,11 @@
 namespace App\Http\Actions\Api\User;
 
 
+use App\Http\BusinessServices\Registration;
 use App\Http\Interfaces\Action;
 use App\Models\User;
 use Exception;
+use Framework\Services\DBPostgres;
 use Framework\Services\Session;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,7 +18,10 @@ class Login extends Action
 {
     public function validationRules($request): array
     {
-        return ['phone' => ['required','size:11']];
+        return [
+            'email' => ['required','string'],
+            'password' => ['required','string'],
+        ];
     }
 
     /**
@@ -26,20 +31,23 @@ class Login extends Action
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
-        $phone = Register::formatPhone($request->getAttribute('phone'));
         $user = User::current();
+        $db = DBPostgres::getInstance();
         // Сохранять в сессии id юзера
 
         if (!$user) {
             // Запрашиваем юзера в БД
-            $user = User::query("SELECT * FROM users WHERE phone = '$phone'")[0] ?? null;
+            $user = $db->get('SELECT * FROM users WHERE email = ? AND password = ?', [
+                $request->getAttribute('email'),
+                Registration::hash($request->getAttribute('password'))
+            ])[0] ?? null;
         }
 
         if (!$user) {
             // Юзер не найден
             return new JsonResponse([
                 'status' => false,
-                'message' => "Не найден пользователь по телефону {$request->getAttribute('phone')}",
+                'errors' => ['email' => ["Не найден пользователь по email`у {$request->getAttribute('email')}, либо пароль не совпадает"]],
             ], 422);
         }
 

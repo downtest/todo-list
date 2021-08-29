@@ -57,7 +57,7 @@ class Application
 
             $action = $this->router->resolve();
 
-            if ($validationErrors = $action->validationRules($this->request)) {
+            if (method_exists($action, 'validationRules') && $validationErrors = $action->validationRules($this->request)) {
                 $this->pipeline->pipe(new Validator($action, $validationErrors));
             }
 
