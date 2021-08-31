@@ -23,6 +23,10 @@ class Get extends Action
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        if (!User::current()) {
+            return $this->errorResponse(['Unauthorised']);
+        }
+
         $db = DBMongo::getInstance();
         $collectionName = 'tasks'.User::current()['id'];
         $collection = $db->find($collectionName, []);

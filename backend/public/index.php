@@ -4,7 +4,7 @@ use Framework\Http\ExceptionsHandler as FrameworkExceptionHandler;
 
 set_error_handler("error_handler", E_ALL);
 
-function error_handler($errno, $errstr) {
+function error_handler($errno, $errstr, $file, $line) {
     switch ($errno) {
         case E_NOTICE:
             $errType = 'Notice'; break;
@@ -17,9 +17,9 @@ function error_handler($errno, $errstr) {
     }
 
     if (class_exists('\App\Http\ExceptionsHandler')) {
-        $exceptionHandler = (new \App\Http\ExceptionsHandler())->handle(new Exception("$errType: $errstr"));
+        $exceptionHandler = (new \App\Http\ExceptionsHandler())->handle(new Exception("$errType: $errstr IN FILE $file ON LINE $line"));
     } else {
-        $exceptionHandler = (new FrameworkExceptionHandler())->handle(new Exception("$errType: $errstr"));
+        $exceptionHandler = (new FrameworkExceptionHandler())->handle(new Exception("$errType: $errstr IN FILE $file ON LINE $line"));
     }
 
     http_response_code($exceptionHandler->getStatusCode());

@@ -27,7 +27,7 @@ const user = {
         load({getters, commit}, userId) {
             if (getters.cu)
 
-            this.axios.post(`http://localhost:82/api/user/login`,)
+            this.axios.post(`/api/user/login`,)
                 .then(({data}) => {
                     commit('setCollections', data)
                     commit('setCurrentUserId', userId)

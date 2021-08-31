@@ -33,7 +33,6 @@ class Login extends Action
     {
         $user = User::current();
         $db = DBPostgres::getInstance();
-        // Сохранять в сессии id юзера
 
         if (!$user) {
             // Запрашиваем юзера в БД
@@ -51,6 +50,7 @@ class Login extends Action
             ], 422);
         }
 
+        // Сохранять в сессии id юзера
         Session::getInstance()->set(User::SESSION_KEY, $user['id']);
 
         return new JsonResponse([

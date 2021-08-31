@@ -31,7 +31,7 @@ const user = {
     actions: {
         register({commit}, payload) {
             return new Promise((resolve, reject) => {
-                this.axios.post('http://localhost:82/api/user/register', payload)
+                this.axios.post('/api/user/register', payload)
                     .then(({data}) => {
                         commit('update', data.user)
 
@@ -44,7 +44,7 @@ const user = {
         },
         login({commit}, payload) {
             return new Promise((resolve, reject) => {
-                this.axios.post('http://localhost:82/api/user/login', payload)
+                this.axios.post('/api/user/login', payload)
                     .then(({data}) => {
                         commit('update', data.user)
 
@@ -57,7 +57,7 @@ const user = {
         },
         logout({commit}) {
             return new Promise((resolve, reject) => {
-                this.axios.post('http://localhost:82/api/user/logout')
+                this.axios.post('/api/user/logout')
                     .then(({data}) => {
                         commit('update', defaultUser)
 
@@ -70,7 +70,7 @@ const user = {
         },
         update({commit}, payload) {
             return new Promise((resolve, reject) => {
-                this.axios.post('http://localhost:82/api/user/update', payload)
+                this.axios.post('/api/user/update', payload)
                     .then(({data}) => {
                         commit('update', data.user)
 
@@ -83,7 +83,7 @@ const user = {
         },
         current({commit, getters}) {
             return new Promise((resolve, reject) => {
-                this.axios.post('http://localhost:82/api/user/current')
+                this.axios.post('/api/user/current')
                     .then(({data}) => {
                         commit('update', {...data.user, permissions: data.permissions})
 

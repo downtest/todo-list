@@ -22,13 +22,13 @@ class ExceptionsHandler extends FrameworkDefaultExceptionHandler
         if ($exception instanceof ValidationException) {
             return new JsonResponse([
                 'success' => false,
-                'error' => "Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}",
+                'error' => "Exception! {$exception->getMessage()}",
             ], 422);
         }
 
         return new JsonResponse([
             'success' => false,
-            'error' => "Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}",
+            'error' => "Exception! {$exception->getMessage()}",
         ], 500);
     }
 }

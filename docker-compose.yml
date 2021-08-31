@@ -12,7 +12,7 @@ services:
     depends_on:
       - nodejs
     ports:
-      - 81:80
+      - ${NGINX_FRONTEND_HOST_PORT:-81}:80
 
   nginx_backend:
     build:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - php
     ports:
-      - 82:80
+      - ${NGINX_BACKEND_HOST_PORT:-82}:80
 
   php:
     build:
@@ -73,7 +73,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - ${ADMINER_HOST_PORT:-8080}:8080
 
   mongo:
     image: mongo
@@ -88,7 +88,7 @@ services:
     image: mongo-express
     restart: always
     ports:
-      - 8081:8081
+      - ${MONGO_EXPRESS_HOST_PORT:-8081}:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASSWORD}
