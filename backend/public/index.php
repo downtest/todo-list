@@ -4,6 +4,7 @@ use Framework\Http\ExceptionsHandler as FrameworkExceptionHandler;
 
 set_error_handler("error_handler", E_ALL);
 
+// Обработка всех ошибок
 function error_handler($errno, $errstr, $file, $line) {
     switch ($errno) {
         case E_NOTICE:
@@ -29,7 +30,7 @@ function error_handler($errno, $errstr, $file, $line) {
 
 require '../vendor/autoload.php';
 
-$request = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
+$request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals();
 
 (new \Framework\Http\Application(
     $request,

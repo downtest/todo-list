@@ -7,6 +7,12 @@ return [
             'primary' => true,
             'autoincrement' => true,
         ],
+        'lang' => [
+            'comment' => 'Язык пользователя (ru, en...). Должен совпадать с названием папки в resources/localization',
+            'type' => 'varchar',
+            'is_nullable' => true,
+            'max_length' => '5',
+        ],
         'name' => [
             'type' => 'varchar',
             'is_nullable' => true,
@@ -26,6 +32,18 @@ return [
             'type' => 'varchar',
             'is_nullable' => true,
             'max_length' => '18',
+        ],
+        'password_change_requested_at' => [
+            'comment' => 'Время в которое запросили смену пароля',
+            'type' => 'timestamp',
+            'is_nullable' => true,
+            'max_length' => '64',
+        ],
+        'password_change_hash' => [
+            'comment' => 'Хэш для сброса пароля',
+            'type' => 'varchar',
+            'is_nullable' => true,
+            'max_length' => '64',
         ],
     ],
     'look_at_me' => [

@@ -115,12 +115,12 @@ class SqlColumn
                     }
                     break;
                 case 'type':
-                    $using = '';
-
                     if (in_array($value, ['int', 'integer'])) {
-                        // Приведение текущих значений колонок в число
-                        $using = "USING ({$this->columnName}::integer)";
+                        $value = 'integer';
                     }
+
+                    // Приведение текущих значений колонок в новый тип
+                    $using = "USING $this->columnName::$value";
 
                     $modifiedColumnsArr[] = "ALTER COLUMN \"{$this->columnName}\" SET DATA TYPE {$value} {$using};\n";
                     break;
@@ -220,6 +220,7 @@ class SqlColumn
                     $aliases = [
                         ['varchar', 'character varying'],
                         ['int', 'integer'],
+                        ['timestamp', 'timestamp without time zone'],
                     ];
 
                     foreach ($aliases as $similars) {

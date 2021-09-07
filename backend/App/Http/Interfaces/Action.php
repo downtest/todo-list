@@ -10,7 +10,7 @@ use Framework\Tools\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 
 abstract class Action implements RequestHandlerInterface
 {
@@ -47,16 +47,16 @@ abstract class Action implements RequestHandlerInterface
 
     public function successResponse(array $data = []): JsonResponse
     {
-        return new JsonResponse(['success' => true] + $data);
+        return new JsonResponse(['status' => true] + $data);
     }
 
-    public function errorResponse(array $data = []): JsonResponse
+    public function errorResponse(array $data = [], $status = 400): JsonResponse
     {
-        return new JsonResponse(['success' => false, 'errors' => $data], 400);
+        return new JsonResponse(['status' => false, 'errors' => $data], $status);
     }
 
     public function validationErrorResponse(array $errors = []): JsonResponse
     {
-        return new JsonResponse(['success' => false, 'errors' => $errors], 422);
+        return new JsonResponse(['status' => false, 'errors' => $errors], 422);
     }
 }

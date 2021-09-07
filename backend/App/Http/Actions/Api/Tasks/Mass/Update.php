@@ -10,7 +10,7 @@ use App\Models\User;
 use Framework\Services\DBMongo;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\ServerRequest;
+use Laminas\Diactoros\ServerRequest;
 
 class Update extends Action
 {

@@ -8,9 +8,12 @@ use App\Http\Interfaces\Action;
 use App\Http\Resources\Tasks\TaskResource;
 use App\Models\User;
 use Framework\Services\DBMongo;
+use Framework\Services\Lang;
+use Framework\Services\Mailer;
+use Framework\Services\Templater;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 
 class Get extends Action
 {
@@ -24,7 +27,7 @@ class Get extends Action
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if (!User::current()) {
-            return $this->errorResponse(['Unauthorised']);
+            return $this->errorResponse(['Unauthorised'], 403);
         }
 
         $db = DBMongo::getInstance();

@@ -4,12 +4,13 @@ namespace App\Http\Actions\Api\User;
 
 
 use App\Http\Interfaces\Action;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\ServerRequest;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\ServerRequest;
 
 class Current extends Action
 {
@@ -23,7 +24,7 @@ class Current extends Action
 
         return new JsonResponse([
             'status' => true,
-            'user' => $user,
+            'user' => (new UserResource($user))->toArray(),
             'permissions' => [],
         ]);
     }

@@ -12,9 +12,9 @@ use Framework\Http\Router\RouterHttp;
 use Framework\Http\Validation\Validator;
 use Narrowspark\HttpEmitter\SapiEmitter;
 use Psr\Http\Message\RequestInterface;
-use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\ServerRequest;
+use Laminas\Diactoros\ServerRequestFactory;
 
 class Application
 {

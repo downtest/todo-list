@@ -62,7 +62,7 @@ class DBState extends Service
      */
     public function loadState(string $name = 'default'): void
     {
-        $configPath = realpath(__DIR__.'/../../../App/database/states');
+        $configPath = realpath(__DIR__ . '/../../../database/states');
         $fullPath = "{$configPath}/{$name}.php";
 
         if (!file_exists($fullPath)) {

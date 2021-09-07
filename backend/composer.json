@@ -8,19 +8,19 @@
         }
     ],
     "require": {
-        "php": ">=7.4.0",
-        "ext-PDO": "^7.1",
+        "php": ">=7.4",
+        "ext-PDO": ">7",
         "ext-json": "*",
         "ext-mongodb": "*",
         "mongodb/mongodb": "^1.8",
-        "doctrine/migrations": "^1.8",
         "monolog/monolog": "^1.23",
         "psr/container": "^1.0",
         "psr/http-message": "^1.0",
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^1.0",
-        "zendframework/zend-diactoros": "^2.2",
-        "narrowspark/http-emitter": "^1.0"
+        "laminas/laminas-diactoros": "^2.6",
+        "narrowspark/http-emitter": "^2.0",
+        "phpmailer/phpmailer": "^6.5"
     },
     "autoload": {
         "psr-4": {

@@ -37,6 +37,7 @@
             </div>
 
             <button @click="login">Login</button>
+            <a href="/password-forget">Restore password</a>
         </div>
 
     </div>

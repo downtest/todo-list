@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\Response\JsonResponse;
 
 /**
  * Валидация вызывается в pipeline с Middleware`ами, поэтому наследуется от их интерфейса
@@ -35,7 +35,7 @@ class Validator implements MiddlewareInterface
 
         if ($errors) {
             return new JsonResponse([
-                'success' => false,
+                'status' => false,
                 'error' => "From validator",
                 'errors' => $errors,
             ], 422);

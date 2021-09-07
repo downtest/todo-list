@@ -19,7 +19,7 @@ class Logger extends Service
 
     public function error(string $error)
     {
-        $directory = $_SERVER['DOCUMENT_ROOT'].'/storage';
+        $directory = $_SERVER['DOCUMENT_ROOT'].'/resources';
         $fullPath = $directory.'/'.date('Y-m-d').".log";
 
         if (!file_exists($directory)) {
@@ -35,7 +35,7 @@ class Logger extends Service
 
     public function info(string $info)
     {
-        $directory = $_SERVER['DOCUMENT_ROOT'].'/storage';
+        $directory = $_SERVER['DOCUMENT_ROOT'].'/resources';
         $fullPath = $directory.'/'.date('Y-m-d').".log";
 
         if (!file_exists($directory)) {

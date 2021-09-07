@@ -4,6 +4,8 @@ namespace Framework\Http\Router;
 
 
 use Framework\Http\Router\Interfaces\Router;
+use Framework\Tools\Arr;
+use Framework\Tools\Str;
 
 class RouterHttp extends Router
 {
@@ -13,7 +15,7 @@ class RouterHttp extends Router
         $parts = explode('/', trim($this->request->getUri()->getPath(), '/'));
 
         foreach ($parts as $part) {
-            $className .= '\\' . ucfirst($part);
+            $className .= '\\' . ucfirst(Str::toCamelCase($part));
         }
 
         if (!class_exists($className)) {

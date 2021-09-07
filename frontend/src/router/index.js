@@ -1,18 +1,22 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Collections from "../components/Collections";
-import User from "../components/User";
+import User from "../components/User/User";
 import MonthLayout from "../components/Calendar/Month/MonthLayout";
 import Day from "../components/Calendar/Day"
 import List from "../components/List";
-import Registration from "../components/Registration";
+import Registration from "../components/User/Registration";
+import PasswordForget from "../components/User/PasswordForget";
+import PasswordReset from "../components/User/PasswordReset";
 
 const NotFound = { template: '<div>404</div>' }
 
 const routes = [
     {path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
     {path: '/', component: List, meta: {title: 'Main page'}},
-    {path: '/user', component: User, meta: {title: 'User'}},
+    {path: '/user', name: 'profile', component: User, meta: {title: 'User'}},
     {path: '/registration', component: Registration, meta: {title: 'Registration'}},
+    {path: '/password-forget', component: PasswordForget, meta: {title: 'Password forget'}},
+    {path: '/password-reset', component: PasswordReset, meta: {title: 'Password reset'}},
     {path: '/calendar/month/:month?', name: 'calendarMonth', component: MonthLayout, meta: {title: 'Calendar'}, props: (route) => ({ month: /^\d{4}\-\d{2}$/.test(route.params.month) ? route.params.month : undefined }) },
     {path: '/calendar/day/:day', name: 'calendarDay', component: Day, meta: {title: 'Day'}, props: (route) => ({ day: /^\d{4}\-\d{2}\-\d{2}$/.test(route.params.day) ? route.params.day : undefined }) },
     {path: '/collections', component: Collections, meta: {title: 'Collections'} },

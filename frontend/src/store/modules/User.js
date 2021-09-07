@@ -94,6 +94,49 @@ const user = {
                     })
             })
         },
+        /**
+         * Action Запрос сброса пароля (письмо на email для сброса пароля)
+         * @returns {Promise<unknown>}
+         */
+        passwordForget({commit}, email) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('/api/user/password/request-change', {email})
+                    .then(({data}) => {
+                        resolve(data)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
+        },
+        getEmailByHash({commit}, hash) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('/api/user/password/get-email-by-hash', {hash})
+                    .then(({data}) => {
+                        resolve(data)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
+        },
+        /**
+         * Action Установка нового пароля взамен забытого
+         * @returns {Promise<unknown>}
+         */
+        passwordReset({commit}, payload) {
+            return new Promise((resolve, reject) => {
+                this.axios.post('/api/user/password/reset', payload)
+                    .then(({data}) => {
+                        commit('update', {...data.user, permissions: data.permissions})
+
+                        resolve(data)
+                    })
+                    .catch((response) => {
+                        reject(response)
+                    })
+            })
+        },
     },
 };
 
