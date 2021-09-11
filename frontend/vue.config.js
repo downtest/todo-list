@@ -1,3 +1,5 @@
+process.env.VUE_APP_BACKEND_HOST = process.env.BACKEND_HOST
+
 module.exports = {
     runtimeCompiler: true,
     pages: {

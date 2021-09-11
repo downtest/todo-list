@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  nginx_frontend:
+  nginx:
     volumes:
       - certificates:/etc/letsencrypt
       - ./docker/nginx/conf/nginx.prod.conf:/etc/nginx/nginx.conf
@@ -10,20 +10,12 @@ services:
       - nodejs
       - certbot
 
-  nginx_backend:
-    volumes:
-      - certificates:/etc/letsencrypt
-      - ./docker/nginx/conf/nginx.prod.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - php
-      - certbot
-
   certbot:
     image: certbot/certbot
     volumes:
       - certificates:/etc/letsencrypt
       - ./frontend/public:/www
-    entrypoint: sh -c 'mkdir -p /www/.dir/.well-known/acme-challenge && ls -al /www && certbot certonly --dry-run --authenticator webroot -d listodo.ru --webroot-path /www && ls /www/.well-known'
+    entrypoint: sh -c 'certbot certonly --dry-run --authenticator webroot -d listodo.ru --webroot-path /www'
 
 volumes:
   certificates:

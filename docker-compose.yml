@@ -5,28 +5,18 @@ version: '3'
 
 services:
 
-  nginx_frontend:
+  nginx:
     build:
       context: ./docker/nginx
     restart: always
     volumes:
-      - ./frontend:/www
+      - ./frontend:/www/frontend
       - ./docker/nginx/conf:/etc/nginx
     depends_on:
       - nodejs
-    ports:
-      - ${NGINX_FRONTEND_HOST_PORT:-81}:80
-
-  nginx_backend:
-    build:
-      context: ./docker/backend
-    restart: always
-    volumes:
-      - ./docker/backend/conf/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
       - php
     ports:
-      - ${NGINX_BACKEND_HOST_PORT:-82}:80
+      - "80:80"
 
   php:
     build:
@@ -58,6 +48,8 @@ services:
       dockerfile: ./docker/node/Dockerfile
     volumes:
       - ./frontend:/www
+    env_file:
+      - .env
     working_dir: /www
     command: sh -c 'yarn install && yarn build'
 

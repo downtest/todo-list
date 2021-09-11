@@ -9,8 +9,8 @@ use Framework\Tools\Arr;
 
 class UserResource extends Resource
 {
-    public function toArray(): array
+    public function toArray(): ?array
     {
-        return Arr::except($this->resource, ['password']);
+        return Arr::except($this->resource, ['password']) ?: null;
     }
 }

@@ -27,5 +27,5 @@ abstract class Resource
         return $result;
     }
 
-    abstract public function toArray(): array;
+    abstract public function toArray(): ?array;
 }

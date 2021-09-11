@@ -17,7 +17,7 @@ const store = createStore({
 })
 
 store.axios = axios.create({
-    baseURL: 'http://localhost:82',
+    baseURL: process.env.VUE_APP_BACKEND_HOST,
     withCredentials: true,
     // headers: {'Origin': 'localhost:81'}, // Передаётся самим браузером автоматически, вроде
 })
