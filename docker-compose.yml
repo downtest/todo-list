@@ -12,6 +12,8 @@ services:
     volumes:
       - ./frontend:/www/frontend
       - ./docker/nginx/conf:/etc/nginx
+    env_file:
+      - .env
     depends_on:
       - nodejs
       - php
@@ -24,6 +26,7 @@ services:
       args:
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
+    user: ${USER_ID:-1000}
     restart: always
     volumes:
       - ./backend:/www
