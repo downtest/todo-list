@@ -8,7 +8,6 @@ services:
       - ./docker/nginx/conf/nginx.prod.conf:/etc/nginx/nginx.conf
     depends_on:
       - nodejs
-      - certbot
 
   certbot:
     image: certbot/certbot
