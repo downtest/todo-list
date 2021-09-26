@@ -1,4 +1,4 @@
-const user = {
+const collections = {
     namespaced: true,
 
     state: {

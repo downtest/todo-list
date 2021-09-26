@@ -8,7 +8,6 @@ use Framework\Http\Exceptions\ValidationException;
 use Framework\Http\ExceptionsHandler as FrameworkDefaultExceptionHandler;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
-use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 
 class ExceptionsHandler extends FrameworkDefaultExceptionHandler

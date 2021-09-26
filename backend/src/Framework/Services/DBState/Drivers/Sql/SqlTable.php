@@ -44,10 +44,10 @@ class SqlTable
         $columnsArr = [];
 
         foreach ($this->state as $columnName => $column) {
-            $columnsArr[] = (new SqlColumn($columnName, $column))->getCreateQuery();
+            $columnsArr[] = (new SqlColumn($this->tableName, $columnName, $column))->getCreateQuery();
         }
 
-        return $sql.PHP_EOL.'('.$columnsArr.')';
+        return $sql.'('.PHP_EOL.implode(",\n", $columnsArr).PHP_EOL.')';
     }
 
     public function getModifyQueries(): ?array

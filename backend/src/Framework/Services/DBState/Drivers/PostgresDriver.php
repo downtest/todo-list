@@ -109,7 +109,7 @@ class PostgresDriver extends DriverInterface
             ];
 
             // Ставим индекс только для тех, которые не являются primary. Для Primary индекс делается автоматически
-            if (!$this->currentState[$index['tablename']][$data['columns'][0]]['primary']) {
+            if (empty($this->currentState[$index['tablename']][$data['columns'][0]]['primary'])) {
                 $this->currentState[$index['tablename']][$data['columns'][0]]['indexes'][$index['indexname']] = $data;
             }
         }

@@ -24,7 +24,12 @@ class Migrate extends BaseAction
             try {
                 $response .= PHP_EOL . "Executing $query... ";
                 $result = $db->exec($query);
-                $response .= print_r($result, true) . PHP_EOL;
+
+                if ($result === 0) {
+                    $response .= 'success!' . PHP_EOL;
+                } else {
+                    $response .= 'failed!' . PHP_EOL;
+                }
             } catch (\Throwable $exception) {
                 $response .= 'failed' . PHP_EOL . $exception->getMessage();
             }

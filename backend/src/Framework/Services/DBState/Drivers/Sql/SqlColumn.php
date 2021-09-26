@@ -12,6 +12,13 @@ class SqlColumn
 
     protected string $columnName;
 
+    protected array $aliases = [
+        ['varchar', 'string', 'str', 'character varying'],
+        ['int', 'integer'],
+        ['timestamp', 'timestamp without time zone'],
+        ['boolean', 'bool'],
+    ];
+
     /**
      * Текущее состояние
      * @var array
@@ -46,10 +53,11 @@ class SqlColumn
             $props = $this->state;
         }
 
-        $sql = 'ADD COLUMN ';
-        $columnType = $props['type'];
+//        $sql = 'ADD COLUMN ';
+        $sql = '';
+        $columnType = $this->standardType($props['type']);
 
-        if (!empty($props['max_length'])) {
+        if (isset($props['max_length']) && !in_array($columnType, ['int', 'int8', 'serial', 'bigserial'])) {
             $columnType .= "({$props['max_length']})";
         }
 
@@ -59,7 +67,7 @@ class SqlColumn
             $props['is_nullable'] ? 'NULL' : 'NOT NULL',
         ];
 
-        if (!empty($props['column_default'])) {
+        if (isset($props['column_default'])) {
             $columnProps[] = 'DEFAULT ' . $props['column_default'];
         }
 
@@ -96,14 +104,14 @@ class SqlColumn
                         $result['create'][] = "CREATE SEQUENCE IF NOT EXISTS {$this->tableName}_{$this->columnName}_seq OWNED BY {$this->tableName}.{$this->columnName}";
                     } else {
                         $modifiedColumnsArr[] = "ALTER COLUMN \"{$this->columnName}\" SET DEFAULT null\n";
-                        $result['delete'][] = "DROP SEQUENCE IF EXISTS {$this->tableName}_{$this->columnName}_seq";
+                        $result['delete'][] = "DROP SEQUENCE IF EXISTS {$this->tableName}_{$this->columnName}_seq CASCADE";
                     }
 
                     break;
                 case 'ordinal_position':
                     break;
                 case 'column_default':
-                    if ($value) {
+                    if (isset($value)) {
                         $modifiedColumnsArr[] = "ALTER COLUMN \"{$this->columnName}\" SET DEFAULT {$value}\n";
                     }
                     break;
@@ -115,9 +123,7 @@ class SqlColumn
                     }
                     break;
                 case 'type':
-                    if (in_array($value, ['int', 'integer'])) {
-                        $value = 'integer';
-                    }
+                    $value = $this->standardType($value);
 
                     // Приведение текущих значений колонок в новый тип
                     $using = "USING $this->columnName::$value";
@@ -179,6 +185,21 @@ class SqlColumn
         return $result;
     }
 
+    protected function standardType(string $type): string
+    {
+        if (in_array($type, ['int2'])) {
+            return 'smallint';
+        } elseif (in_array($type, ['int', 'int4', 'integer'])) {
+            return 'int';
+        } elseif (in_array($type, ['big_int', 'bigInt', 'int8'])) {
+            return 'bigint';
+        } elseif (in_array($type, ['string'])) {
+            return 'varchar';
+        } else {
+            return $type;
+        }
+    }
+
     /**
      * Возвращает все свойства, которые нужно поменять
      *
@@ -204,7 +225,7 @@ class SqlColumn
 
                     break;
                 case 'column_default':
-                    if ($this->state['autoincrement']) {
+                    if (isset($this->state['autoincrement']) && $this->state['autoincrement']) {
                         // Когда поле autoincrement true, то тут будет nextval(seq_name::regclass) и менять его не нужно
                         break;
                     }
@@ -217,15 +238,9 @@ class SqlColumn
                         break;
                     }
 
-                    $aliases = [
-                        ['varchar', 'character varying'],
-                        ['int', 'integer'],
-                        ['timestamp', 'timestamp without time zone'],
-                    ];
-
-                    foreach ($aliases as $similars) {
+                    foreach ($this->aliases as $similars) {
                         if (in_array($this->state[$prop], $similars) && in_array($value, $similars)) {
-                            // Значения разнятся, но они синонимы(из одного массива в $aliases)
+                            // Значения разнятся, но они синонимы(из одного массива в $this->aliases)
                             break 2; // Выходим из цикла foreach, и из конструкции switch
                         }
                     }
@@ -273,7 +288,7 @@ class SqlColumn
             throw new Exception('При описании внешнего ключа должны быть указаны свойства: name, foreign_table, foreign_column');
         }
 
-        $foreignSql = "CONSTRAINT {$foreignProps['name']}
+        $foreignSql = "ADD CONSTRAINT {$foreignProps['name']} FOREIGN KEY ({$this->columnName})
                 REFERENCES {$foreignProps['foreign_table']} ({$foreignProps['foreign_column']})";
 
         if (isset($foreignProps['on_update'])) {
@@ -313,6 +328,6 @@ class SqlColumn
         }
 
         // Поменялось не только имя и т.к. у постгреса менять ограничения нельзя(constraint), то надо пересоздать его
-        return 'DROP CONSTRAINT ' . $currentState['name'] . PHP_EOL . $this->getForeignCreateQuery($state);
+        return 'DROP CONSTRAINT ' . $currentState['name'] . ',' . PHP_EOL . $this->getForeignCreateQuery($state);
     }
 }
