@@ -3,7 +3,7 @@
 return [
     'users' => [
         'id' => [
-            'type' => 'integer',
+            'type' => 'bigint', // 	1 .. 9223372036854775807
             'primary' => true,
             'autoincrement' => true,
         ],
@@ -45,46 +45,130 @@ return [
             'is_nullable' => true,
             'max_length' => '64',
         ],
-    ],
-    'look_at_me' => [
-        'id' => [
-            'type' => 'integer',
-            'primary' => true,
-            'ordinal_position' => 1,
-            'autoincrement' => true,
-            'is_nullable' => false,
+        'created_at' => [
+            'column_default' => 'CURRENT_TIMESTAMP',
+            'is_nullable' => true,
+            'type' => 'date',
             'max_length' => null,
         ],
-        'name' => [
+    ],
+    'collections' => [
+        'id' => [
+            'type' => 'string',
+            'primary' => true,
+            'ordinal_position' => 1,
+            'autoincrement' => false,
+            'is_nullable' => false,
+            'max_length' => 100,
+        ],
+        'owner_id' => [
             'ordinal_position' => 2,
             'column_default' => null,
             'is_nullable' => false,
-            'type' => 'character varying',
+            'type' => 'bigint',
             'max_length' => 12,
             'indexes' => [
-                'look_at_me_name' => [
+                'collections_owner_id' => [
                     'unique' => false,
                     'columns' => [
-                        'name'
+                        'owner_id'
                     ],
                 ],
             ],
         ],
-        'description' => [
+        'name' => [
             'ordinal_position' => 3,
             'column_default' => null,
             'is_nullable' => true,
             'type' => 'varchar',
             'max_length' => null,
-            'indexes' => [
-                'look_at_me_description' => [
-                    'columns' => ['description'],
-                ],
-            ],
         ],
         'created_at' => [
             'ordinal_position' => 4,
-            'column_default' => false,
+            'column_default' => 'CURRENT_TIMESTAMP',
+            'is_nullable' => true,
+            'type' => 'date',
+            'max_length' => null,
+        ],
+    ],
+    'user_collection' => [
+        'id' => [
+            'type' => 'bigint',
+            'primary' => true,
+            'ordinal_position' => 1,
+            'autoincrement' => true,
+            'is_nullable' => false,
+            'max_length' => 100,
+        ],
+        'user_id' => [
+            'ordinal_position' => 2,
+            'column_default' => null,
+            'autoincrement' => false,
+            'is_nullable' => false,
+            'type' => 'bigint',
+            'max_length' => 100,
+            'indexes' => [
+                'collections_user_id' => [
+                    'unique' => false,
+                    'columns' => [
+                        'user_id',
+                    ],
+                ],
+            ],
+            'foreign' => [
+                'name' => 'foreign_user_collection_user_id',
+                'foreign_table' => 'users',
+                'foreign_column' => 'id',
+                'on_update' => 'CASCADE',
+                'on_delete' => 'CASCADE',
+            ],
+        ],
+        'collection_id' => [
+            'ordinal_position' => 3,
+            'column_default' => null,
+            'is_nullable' => false,
+            'type' => 'string',
+            'max_length' => 100,
+            'indexes' => [
+                'collections_collection_id' => [
+                    'unique' => false,
+                    'columns' => [
+                        'collection_id',
+                    ],
+                ],
+            ],
+            'foreign' => [
+                'name' => 'foreign_user_collection_collection_id',
+                'foreign_table' => 'collections',
+                'foreign_column' => 'id',
+                'on_update' => 'CASCADE',
+                'on_delete' => 'CASCADE',
+            ],
+        ],
+        'create_access' => [
+            'ordinal_position' => 4,
+            'column_default' => 'false',
+            'is_nullable' => false,
+            'type' => 'bool',
+            'max_length' => null,
+        ],
+        'update_access' => [
+            'ordinal_position' => 5,
+            'column_default' => 'false',
+            'is_nullable' => false,
+            'type' => 'bool',
+            'max_length' => null,
+        ],
+        'delete_access' => [
+            'ordinal_position' => 6,
+            'column_default' => 'false',
+            'is_nullable' => false,
+            'type' => 'bool',
+            'max_length' => null,
+        ],
+        'created_at' => [
+            'ordinal_position' => 7,
+            'column_default' => 'CURRENT_TIMESTAMP',
             'is_nullable' => true,
             'type' => 'date',
             'max_length' => null,

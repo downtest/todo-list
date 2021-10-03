@@ -228,6 +228,9 @@ class SqlColumn
                     if (isset($this->state['autoincrement']) && $this->state['autoincrement']) {
                         // Когда поле autoincrement true, то тут будет nextval(seq_name::regclass) и менять его не нужно
                         break;
+                    } elseif ($this->state[$prop] !== $value) {
+                        $changedProps[$prop] = $this->state[$prop];
+                        break;
                     }
                 case 'ordinal_position':
                     // TODO: сделать сортировку надо бы, но Postgres, по-моему, не поддерживает в запросе alter table очерёдность колонок(но это не точно)
