@@ -137,6 +137,8 @@ const todos = {
     },
     actions: {
         async load ({state, commit, dispatch}) {
+            commit('setItems', [])
+
             return new Promise((resolve, reject) => {
                 this.axios.get('api/tasks/get', {params: {
                     collectionId: null,
@@ -144,6 +146,12 @@ const todos = {
                     .then(({data}) => {
                         commit('setItems', data)
 
+                        return resolve(data)
+                    })
+                    .catch((response) => {
+                        console.error(response, `error on Tasks Load`)
+                    })
+                    .finally(() => {
                         if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
                             for (let task of JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS))) {
                                 if (task.isNew) {
@@ -156,11 +164,6 @@ const todos = {
                                 }
                             }
                         }
-
-                        return resolve(data)
-                    })
-                    .catch((response) => {
-                        console.error(response, `error on Tasks Load`)
                     })
             })
         },
