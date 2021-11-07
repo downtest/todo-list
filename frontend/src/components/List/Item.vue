@@ -1,62 +1,123 @@
 <template>
-    <div :class="{item: true, hover: hover, updated: !modelValue.updated && !modelValue.isNew}" :data-id="modelValue.id">
-        <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
-            <div class="item--handle">=</div>
+    <div :class="{item: true, active: isActive, hover: hover, updated: !modelValue.updated && !modelValue.isNew}" :data-id="modelValue.id">
 
-            <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
-                {{ name }}
+        <swiper
+            :slides-per-view="'auto'"
+            :initial-slide="0"
+            @swiper="onSwiper"
+            @slideChange="onSlideChange"
+        >
+            <swiper-slide class="item--content">
+                <div class="item--handle" :style="`background-image: ${$store.getters['icons/Move']}`">
+                    <span class="handle--bg" :style="`background-image: url(${$store.getters['icons/Move']})`"></span>
+<!--                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">-->
+                </div>
 
-                <span v-if="date">
-                    {{date}}
-                    <img class="btn-icon" :src="require('/assets/icons/calendar.svg')" alt="datetime" :title="date">
-                </span>
+                <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
+                    {{ name }}
 
-                <span v-if="time">
-                    {{time}}
-                    <img class="btn-icon" :src="require('/assets/icons/clock.svg')" alt="datetime" :title="time">
-                </span>
-            </div>
+                    <span v-if="date">
+                        D:{{date}}
+                        <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
+                    </span>
 
-            <div class="item--labels" v-if="labels">
-                <div class="label" key="index" v-for="(label, index) in labels">
-                    {{label}}
-                    <span v-if="isActive" class="close-btn" @click="deleteLabel(index)">
-                        <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="delete" title="Delete label">
+                    <span v-if="time">
+                        T:{{time}}
+                        <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
                     </span>
                 </div>
-            </div>
 
-            <div class="item--buttons">
-                <span class="btn go-btn" @click="goto" v-if="$route && $route.params.parentId != modelValue.id">
-                    <img class="btn-icon" :src="require('/assets/icons/right_arrow.svg')" alt="go" title="Focus on task">
+                <div class="item--labels" v-if="labels">
+                    <div class="label" key="index" v-for="(label, index) in labels" :style="`border: 1px solid ${label.color.border}; background-color: ${label.color.background};`">
+                        <span class="label-name">{{label.name}}</span>
+                    </div>
+                </div>
+
+                <span class="btn" @click="toggleMore">
+                    <img class="btn--icon" v-if="!showMore" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
+                    <img class="btn--icon" v-else :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
                 </span>
-                <span class="btn add-btn" @click="createChild">
-                    <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="add" title="Add task">
+            </swiper-slide>
+
+            <swiper-slide class="item--buttons" style="width: auto;">
+                <span class="btn" @click="toggleFocus(modelValue.id)" v-if="!isActive">
+                    <img class="btn--icon" :src="$store.getters['icons/PenWhite']" alt="go" title="Focus on task">
+                    <span class="btn--title">Edit</span>
                 </span>
-                <span class="btn delete-btn" @click="deleteTask">
-                    <img class="btn-icon" :src="require('/assets/icons/trash.svg')" alt="delete" title="Delete">
+
+                <span class="btn" @click="goto" v-if="$route && $route.params.parentId != modelValue.id">
+                    <img class="btn--icon" :src="$store.getters['icons/RightArrow']" alt="go" title="Focus on task">
+                    <span class="btn--title">Focus</span>
                 </span>
-                <span class="btn" @click="reset">Reset</span>
-            </div>
-        </div>
+
+                <span class="btn" @click="createChild">
+                    <img class="btn--icon" :src="$store.getters['icons/Plus']" alt="add" title="Add child">
+                    <span class="btn--title">Add</span>
+                </span>
+
+                <span class="btn" @click="deleteTask">
+                    <img class="btn--icon" :src="$store.getters['icons/Trash']" alt="delete" title="Delete">
+                    <span class="btn--title">Delete</span>
+                </span>
+
+                <span class="btn" @click="reset" v-if="isChanged">
+                    <img class="btn--icon" :src="$store.getters['icons/Undo']" alt="reset" title="Undo made changes">
+                    <span class="btn--title">Reset</span>
+                </span>
+            </swiper-slide>
+        </swiper>
+
 
         <div class="item--edit" v-if="isActive">
-            <label class="edit--label">
+            <div>
                 <textarea class="edit--message" rows="5" v-model="message"></textarea>
-            </label>
 
-            <label class="edit--label">
-                Дата: <input type="date" v-model="date">
-                Время: <input type="time" v-model="time">
-            </label>
+                <label class="edit--label">
+                    {{date}}
+                    Дата: <input type="date" v-model="date">
+                    <br>
+                    Время: <input type="time" v-model="time">
+                </label>
 
-            <label class="edit--label">
-                Новый лейбл: <input type="text" v-model="labelInput">
-            </label>
+                <div class="item--labels" v-if="labels">
+                    <draggable
+                        class="labels-list"
+                        v-model="labels"
+                        item-key="id"
+                        tag="div"
+                        handle=".label"
+                    >
+                        <template #item="{element}">
+                            <div class="label" :data-id="element.name" :style="`border: 1px solid ${element.color.border}; background-color: ${element.color.background}; color: ${element.color.color};`">
+                                <span class="label-name">{{element.name}}</span>
+                                <span class="close-btn" @click="deleteLabel(index)">
+                                    <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="delete" title="Delete label">
+                                </span>
+                            </div>
+                        </template>
+                    </draggable>
 
-            <span class="close-btn" @click="toggleFocus(null)">
-                <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="close" title="Close edit window">
-            </span>
+                    <label>
+                        Новый лейбл:
+                        <input class="label-text-input" type="text" v-model="labelInput" :style="`border-color: ${labelColor.background}`">
+
+                        <div class="label-colors">
+                            <div v-for="colorObj in labelColors"
+                                 @click="labelColor = colorObj"
+                                 class="color"
+                                 :style="`background-color: ${colorObj.background}; color: ${colorObj.color}; border: 1px solid ${colorObj.border}; --label-color-shadow: ${colorObj.background};`"
+                            ></div>
+                        </div>
+
+                        <button @click="addLabel">Добавить</button>
+                    </label>
+                </div>
+            </div>
+            <div @click="toggleFocus(null)" style="display: flex; align-items: center;">
+                <span class="close-btn">
+                    <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="close" title="Close edit window">
+                </span>
+            </div>
         </div>
 
         <nested v-model="children"
@@ -68,10 +129,15 @@
 </template>
 
 <script>
+import draggable from "vuedraggable"
+import { Swiper, SwiperSlide } from 'swiper/vue'
+
     export default {
         name: "item",
         components: {
-            // https://vuejs.org/v2/guide/components-edge-cases.html#Circular-References-Between-Components
+            Swiper,
+            SwiperSlide,
+            draggable,
         },
         props: {
             modelValue: {
@@ -89,24 +155,37 @@
                 localData: {},
                 hover: false,
                 labelInput: '',
+                labelColor: '',
+                swiper: null,
+                showMore: false,
+                labelColors: [
+                    {background: 'red', color: 'black', border: 'red'},
+                    {background: 'orange', color: 'black', border: 'orange'},
+                    {background: 'yellow', color: 'black', border: 'orange'},
+                    {background: 'green', color: '#eee', border: 'green'},
+                    {background: 'blue', color: '#eee', border: 'blue'},
+                    {background: 'darkblue', color: '#eee', border: 'darkblue'},
+                    {background: 'violet', color: 'black', border: 'violet'},
+                ],
             };
         },
         watch: {
-            labelInput(value) {
-                if (value.split(' ').length > 1) {
-                    // Юзер поставил пробел и надо добавить новый лейбл
-                    this.$store.dispatch('todos/addLabel', {
-                        id: this.modelValue.id,
-                        label: value.split(' ')[0],
-                    })
-
-                    this.labelInput = ''
+            isMoreOpened(value) {
+                if (!value) {
+                    // Закрываем кнопки управления, т.к. они были открыты у другой задачи
+                    this.swiper.slidePrev()
                 }
-            }
+            },
         },
         computed: {
             isActive() {
                 return this.$store.state.todos.focusId === this.modelValue.id
+            },
+            isChanged() {
+                return this.modelValue.updated
+            },
+            isMoreOpened() {
+                return this.$store.state.todos.moreId === this.modelValue.id
             },
             children: {
                 get() {
@@ -123,12 +202,20 @@
                     // });
                 },
             },
-            labels() {
-                if (this.modelValue.updated && this.modelValue.updated.labels) {
-                    return this.modelValue.updated.labels
-                }
+            labels: {
+                get() {
+                    if (this.modelValue.updated && this.modelValue.updated.labels) {
+                        return this.modelValue.updated.labels
+                    }
 
-                return this.modelValue.labels || []
+                    return this.modelValue.labels || []
+                },
+                set(value) {
+                    this.$store.dispatch('todos/changeLabelsOrder', {
+                        id: this.modelValue.id,
+                        labels: value,
+                    })
+                },
             },
             message: {
                 get() {
@@ -148,7 +235,14 @@
                 },
             },
             name() {
-                return this.message.split("\n")[0]
+                let name = this.message.split("\n")[0]
+                let cutName = name.substr(0, 45)
+
+                if (cutName.length < name.length) {
+                    return cutName + '...'
+                } else {
+                    return cutName
+                }
             },
             date: {
                 get() {
@@ -233,6 +327,38 @@
                     parentId: this.modelValue.id,
                     message: '',
                 })
+            },
+            addLabel()
+            {
+                this.$store.dispatch('todos/addLabel', {
+                    id: this.modelValue.id,
+                    label: {
+                        name: this.labelInput,
+                        color: this.labelColor,
+                    },
+                })
+
+                this.labelInput = ''
+                this.labelColor = ''
+            },
+            onSwiper(swiper) {
+                this.swiper = swiper
+            },
+            toggleMore() {
+                if (!this.showMore) {
+                    this.swiper.slideNext()
+                } else {
+                    this.swiper.slidePrev()
+                }
+            },
+            // Событие от слайдера
+            onSlideChange(swiper) {
+                if (swiper.progress > 0) {
+                    this.$store.commit('todos/setMoreId', this.modelValue.id)
+                    this.showMore = true
+                } else {
+                    this.showMore = false
+                }
             },
         },
     };

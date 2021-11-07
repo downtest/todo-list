@@ -20,7 +20,7 @@
             </div>
 
             <span class="btn-icon" @click="showPasswords = !showPasswords">
-                <img class="icon" :src="showPasswords ? require('/assets/icons/eye_crossed.svg') : require('/assets/icons/eye_opened.svg')" alt="">
+                <img class="icon" :src="showPasswords ? require('/assets/icons/temp/eye_crossed.svg') : require('/assets/icons/temp/eye_opened.svg')" alt="">
             </span>
 
             <div :class="{input: true, 'error': validationErrors.email}">

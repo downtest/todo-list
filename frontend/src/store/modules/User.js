@@ -42,12 +42,13 @@ const user = {
                     })
             })
         },
-        login({commit}, payload) {
+        login({commit, dispatch}, payload) {
             return new Promise((resolve, reject) => {
                 this.axios.post('/api/user/login', payload)
                     .then(({data}) => {
                         commit('update', data.user)
 
+                        this.dispatch('todos/resetInitialized')
                         resolve(data.user)
                     })
                     .catch((response) => {
@@ -55,12 +56,13 @@ const user = {
                     })
             })
         },
-        logout({commit}) {
+        logout({commit, dispatch}) {
             return new Promise((resolve, reject) => {
                 this.axios.post('/api/user/logout')
                     .then(({data}) => {
                         commit('update', defaultUser)
 
+                        this.dispatch('todos/resetInitialized')
                         resolve(defaultUser)
                     })
                     .catch((response) => {

@@ -122,7 +122,7 @@ export default {
     },
     watch: {
         day() {
-            this.scrollToCurrent()
+            this.reloadTasks()
         },
     },
     methods: {
@@ -189,12 +189,15 @@ export default {
                 message: '',
             })
         },
+        reloadTasks() {
+            this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+                .then(() => {
+                    this.scrollToCurrent(true)
+                })
+        },
     },
-    mounted() {
-        this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
-            .then(() => {
-                this.scrollToCurrent(true)
-            })
+    activated() {
+        this.reloadTasks()
     },
 }
 </script>

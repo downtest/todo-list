@@ -37,9 +37,9 @@
                 :parentId="parentId"
             />
 
-            <span class="btn add-btn" @click="createChild">
-                <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="add" title="Add task">
-            </span>
+            <div class="btn__add" @click="createChild">
+                <img class="btn--icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
+            </div>
 
             <div class="logs">
                 <div :key="index" v-for="(log, index) in $store.state.todos.logs">{{log}}</div>
@@ -49,11 +49,16 @@
 </template>
 
 <script>
-    import nested from "./List/Nested";
-    import tasksBreadcrumb from "./List/Breadcrumb";
-    import contenteditable from "./Contenteditable";
-    import draggable from "vuedraggable"
-    import search from "./List/Search"
+// Import Swiper Vue.js components
+import { Swiper, SwiperSlide } from 'swiper/vue';
+// Import Swiper styles
+import 'swiper/css';
+
+import nested from "./List/Nested";
+import tasksBreadcrumb from "./List/Breadcrumb";
+import contenteditable from "./Contenteditable";
+import draggable from "vuedraggable"
+import search from "./List/Search"
 
     export default {
         components: {
@@ -62,6 +67,8 @@
             contenteditable,
             draggable,
             search,
+            Swiper,
+            SwiperSlide,
         },
         props: {
             title: {
@@ -178,22 +185,58 @@
                 }
             },
             setTimeHandler(value) {
-                console.log(value, `changing parentDatetime`)
                 this.parentDatetime = value
             },
         },
-        created() {
+        activated() {
             this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+        },
+        // Swiper setup
+        setup() {
+            const onSlideChangeTransitionStart = (swiper) => {
+                console.log(`trans start`)
+            }
+            const onSlideChangeTransitionEnd = (swiper) => {
+                console.log(`trans end`)
+            }
+            return {
+                onSlideChangeTransitionStart,
+                onSlideChangeTransitionEnd,
+            };
         },
     }
 </script>
 
 <style lang="scss">
+@import "../scss/variables";
+
 .parent {
 
     &--input {
         width: 100%;
         margin-bottom: 10px;
     }
+}
+
+.btn--icon {
+    max-width: 25px;
+    max-height: 25px;
+    margin: auto;
+}
+
+.btn__add {
+    background-color: $colorMain;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    display: flex;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-bottom: 50px;
+    bottom: 0;
+    position: fixed;
+    left: 50%;
+    margin-left: -20px;
+    z-index: 6;
 }
 </style>

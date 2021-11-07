@@ -1,7 +1,8 @@
 <template>
-<div>
+<div class="component">
+    <img class="icon__search" :src="$store.getters['icons/Search']" alt="Search">
     <input class="search-input" v-model="phrase" type="text">
-    <span @click="erase">-</span>
+    <img @click="erase" class="icon__erase" :src="$store.getters['icons/Plus']" alt="Clear">
 
     <div class="search-items" v-show="showSearchResults">
         <div class="search-items__item" v-for="task in foundTasks" :key="task.id">
@@ -62,7 +63,25 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.component {
+    display: flex;
+    justify-content: center;
+}
+
+.icon__erase, .icon__search {
+    max-width: 25px;
+    max-height: 25px;
+}
+
+.icon__erase {
+    transform: rotate(45deg);
+}
+
+.search-input {
+    margin: 0 10px;
+}
+
 .search-items {
     width: 60%;
     left: 20%;

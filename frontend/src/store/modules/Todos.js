@@ -5,11 +5,18 @@ const LS_TODOS_UNCONFIRMED_ITEMS = 'ls_todos_unconfirmed_items'
 const todos = {
     namespaced: true,
     state: {
+        initialized: false,
         items: [],
+        // Задача, открытая на отдельной странице
         focusId: null,
+        // У какой задачи показывать кнопки управления
+        moreId: null,
         logs: ['Init'],
     },
     getters: {
+        initialized(state){
+            return state.initialized
+        },
         all(state){
             return state.items
         },
@@ -84,6 +91,9 @@ const todos = {
         log(state, message) {
             state.log.append(message)
         },
+        setInitialized(state, initialized) {
+            state.initialized = initialized
+        },
         setItems (state, items) {
             state.items = items
         },
@@ -132,11 +142,20 @@ const todos = {
         },
         setFocusId (state, id) {
             state.focusId = id
-            console.log(state.focusId, `current focus Id from ${id}`)
+        },
+        // Кнопки управления
+        setMoreId (state, id) {
+            state.moreId = id
         },
     },
     actions: {
-        async load ({state, commit, dispatch}) {
+        async load ({state, commit, dispatch, getters}) {
+            if (getters.initialized) {
+                return new Promise((resolve, reject) => {
+                    resolve(getters.all)
+                })
+            }
+
             commit('setItems', [])
 
             return new Promise((resolve, reject) => {
@@ -146,15 +165,18 @@ const todos = {
                     .then(({data}) => {
                         commit('setItems', data)
 
-                        return resolve(data)
+                        resolve(data)
                     })
                     .catch((response) => {
                         console.error(response, `error on Tasks Load`)
+                        resolve([])
                     })
                     .finally(() => {
+                        commit('setInitialized', true)
+
                         if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
                             for (let task of JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS))) {
-                                if (task.isNew) {
+                                if (task.isNew && !getters.getById(task.id)) {
                                     dispatch('createItem', task)
                                 } else {
                                     dispatch('updateItem', {
@@ -195,6 +217,11 @@ const todos = {
             commit('setFocusId', tempId)
 
             return payload
+        },
+        resetInitialized({commit}) {
+            console.log(`todos init is reseted`)
+
+            return commit('setInitialized', false)
         },
         /**
          * Action updateChildren
@@ -301,6 +328,19 @@ const todos = {
             commit('updateItem', {
                 id: id,
                 payload: {labels: [...labels, label]},
+            })
+
+            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+        },
+        /**
+         * Action сортировки лейблов (перетащили лейбл)
+         */
+        changeLabelsOrder ({state, commit, getters}, {id, labels}) {
+            let task = getters.getById(id)
+
+            commit('updateItem', {
+                id: id,
+                payload: {labels: labels},
             })
 
             window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))

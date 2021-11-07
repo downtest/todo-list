@@ -9,21 +9,22 @@
     "watch": "vue-cli-service build --watch --mode development"
   },
   "dependencies": {
-    "axios": "^0.21.1",
-    "core-js": "^3.16.0",
+    "axios": "^0.21.4",
+    "core-js": "^3.18.2",
     "moment": "^2.29.1",
-    "vue": "^3.0.11",
-    "vue-axios": "^3.2.4",
+    "swiper": "^7.0.8",
+    "vue": "^3.2.19",
+    "vue-axios": "^3.3.7",
     "vue-moment-lib": "^1.2.2",
-    "vue-router": "^4.0.6",
-    "vuedraggable": "^4.0.1",
+    "vue-router": "^4.0.11",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "@vue/cli": "^4.5.13",
-    "@vue/cli-service": ">4.4.4",
-    "@vue/compiler-sfc": "^3.0.11",
-    "sass": "^1.37.5",
+    "@vue/cli": "^5.0.0-beta.4",
+    "@vue/cli-service": ">5.0.0-beta.4",
+    "@vue/compiler-sfc": "^3.2.19",
+    "sass": "^1.42.1",
     "sass-loader": "^10"
   },
   "eslintConfig": {

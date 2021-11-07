@@ -3,7 +3,7 @@
     <tr><td colspan="7" class="calendar--title">{{monthsTitleEng[month]}} {{year}}</td></tr>
 
     <tr class="calendar--annotation">
-        <td v-for="day in daysOfWeek">{{day}}</td>
+        <td class="annotation--day" v-for="day in daysOfWeek">{{day}}</td>
     </tr>
 
     <tr :key="index" v-for="(week, index) in calendarDays">
@@ -72,14 +72,23 @@ export default {
                 'November',
                 'December',
             ],
+            // daysTitleEng: [
+            //     'Sunday',
+            //     'Monday',
+            //     'Tuesday',
+            //     'Wednesday',
+            //     'Thursday',
+            //     'Friday',
+            //     'Saturday',
+            // ],
             daysTitleEng: [
-                'Sunday',
-                'Monday',
-                'Tuesday',
-                'Wednesday',
-                'Thursday',
-                'Friday',
-                'Saturday',
+                'Sun',
+                'Mon',
+                'Tue',
+                'Wed',
+                'Thur',
+                'Fr',
+                'Sat',
             ],
             // startPeriod: this.$moment([this.year, this.month]),
             // startPeriod: this.$moment([this.year, this.month]),
@@ -152,6 +161,10 @@ export default {
     }
     .calendar--annotation {
         font-size: .8em;
+
+        .annotation--day {
+            width: 10px;
+        }
     }
 
     tbody {

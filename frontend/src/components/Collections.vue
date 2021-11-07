@@ -31,7 +31,7 @@
         },
         methods: {
         },
-        created() {
+        mounted() {
             this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
         },
     }

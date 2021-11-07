@@ -7,7 +7,7 @@
                 {{ name }}
 
                 <span v-if="modelValue.datetime">
-                    <img class="btn-icon" :src="require('/assets/icons/calendar.svg')" alt="datetime" :title="modelValue.datetime">
+                    <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="modelValue.datetime">
                 </span>
             </div>
 
@@ -19,10 +19,10 @@
 
             <div class="item--buttons">
                 <span class="btn add-btn" @click="createChild">
-                    <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="add" title="Add task">
+                    <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="add" title="Add task">
                 </span>
                 <span class="btn delete-btn" @click="deleteTask">
-                    <img class="btn-icon" :src="require('/assets/icons/trash.svg')" alt="delete" title="Delete">
+                    <img class="btn-icon" :src="$store.getters['icons/Trash']" alt="delete" title="Delete">
                 </span>
             </div>
         </div>
@@ -41,7 +41,7 @@
             </label>
 
             <span class="close-btn" @click="toggleFocus(null)">
-                <img class="btn-icon" :src="require('/assets/icons/plus.svg')" alt="close" title="Close edit window">
+                <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="close" title="Close edit window">
             </span>
         </div>
 
@@ -82,7 +82,10 @@ export default {
                 // Юзер поставил пробел и надо добавить новый лейбл
                 this.$store.dispatch('todos/addLabel', {
                     id: this.modelValue.id,
-                    label: value.split(' ')[0],
+                    label: {
+                        name: value.split(' ')[0],
+                        color: this.labelColor,
+                    },
                 })
 
                 this.labelInput = ''

@@ -3,19 +3,22 @@
         <h1>{{monthsTitleEng[today.month()]}} {{today.year()}}</h1>
         <button @click="scrollToCurrent()">scrollToCurrent</button>
 
-        <div id="calendar" style="height: 300px; overflow: scroll; position: relative;" @scroll="handleWheel">
-            <div style="background-color: #e9e9e9; position: absolute;">
-                <table class="calendar">
-                    <tr id="calendar--start"><td colspan="9999"></td></tr>
+        <div class="calendar-wrapper" @scroll="handleWheel">
+            <div id="calendar">
+                <div style="background-color: #e9e9e9; position: absolute; width: 100%;">
+                    <table class="calendar">
+                        <tr id="calendar--start"><td colspan="9999"></td></tr>
 
-                    <month :month="month.month" :year="month.year" :key="index" v-for="(month, index) in prevCalendarDays"></month>
-                    <month id="currentMonth" :month="calendarDays.month" :year="calendarDays.year"></month>
-                    <month :month="month.month" :year="month.year" :key="index" v-for="(month, index) in nextCalendarDays"></month>
+                        <month :month="month.month" :year="month.year" :key="index" v-for="(month, index) in prevCalendarDays"></month>
+                        <month id="currentMonth" :month="calendarDays.month" :year="calendarDays.year"></month>
+                        <month :month="month.month" :year="month.year" :key="index" v-for="(month, index) in nextCalendarDays"></month>
 
-                    <tr id="calendar--end"><td colspan="9999"></td></tr>
-                </table>
+                        <tr id="calendar--end"><td colspan="9999"></td></tr>
+                    </table>
+                </div>
             </div>
         </div>
+
 
     </div>
 </template>
@@ -67,6 +70,11 @@ import moment from "moment"
                     'Saturday',
                 ],
                 scrollingEvent: null, // Указатель на setTimeout
+                debugData: {
+                    monthHeight: null,
+                    fromTopEdge: null,
+                    fromBottomEdge: null,
+                },
             }
         },
         computed: {
@@ -124,7 +132,9 @@ import moment from "moment"
                     return
                 }
 
+                let calendarWrapper = document.querySelector('.calendar-wrapper')
                 let calendarBlock = document.getElementById('calendar')
+                let calendarSheet = document.querySelector('table.calendar')
                 let calendarOffsetTop = calendarBlock.getBoundingClientRect().top
                 let calendarOffsetBottom = calendarBlock.getBoundingClientRect().bottom
                 let calendarStartBlock = document.getElementById('calendar--start')
@@ -133,49 +143,56 @@ import moment from "moment"
                 let todayBlock = document.getElementById('currentMonth')
                 let monthHeight = todayBlock.clientHeight // Высота одного месяца
 
-                let fromTopEdge = (calendarStartBlock.getBoundingClientRect().bottom - calendarOffsetTop) * -1
-                let fromBottomEdge = calendarEndBlock.getBoundingClientRect().top - calendarOffsetBottom
+                // let fromTopEdge = (calendarStartBlock.getBoundingClientRect().bottom - calendarOffsetTop) * -1
+                let fromTopEdge = (calendarOffsetTop) * -1
+                // let fromBottomEdge = calendarEndBlock.getBoundingClientRect().top - calendarOffsetBottom
+                let fromBottomEdge = calendarEndBlock.getBoundingClientRect().top - calendarBlock.clientHeight
                 let startOffsetTop = todayBlock.offsetTop - calendarBlock.offsetTop
+                let minDistance = monthHeight * 3
 
-                console.log(`before ${fromTopEdge}`)
+                this.debugData.calendarSheet = Math.floor(calendarSheet.clientHeight)
+                this.debugData.monthHeight = Math.floor(monthHeight)
+                this.debugData.fromTopEdge = Math.floor(fromTopEdge)
+                this.debugData.fromBottomEdge = Math.floor(fromBottomEdge)
 
-                if (fromTopEdge < 500) {
+                if (calendarSheet.clientHeight > 1000 && fromTopEdge < minDistance) {
                     // При добавлении пунктов в начало скролинг от верха не меняется, поэтому его надо увеличивать на высоту добавленных элементов
                     this.subMonths += 12
 
                     this.scrollingEvent = setTimeout(() => {
-                        console.log(`after ${fromTopEdge}`)
+                        let top = fromTopEdge + (14 * monthHeight)
 
-                        let top = fromTopEdge + (12 * 150)
-
-                        calendarBlock.scrollTo({
+                        calendarWrapper.scrollTo({
                             // Текущий скролинг + добавленные месяцы
                             top: top,
                             behavior: 'auto'
                         })
 
                         this.scrollingEvent = false
-                    }, 100)
+                    }, 0)
                 }
 
-                if (fromBottomEdge < 500) {
+                if (fromBottomEdge < minDistance) {
                     this.addedMonths += 12
                 }
             },
             scrollToCurrent(fast) {
-                let calendarBlock = document.getElementById('calendar')
+                // let calendarWrapper = document.querySelector('.calendar-wrapper')
+                // let calendarBlock = document.getElementById('calendar')
                 let todayBlock = document.getElementById('currentMonth')
                 let monthHeight = todayBlock.clientHeight // Высота одного месяца
-                let scroll = todayBlock.offsetTop - calendarBlock.offsetTop + monthHeight - 20
+                let monthsOnScreen = window.innerHeight / monthHeight // Кол-во влезающих в экран месяцев
+                let scroll = todayBlock.offsetTop - ((monthsOnScreen - 1) * monthHeight / 5)
 
-                document.getElementById('calendar').scrollTo({
+                document.querySelector('.calendar-wrapper').scrollTo({
+                // document.getElementById('calendar').scrollTo({
                     top: scroll,
                     left: 0,
                     behavior: fast ? 'auto' : 'smooth'
                 })
             },
         },
-        mounted() {
+        activated() {
             this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
                 .then(() => {
                     this.scrollToCurrent(true)
@@ -184,6 +201,20 @@ import moment from "moment"
     }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.calendar-wrapper {
+    position: relative;
+    overflow: scroll;
+    height: 100%;
 
+    #calendar {
+        height: 1000px;
+        position: relative;
+        width: 100%;
+
+        .calendar {
+            width: 100%;
+        }
+    }
+}
 </style>

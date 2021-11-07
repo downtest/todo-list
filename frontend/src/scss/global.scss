@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+input, textarea {
+  &:focus, &:focus-visible, &:focus-within, &:hover, &:target {
+    outline-width: 0;
+  }
+}
