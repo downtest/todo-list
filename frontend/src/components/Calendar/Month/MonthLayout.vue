@@ -5,7 +5,7 @@
 
         <div class="calendar-wrapper" @scroll="handleWheel">
             <div id="calendar">
-                <div style="background-color: #e9e9e9; position: absolute; width: 100%;">
+                <div style="position: absolute; width: 100%;">
                     <table class="calendar">
                         <tr id="calendar--start"><td colspan="9999"></td></tr>
 

@@ -73,7 +73,6 @@
                 <textarea class="edit--message" rows="5" v-model="message"></textarea>
 
                 <label class="edit--label">
-                    {{date}}
                     Дата: <input type="date" v-model="date">
                     <br>
                     Время: <input type="time" v-model="time">

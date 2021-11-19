@@ -12,6 +12,7 @@
         <td :key="index" v-for="(day, index) in week">
             <div v-if="day" :class="{
                     day: true,
+                    today: day.date() === today.date() && day.month() === today.month() && day.year() === today.year(),
                     current_month: day.month() === today.month() && day.year() === today.year(),
                     focus_month: focus && day.month() === focus.month() && day.year() === focus.year(),
                     weekend: [6, 0].includes(day.day()),
@@ -20,7 +21,7 @@
                  :title="`${day}`"
                  @click="$router.push({name: 'calendarDay', params: {day: day.format('YYYY-MM-DD')}})"
             >
-                {{day.date()}}
+                <span class="day--date">{{day.date()}}</span>
 
                 <label class="tasksAmount" v-if="groupedByDatesTasks[`${day.year()}.${day.month()}.${day.date()}`]">
                     {{groupedByDatesTasks[`${day.year()}.${day.month()}.${day.date()}`].length}}
@@ -171,6 +172,16 @@ export default {
         .day {
             color: #bcbcbc;
             cursor: pointer;
+            padding: 2px;
+            border-radius: 2px;
+
+            &.today {
+                background-color: #cd2533;
+
+                .day--date {
+                    color: #ffffff;
+                }
+            }
 
             &.current_month {
                 color: #676767;
@@ -189,6 +200,7 @@ export default {
 
                 .tasksAmount {
                     position: absolute;
+                    z-index: 10;
                     width: 13px;
                     height: 13px;
                     line-height: 13px;
@@ -202,6 +214,10 @@ export default {
             &:hover {
                 background-color: #2c3e50;
                 color: #dddddd;
+            }
+
+            .day--date {
+                background-color: inherit;
             }
         }
     }

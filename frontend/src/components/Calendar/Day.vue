@@ -27,7 +27,7 @@
                         'weekend': [6, 0].includes(neighborDay.day()),
                      }"
                 >
-                    {{neighborDay.date()}}
+                    {{neighborDay.date()}}, {{shortDaysTitleEng[neighborDay.day()]}}
                 </div>
                 <div class="day__month">{{monthsTitleEng[neighborDay.month()]}}</div>
 
@@ -87,6 +87,15 @@ export default {
                 'Thursday',
                 'Friday',
                 'Saturday',
+            ],
+            shortDaysTitleEng: [
+                'Sun',
+                'Mon',
+                'Tue',
+                'Wed',
+                'Thur',
+                'Fr',
+                'Sat',
             ],
             subDays: 30,
             addDays: 30,
@@ -230,12 +239,12 @@ export default {
             }
 
             &.weekend {
-                background-color: red;
+                color: #ef1111;
             }
 
             &.current-day {
                 cursor: inherit;
-                border-color: inherit;
+                border: 3px solid #cd2533;
             }
 
             &__tasksLabel {
