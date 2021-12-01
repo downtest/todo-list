@@ -159,9 +159,9 @@ import search from "./List/Search"
             elements: {
                 get() {
                     if (this.parentId) {
-                        return this.$store.getters['todos/children'](this.parentId);
+                        return this.$store.getters['todos/children'](this.parentId).sort((a, b) => a.index - b.index)
                     } else {
-                        return this.$store.getters['todos/firstLevel'];
+                        return this.$store.getters['todos/firstLevel'].sort((a, b) => a.index - b.index)
                     }
                 },
                 set(payload) {
