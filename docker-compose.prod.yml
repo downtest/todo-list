@@ -14,7 +14,8 @@ services:
     volumes:
       - certificates:/etc/letsencrypt
       - ./frontend/public:/www
-    entrypoint: sh -c 'certbot certonly --authenticator webroot -d listodo.ru --webroot-path /www --email ramirez2006@mail.ru --agree-tos --dry-run'
+    entrypoint: sh -c 'certbot certonly --authenticator webroot -d listodo.ru -d app.listodo.ru --webroot-path /www --email ramirez2006@mail.ru --agree-tos --dry-run'
+    # --dry-run for simulating
 
 volumes:
   certificates:
