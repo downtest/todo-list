@@ -13,18 +13,22 @@
 <!--                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">-->
                 </div>
 
-                <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
-                    {{ name }}
+                <div class="item--name" :title="modelValue.message">
+                    <router-link :to="{name: 'task-item', params: {itemId: modelValue.id}}">
+                        {{ name }}
 
-                    <span v-if="date">
-                        D:{{date}}
-                        <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
-                    </span>
+                        <div class="item--time-block">
+                            <span v-if="date" class="time-block--date">
+                                <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
+                                {{date}}
+                            </span>
 
-                    <span v-if="time">
-                        T:{{time}}
-                        <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
-                    </span>
+                            <span v-if="time" class="time-block--time">
+                                <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
+                                {{time}}
+                            </span>
+                        </div>
+                    </router-link>
                 </div>
 
                 <div class="item--labels" v-if="labels">
@@ -40,16 +44,6 @@
             </swiper-slide>
 
             <swiper-slide class="item--buttons" style="width: auto;">
-                <span class="btn" @click="toggleFocus(modelValue.id)" v-if="!isActive">
-                    <img class="btn--icon" :src="$store.getters['icons/PenWhite']" alt="go" title="Focus on task">
-                    <span class="btn--title">Edit</span>
-                </span>
-
-                <span class="btn" @click="goto" v-if="$route && $route.params.parentId != modelValue.id">
-                    <img class="btn--icon" :src="$store.getters['icons/RightArrow']" alt="go" title="Focus on task">
-                    <span class="btn--title">Focus</span>
-                </span>
-
                 <span class="btn" @click="createChild">
                     <img class="btn--icon" :src="$store.getters['icons/Plus']" alt="add" title="Add child">
                     <span class="btn--title">Add</span>
@@ -69,50 +63,9 @@
 
 
         <div class="item--edit" v-if="isActive">
-            <div>
-                <textarea class="edit--message" rows="5" v-model="message"></textarea>
+            <labels :task="modelValue"></labels>
 
-                <label class="edit--label">
-                    Дата: <input type="date" v-model="date">
-                    <br>
-                    Время: <input type="time" v-model="time">
-                </label>
-
-                <div class="item--labels" v-if="labels">
-                    <draggable
-                        class="labels-list"
-                        v-model="labels"
-                        item-key="id"
-                        tag="div"
-                        handle=".label"
-                    >
-                        <template #item="{element}">
-                            <div class="label" :data-id="element.name" :style="`border: 1px solid ${element.color.border}; background-color: ${element.color.background}; color: ${element.color.color};`">
-                                <span class="label-name">{{element.name}}</span>
-                                <span class="close-btn" @click="deleteLabel(index)">
-                                    <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="delete" title="Delete label">
-                                </span>
-                            </div>
-                        </template>
-                    </draggable>
-
-                    <label>
-                        Новый лейбл:
-                        <input class="label-text-input" type="text" v-model="labelInput" :style="`border-color: ${labelColor.background}`">
-
-                        <div class="label-colors">
-                            <div v-for="colorObj in labelColors"
-                                 @click="labelColor = colorObj"
-                                 class="color"
-                                 :style="`background-color: ${colorObj.background}; color: ${colorObj.color}; border: 1px solid ${colorObj.border}; --label-color-shadow: ${colorObj.background};`"
-                            ></div>
-                        </div>
-
-                        <button @click="addLabel">Добавить</button>
-                    </label>
-                </div>
-            </div>
-            <div @click="toggleFocus(null)" style="display: flex; align-items: center;">
+            <div style="display: flex; align-items: center;">
                 <span class="close-btn">
                     <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="close" title="Close edit window">
                 </span>
@@ -130,6 +83,7 @@
 <script>
 import draggable from "vuedraggable"
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import Labels from "../Item/Labels"
 
     export default {
         name: "item",
@@ -137,6 +91,7 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
             Swiper,
             SwiperSlide,
             draggable,
+            Labels,
         },
         props: {
             modelValue: {
@@ -153,19 +108,8 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
             return {
                 localData: {},
                 hover: false,
-                labelInput: '',
-                labelColor: '',
                 swiper: null,
                 showMore: false,
-                labelColors: [
-                    {background: 'red', color: 'black', border: 'red'},
-                    {background: 'orange', color: 'black', border: 'orange'},
-                    {background: 'yellow', color: 'black', border: 'orange'},
-                    {background: 'green', color: '#eee', border: 'green'},
-                    {background: 'blue', color: '#eee', border: 'blue'},
-                    {background: 'darkblue', color: '#eee', border: 'darkblue'},
-                    {background: 'violet', color: 'black', border: 'violet'},
-                ],
             };
         },
         watch: {
@@ -199,21 +143,6 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
                     //     parentId: this.modelValue.id,
                     //     children: payload
                     // });
-                },
-            },
-            labels: {
-                get() {
-                    if (this.modelValue.updated && this.modelValue.updated.labels) {
-                        return this.modelValue.updated.labels
-                    }
-
-                    return this.modelValue.labels || []
-                },
-                set(value) {
-                    this.$store.dispatch('todos/changeLabelsOrder', {
-                        id: this.modelValue.id,
-                        labels: value,
-                    })
                 },
             },
             message: {
@@ -298,9 +227,9 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
                 // console.log(value, `emitter in ${this.modelValue.id}`)
                 this.$emit("input", value);
             },
-            toggleFocus (value) {
-                this.$store.commit('todos/setFocusId', value)
-            },
+            // toggleFocus (value) {
+            //     this.$store.commit('todos/setFocusId', value)
+            // },
             reset () {
                 this.$store.dispatch('todos/resetChanges', this.modelValue.id)
             },
@@ -315,30 +244,11 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
                 // Удаление пункта из родительского списка дочерей
                 this.$store.dispatch('todos/deleteItem', this.modelValue.id)
             },
-            deleteLabel(index) {
-                this.$store.dispatch('todos/deleteLabel', {
-                    id: this.modelValue.id,
-                    index: index,
-                })
-            },
             createChild() {
                 this.$store.dispatch('todos/createItem', {
                     parentId: this.modelValue.id,
                     message: '',
                 })
-            },
-            addLabel()
-            {
-                this.$store.dispatch('todos/addLabel', {
-                    id: this.modelValue.id,
-                    label: {
-                        name: this.labelInput,
-                        color: this.labelColor,
-                    },
-                })
-
-                this.labelInput = ''
-                this.labelColor = ''
             },
             onSwiper(swiper) {
                 this.swiper = swiper

@@ -251,12 +251,16 @@ const todos = {
                 return
             }
 
-            commit('updateItem', {
-                id: id,
-                payload: payload,
-            })
+            return new Promise((resolve, reject) => {
+                commit('updateItem', {
+                    id: id,
+                    payload: payload,
+                })
 
-            window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+                window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+
+                resolve()
+            })
         },
         /**
          * Action dragItem

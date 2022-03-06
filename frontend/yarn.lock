@@ -1112,6 +1112,20 @@
   resolved "https://registry.yarnpkg.com/@soda/get-current-script/-/get-current-script-1.0.2.tgz#a53515db25d8038374381b73af20bb4f2e508d87"
   integrity sha512-T7VNNlYVM1SgQ+VsMYhnDkcGmWhQdL0bDyGm5TlQ3GBXnJscEClUUOKduWTmm2zCnvNLC1hc3JpuXjs/nFOc5w==
 
+"@todo-markdown/parser@file:todo-markdown/parser":
+  version "0.1.0"
+  dependencies:
+    axios "^0.21.4"
+    core-js "^3.18.2"
+    moment "^2.29.1"
+    swiper "^7.0.8"
+    vue "^3.2.19"
+    vue-axios "^3.3.7"
+    vue-moment-lib "^1.2.2"
+    vue-router "^4.0.11"
+    vuedraggable "^4.1.0"
+    vuex "^4.0.0"
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"

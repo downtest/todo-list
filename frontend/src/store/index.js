@@ -2,7 +2,11 @@ import { createStore } from 'vuex'
 import counter from './modules/Counter'
 import user from './modules/User'
 import todos from './modules/Todos'
+
 import icons from './modules/Icons'
+
+import range from './tools/range'
+
 import axios from "axios";
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -13,6 +17,7 @@ const store = createStore({
         user,
         todos,
         icons,
+        range,
     },
     strict: debug,
     plugins: [],

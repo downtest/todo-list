@@ -1,5 +1,5 @@
 {
-  "name": "vue-spa-template",
+  "name": "@todo-markdown/parser",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,6 @@
     "watch": "vue-cli-service build --watch --mode development"
   },
   "dependencies": {
-    "@todo-markdown/parser": "file:todo-markdown/parser",
     "axios": "^0.21.4",
     "core-js": "^3.18.2",
     "moment": "^2.29.1",
@@ -45,5 +44,9 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "description": "Component to parse todo markdown",
+  "main": "babel.config.js",
+  "author": "",
+  "license": "ISC"
 }

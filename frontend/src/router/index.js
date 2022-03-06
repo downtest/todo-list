@@ -4,6 +4,7 @@ import User from "../components/User/User";
 import MonthLayout from "../components/Calendar/Month/MonthLayout";
 import Day from "../components/Calendar/Day"
 import List from "../components/List";
+import Task from "../components/Item/Task";
 import Registration from "../components/User/Registration";
 import PasswordForget from "../components/User/PasswordForget";
 import PasswordReset from "../components/User/PasswordReset";
@@ -21,6 +22,7 @@ const routes = [
     {path: '/calendar/day/:day', name: 'calendarDay', component: Day, meta: {title: 'Day'}, props: (route) => ({ day: /^\d{4}\-\d{2}\-\d{2}$/.test(route.params.day) ? route.params.day : undefined }) },
     {path: '/collections', name: 'collections', component: Collections, meta: {title: 'Collections'} },
     {path: '/list/:parentId?', name: 'task-list', component: List, meta: {title: 'List'}, props: true },
+    {path: '/item/:itemId?', name: 'task-item', component: Task, meta: {title: 'Task'}, props: true },
 ]
 
 const router = createRouter({
