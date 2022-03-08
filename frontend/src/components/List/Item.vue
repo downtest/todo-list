@@ -5,7 +5,7 @@
             :slides-per-view="'auto'"
             :initial-slide="0"
             @swiper="onSwiper"
-            @slideChange="onSlideChange"
+            @snapIndexChange="onSlideChange"
         >
             <swiper-slide class="item--content">
                 <div class="item--handle" :style="`background-image: ${$store.getters['icons/Move']}`">
@@ -41,7 +41,7 @@
                 </span>
             </swiper-slide>
 
-            <swiper-slide class="item--buttons" style="width: auto;">
+            <swiper-slide class="item--buttons">
                 <span class="btn" @click="createChild">
                     <img class="btn--icon" :src="$store.getters['icons/Plus']" alt="add" title="Add child">
                     <span class="btn--title">Add</span>
