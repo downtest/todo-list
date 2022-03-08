@@ -13,22 +13,20 @@
 <!--                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">-->
                 </div>
 
-                <div class="item--name" :title="modelValue.message">
-                    <router-link :to="{name: 'task-item', params: {itemId: modelValue.id}}">
-                        {{ name }}
+                <div class="item--name" :title="modelValue.message" @click="$router.push({name: 'task-item', params: {itemId: modelValue.id}})">
+                    {{ name }}
 
-                        <div class="item--time-block">
-                            <span v-if="date" class="time-block--date">
-                                <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
-                                {{date}}
-                            </span>
+                    <div class="item--time-block">
+                        <span v-if="date" class="time-block--date">
+                            <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
+                            {{date.format('DD.MM.YYYY')}}
+                        </span>
 
-                            <span v-if="time" class="time-block--time">
-                                <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
-                                {{time}}
-                            </span>
-                        </div>
-                    </router-link>
+                        <span v-if="time" class="time-block--time">
+                            <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
+                            {{time}}
+                        </span>
+                    </div>
                 </div>
 
                 <div class="item--labels" v-if="labels">
@@ -130,6 +128,13 @@ import Labels from "../Item/Labels"
             isMoreOpened() {
                 return this.$store.state.todos.moreId === this.modelValue.id
             },
+            labels() {
+                if (this.modelValue.updated && this.modelValue.updated.labels) {
+                    return this.modelValue.updated.labels
+                }
+
+                return this.modelValue.labels || []
+            },
             children: {
                 get() {
                     return this.$store.getters['todos/children'](this.modelValue.id).sort((a, b) => a.index - b.index)
@@ -172,22 +177,14 @@ import Labels from "../Item/Labels"
                     return cutName
                 }
             },
-            date: {
-                get() {
-                    if (this.modelValue.updated && this.modelValue.updated.date) {
-                        return this.modelValue.updated.date
-                    }
+            date() {
+                if (this.modelValue.updated && this.modelValue.updated.date) {
+                    return this.$moment(this.modelValue.updated.date, 'YYYY-MM-DD')
+                } else if (this.modelValue.date) {
+                    return this.$moment(this.modelValue.date, 'YYYY-MM-DD')
+                }
 
-                    return this.modelValue.date
-                },
-                set(date) {
-                    this.$store.dispatch('todos/updateItem', {
-                        id: this.modelValue.id,
-                        payload: {
-                            date: date,
-                        },
-                    })
-                },
+                return null
             },
             time: {
                 get() {

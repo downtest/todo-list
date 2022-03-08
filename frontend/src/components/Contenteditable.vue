@@ -37,7 +37,13 @@ export default {
     },
     computed: {
         content() {
-            return this.parser ? this.parser.toHtml() : ''
+            if (this.task && this.task.message) {
+                this.parser = new Parser(this.task.message)
+
+                return this.parser.toHtml()
+            }
+
+            return ''
         },
     },
     methods: {
@@ -58,15 +64,15 @@ export default {
         },
         updateText(string) {
             // TODO: сохранять фокус
-            let range=window.getSelection().getRangeAt(0);
-            let sC=range.startContainer,eC=range.endContainer;
+            // let range=window.getSelection().getRangeAt(0);
+            // let sC=range.startContainer,eC=range.endContainer;
             let bE = document.getElementById('contenteditable-message')
-            function getNodeIndex(n){let i=0;while(n=n.previousSibling)i++;return i}
-
-            let A=[];while(sC!==bE){A.push(getNodeIndex(sC));sC=sC.parentNode}
-            let B=[];while(eC!==bE){B.push(getNodeIndex(eC));eC=eC.parentNode}
-
-            let rp = {"sC":A,"sO":range.startOffset,"eC":B,"eO":range.endOffset}
+            // function getNodeIndex(n){let i=0;while(n=n.previousSibling)i++;return i}
+            //
+            // let A=[];while(sC!==bE){A.push(getNodeIndex(sC));sC=sC.parentNode}
+            // let B=[];while(eC!==bE){B.push(getNodeIndex(eC));eC=eC.parentNode}
+            //
+            // let rp = {"sC":A,"sO":range.startOffset,"eC":B,"eO":range.endOffset}
 
             this.$store.dispatch('todos/updateItem', {
               id: this.task.id,
@@ -76,17 +82,17 @@ export default {
             }).then(() => {
               // TODO: восстанавливать сохранённый фокус
               bE.focus();
-              let sel=window.getSelection()
-              let range=sel.getRangeAt(0)
-              let x,C,sC=bE,eC=bE;
-
-              C=rp.sC;x=C.length;while(x--)sC=sC.childNodes[C[x]];
-              C=rp.eC;x=C.length;while(x--)eC=eC.childNodes[C[x]];
-
-              range.setStart(sC,rp.sO);
-              range.setEnd(eC,rp.eO);
-              sel.removeAllRanges();
-              sel.addRange(range)
+              // let sel=window.getSelection()
+              // let range=sel.getRangeAt(0)
+              // let x,C,sC=bE,eC=bE;
+              //
+              // C=rp.sC;x=C.length;while(x--)sC=sC.childNodes[C[x]];
+              // C=rp.eC;x=C.length;while(x--)eC=eC.childNodes[C[x]];
+              //
+              // range.setStart(sC,rp.sO);
+              // range.setEnd(eC,rp.eO);
+              // sel.removeAllRanges();
+              // sel.addRange(range)
             })
         },
         inspectElement() {
@@ -147,11 +153,6 @@ export default {
 
             this.inputEvent()
         },
-    },
-    mounted() {
-        if (this.task && this.task.message) {
-            this.parser = new Parser(this.task.message)
-        }
     },
 }
 </script>

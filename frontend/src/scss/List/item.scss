@@ -6,11 +6,11 @@
   transition: .1s;
   margin: 0 0 -1px 0;
 
-  $itemHeight: 70px;
+  $itemHeight: 80px;
 
   .item--content {
     display: flex;
-    height: $itemHeight;
+    //height: $itemHeight;
     align-items: center;
     justify-content: space-between;
 
@@ -40,6 +40,8 @@
     .item--name {
       margin: 10px;
       width: 70%;
+      height: 90%;
+      cursor: pointer;
 
       a {
           text-decoration: none;

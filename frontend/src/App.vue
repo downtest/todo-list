@@ -48,7 +48,7 @@
         </keep-alive>
     </router-view>
 
-    <div class="controls-push-up">to close controls</div>
+    <div class="bottom"></div>
 
 </div>
 </template>

@@ -157,6 +157,7 @@ export default class Parser {
         this.lineRules = [
             {
                 // 1. Список
+                name: 'Список (начинается с "1. ")',
                 regexp: /^\d+\.\s+(.+)/i,
                 handler(matches, line, prevLine, nextLine) {
                     let result = ''
@@ -178,6 +179,7 @@ export default class Parser {
             },
             {
                 // ## Заголовок
+                name: 'Заголовок (начинается с #)',
                 regexp: /^(#*)\s(.+)/i,
                 handler(matches, line, prevLine, nextLine) {
                     return `<h${matches[1].length} class="contenteditable-h">${matches[2]}</h${matches[1].length}>`
@@ -185,6 +187,7 @@ export default class Parser {
             },
             {
                 // [] Checkbox
+                name: 'Checkbox (начинается с [])',
                 regexp: /^\[\]\s(.+)/i,
                 handler(matches, line, prevLine, nextLine) {
                     return `<input type="checkbox" class="contenteditable-checkbox"> ${matches[1]}<br>`
@@ -192,12 +195,15 @@ export default class Parser {
             },
             {
                 // Если строка начинается с буквы или цифры, то это обычный текст, скорее всего и нужно поставить перенос строки
+                name: 'Обычный текст (начинается с буквы или цифры)',
                 regexp: /(^[\w\d\(\)]|^\s*$)/i,
                 handler(matches, line, prevLine, nextLine) {
                     // На последней строке перенос не нужен, поэтому проверяем, что это не последняя строка
                     if (typeof nextLine === 'string' || nextLine instanceof String) {
                         return line + '<br>'
                     }
+
+                    return line
                 },
             },
         ]
@@ -259,7 +265,8 @@ export default class Parser {
 
             switch (node.nodeName) {
                 case '#text':
-                    result += node.nodeValue + '\n'
+                    // result += node.nodeValue + '\n'
+                    result += node.nodeValue
                     break;
                 case 'DIV':
                     result += this.toMDFromNodes(node.childNodes) + '\n'
@@ -298,6 +305,9 @@ export default class Parser {
                     node.childNodes.forEach(li => {
                         result +=  '1. ' + li.outerText + '\n'
                     })
+                    break;
+                default:
+                    result += this.toMDFromNodes(node.childNodes)
                     break;
             }
         })

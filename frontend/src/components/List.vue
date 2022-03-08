@@ -41,9 +41,6 @@
                 <img class="btn--icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
             </div>
 
-            <div class="logs">
-                <div :key="index" v-for="(log, index) in $store.state.todos.logs">{{log}}</div>
-            </div>
         </div>
     </div>
 </template>
