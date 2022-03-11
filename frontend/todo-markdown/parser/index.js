@@ -210,6 +210,8 @@ export default class Parser {
     }
     setText(text) {
         this.text = text
+
+        return this
     }
     toHtml() {
         let string = this.text

@@ -37,11 +37,7 @@ export default {
     },
     computed: {
         content() {
-            if (this.task && this.task.message) {
-                return this.parser.toHtml()
-            }
-
-            return ''
+            return this.parser.setText(this.task.message).toHtml()
         },
     },
     methods: {
@@ -153,7 +149,7 @@ export default {
         },
     },
     beforeMount() {
-        this.parser = new Parser(this.task.message)
+        this.parser = new Parser()
     },
 }
 </script>
