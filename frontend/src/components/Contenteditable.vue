@@ -38,8 +38,6 @@ export default {
     computed: {
         content() {
             if (this.task && this.task.message) {
-                this.parser = new Parser(this.task.message)
-
                 return this.parser.toHtml()
             }
 
@@ -153,6 +151,9 @@ export default {
 
             this.inputEvent()
         },
+    },
+    beforeMount() {
+        this.parser = new Parser(this.task.message)
     },
 }
 </script>

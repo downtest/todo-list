@@ -201,8 +201,7 @@ const todos = {
         async createItem ({commit, state, getters}, payload) {
             // Временный id, настоящий придёт с сервера
             let tempId = (new String(Date.now() + Math.random())).toString()
-
-            commit('createItem', {
+            let newTaskData = {
                 id: tempId,
                 date: null,
                 time: null,
@@ -210,13 +209,15 @@ const todos = {
                 children: [],
                 isNew: true,
                 ...payload
-            })
+            }
+
+            commit('createItem', newTaskData)
 
             window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
-            commit('setFocusId', tempId)
+            // commit('setFocusId', tempId)
 
-            return payload
+            return newTaskData
         },
         resetInitialized({commit}) {
             console.log(`todos init is reseted`)

@@ -8,7 +8,7 @@
 
         <div class="breadcrumb--item" :key="index" v-for="(parent, index) in $store.getters['todos/parents'](id)">
             <div v-if="index + 1 < $store.getters['todos/parents'](id).length">
-                <router-link :to="{name: 'task-list', params: {parentId: parent.id}}">
+                <router-link :to="{name: 'task-item', params: {itemId: parent.id}}">
                     {{parent.message ? parent.message.split("\n")[0] : ''}}
                 </router-link>
             </div>

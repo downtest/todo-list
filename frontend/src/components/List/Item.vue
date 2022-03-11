@@ -245,6 +245,8 @@ import Labels from "../Item/Labels"
                 this.$store.dispatch('todos/createItem', {
                     parentId: this.modelValue.id,
                     message: '',
+                }).then((task) => {
+                    this.$router.push({name: 'task-item', params: {itemId: task.id}})
                 })
             },
             onSwiper(swiper) {

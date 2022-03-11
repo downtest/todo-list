@@ -174,6 +174,8 @@ import search from "./List/Search"
                 this.$store.dispatch('todos/createItem', {
                     parentId: this.parentId,
                     message: '',
+                }).then((task) => {
+                    this.$router.push({name: 'task-item', params: {itemId: task.id}})
                 })
             },
             handleWordFunction(node) {
