@@ -18,11 +18,10 @@
     </draggable>
 
     <div>
-      <div class="label-add">
-        <input class="label-add__input" type="text" v-model="labelInput" :style="`border-color: ${labelColor.background}`">
-
-        <button class="label-add__btn" @click="addLabel">Добавить</button>
-      </div>
+      <label class="label">
+        <input class="label__input" type="text" v-model="labelInput" :style="`border-color: ${labelColor.background}`">
+        <div class="label__name" style="text-align: center"><button class="label-add__btn" @click="addLabel">Добавить</button></div>
+      </label>
 
       <div class="label-colors">
         <div v-for="colorObj in labelColors"
@@ -105,6 +104,7 @@ export default {
 
 <style lang="scss" scoped>
   @import "./../../scss/variables";
+  @import "../../scss/Task/label";
 
   .item--labels {
     display: block;
@@ -115,19 +115,26 @@ export default {
     .labels-list {
 
       .label {
-        display: block;
+        display: flex;
         border-radius: 3px;
         margin-bottom: 5px;
         margin-top: 5px;
         padding: 0;
         color: $colorWhite;
+        height: 60px;
 
         .label-name {
           margin: 5px;
+          width: 100%;
         }
 
         .close-btn {
-          float: right;
+          //float: right;
+          height: 100%;
+          width: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
     }

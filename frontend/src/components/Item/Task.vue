@@ -15,12 +15,14 @@
           ></contenteditable-component>
         </div>
 
-        <label>
-          <input class="parent--input" type="date" v-model="itemDate">
+        <label class="label">
+          <div class="label__name">Дата</div>
+          <input class="label__input" type="date" v-model="itemDate">
         </label>
 
-        <label>
-          <input class="parent--input" type="time" v-model="itemTime">
+        <label class="label">
+          <div class="label__name">Время</div>
+          <input class="label__input" type="time" v-model="itemTime">
         </label>
 
         <router-link v-if="itemDate" :to="{name: 'calendarDay', params: {day: itemDate}}">
@@ -31,6 +33,11 @@
 
         <labels :task="item"></labels>
       </div>
+
+      <nested
+          v-model="children"
+          :parentId="itemId"
+      />
 
     </div>
 
@@ -130,13 +137,9 @@ export default {
         })
       },
     },
-    elements: {
+    children: {
       get() {
-        if (this.itemId) {
-          return this.$store.getters['todos/children'](this.itemId).sort((a, b) => a.index - b.index)
-        } else {
-          return this.$store.getters['todos/firstLevel'].sort((a, b) => a.index - b.index)
-        }
+        return this.$store.getters['todos/children'](this.itemId)
       },
       set(payload) {
         // this.$store.dispatch("todos/updateChildren", {
@@ -171,6 +174,7 @@ export default {
 
 <style lang="scss">
 @import "../../scss/variables";
+@import "../../scss/Task/label";
 
 .bottom {
   height: 40px;
