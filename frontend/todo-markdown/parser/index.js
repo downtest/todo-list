@@ -138,17 +138,17 @@ export default class Parser {
             //         return matches.map(word => `<span class="word">${word}</span>`).join(' ')
             //     },
             // },
-            {
-                regexp: /.*/i,
-                handler: (matches, string) => {
-                    // Заменяем переносы на br`ы
-                    return string
-                        // .replaceAll('&nbsp;', ' ')
-                        // .replaceAll(' ', '&nbsp;')
-                        .replaceAll('\n', '<br>')
-                        // .replaceAll(/\s/g, ' ')
-                },
-            },
+            // {
+            //     regexp: /.*/i,
+            //     handler: (matches, string) => {
+            //         // Заменяем переносы на br`ы
+            //         return string
+            //             // .replaceAll('&nbsp;', ' ')
+            //             // .replaceAll(' ', '&nbsp;')
+            //             // .replaceAll('\n', '<br>')
+            //             // .replaceAll(/\s/g, ' ')
+            //     },
+            // },
         ]
 
         /**
@@ -193,19 +193,19 @@ export default class Parser {
                     return `<input type="checkbox" class="contenteditable-checkbox"> ${matches[1]}<br>`
                 },
             },
-            {
-                // Если строка начинается с буквы или цифры, то это обычный текст, скорее всего и нужно поставить перенос строки
-                name: 'Обычный текст (начинается с буквы или цифры)',
-                regexp: /(^[\w\d\(\)]|^\s*$)/i,
-                handler(matches, line, prevLine, nextLine) {
-                    // На последней строке перенос не нужен, поэтому проверяем, что это не последняя строка
-                    if (typeof nextLine === 'string' || nextLine instanceof String) {
-                        return line + '<br>'
-                    }
-
-                    return line
-                },
-            },
+            // {
+            //     // Если строка начинается с буквы или цифры, то это обычный текст, скорее всего и нужно поставить перенос строки
+            //     name: 'Обычный текст (начинается с буквы или цифры)',
+            //     regexp: /(^[\S]|^\s*$)/i,
+            //     handler(matches, line, prevLine, nextLine) {
+            //         // На последней строке перенос не нужен, поэтому проверяем, что это не последняя строка
+            //         if (typeof nextLine === 'string' || nextLine instanceof String) {
+            //             return line + '<br>'
+            //         }
+            //
+            //         return line
+            //     },
+            // },
         ]
     }
     setText(text) {
@@ -226,7 +226,7 @@ export default class Parser {
         })
 
         // Построчная обработка
-        let linesArr = string.split('<br>')
+        let linesArr = string.split('\n')
 
         linesArr = linesArr.map((line, index) => {
             this.lineRules.forEach(rule => {
@@ -244,7 +244,7 @@ export default class Parser {
             return line
         })
 
-        return linesArr.join('')
+        return linesArr.join('<br>')
     }
     toMD(html) {
         if (!html) {
@@ -264,35 +264,42 @@ export default class Parser {
 
         nodes.forEach((node, index) => {
             let prevNode = nodes[index - 1] || null
+            let nextNode = nodes[index + 1] || null
 
             switch (node.nodeName) {
                 case '#text':
                     // result += node.nodeValue + '\n'
                     result += node.nodeValue
+
+                    if (nextNode && nextNode.nodeName === 'DIV') {
+                        result += '\n'
+                    }
+
                     break;
                 case 'DIV':
-                    result += this.toMDFromNodes(node.childNodes) + '\n'
+                    // result += this.toMDFromNodes(node.childNodes) + '\n'
+                    result += this.toMDFromNodes(node.childNodes)
                     break;
                 case 'BR':
                     result += '\n'
                     break;
                 case 'H1':
-                    result += `# ${node.innerText}\n`
+                    result += `# ${node.innerText}`
                     break;
                 case 'H2':
-                    result += `## ${node.innerText}\n`
+                    result += `## ${node.innerText}`
                     break;
                 case 'H3':
-                    result += `### ${node.innerText}\n`
+                    result += `### ${node.innerText}`
                     break;
                 case 'H4':
-                    result += `#### ${node.innerText}\n`
+                    result += `#### ${node.innerText}`
                     break;
                 case 'H5':
-                    result += `##### ${node.innerText}\n`
+                    result += `##### ${node.innerText}`
                     break;
                 case 'H6':
-                    result += `###### ${node.innerText}\n`
+                    result += `###### ${node.innerText}`
                     break;
                 case 'INPUT':
                     if (node.className === 'contenteditable-checkbox') {
@@ -313,8 +320,6 @@ export default class Parser {
                     break;
             }
         })
-
-        console.log(result, `resulted string`)
 
         return result
     }

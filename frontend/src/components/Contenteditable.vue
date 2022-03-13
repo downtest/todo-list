@@ -33,11 +33,12 @@ export default {
             waitingId: null,
             entities: null,
             parser: null,
+            message: '',
         }
     },
     computed: {
         content() {
-            return this.parser.setText(this.task.message).toHtml()
+            return this.parser.setText(this.message).toHtml()
         },
     },
     methods: {
@@ -150,6 +151,7 @@ export default {
     },
     beforeMount() {
         this.parser = new Parser()
+        this.message = this.task.message
     },
 }
 </script>
