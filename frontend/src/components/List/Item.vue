@@ -36,25 +36,25 @@
                 </div>
 
                 <span class="btn" @click="toggleMore">
-                    <img class="btn--icon" v-if="!showMore" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
-                    <img class="btn--icon" v-else :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
+                    <img class="btn__icon" v-if="!showMore" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
+                    <img class="btn__icon" v-else :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
                 </span>
             </swiper-slide>
 
             <swiper-slide class="item--buttons">
                 <span class="btn" @click="createChild">
-                    <img class="btn--icon" :src="$store.getters['icons/Plus']" alt="add" title="Add child">
-                    <span class="btn--title">Add</span>
+                    <img class="btn__icon" :src="$store.getters['icons/Plus']" alt="add" title="Add child">
+                    <span class="btn__title">Add</span>
                 </span>
 
                 <span class="btn" @click="deleteTask">
-                    <img class="btn--icon" :src="$store.getters['icons/Trash']" alt="delete" title="Delete">
-                    <span class="btn--title">Delete</span>
+                    <img class="btn__icon" :src="$store.getters['icons/Trash']" alt="delete" title="Delete">
+                    <span class="btn__title">Delete</span>
                 </span>
 
                 <span class="btn" @click="reset" v-if="isChanged">
-                    <img class="btn--icon" :src="$store.getters['icons/Undo']" alt="reset" title="Undo made changes">
-                    <span class="btn--title">Reset</span>
+                    <img class="btn__icon" :src="$store.getters['icons/Undo']" alt="reset" title="Undo made changes">
+                    <span class="btn__title">Reset</span>
                 </span>
             </swiper-slide>
         </swiper>
@@ -271,7 +271,3 @@ import Labels from "../Item/Labels"
         },
     };
 </script>
-
-<style lang="scss">
-    @import "src/scss/List/item";
-</style>

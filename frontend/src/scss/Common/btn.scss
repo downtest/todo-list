@@ -1,0 +1,21 @@
+
+.btn {
+
+  &_add {
+    background-color: $colorMain;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    display: flex;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: calc(50% - 20px);
+  }
+
+  &__icon {
+    display: block;
+    max-width: 25px;
+    max-height: 25px;
+    margin: auto;
+  }
+}

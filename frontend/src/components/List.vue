@@ -37,8 +37,8 @@
                 :parentId="parentId"
             />
 
-            <div class="btn__add" @click="createChild">
-                <img class="btn--icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
+            <div class="btn_add" @click="createChild">
+                <img class="btn__icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
             </div>
 
         </div>
@@ -207,7 +207,6 @@ import search from "./List/Search"
 </script>
 
 <style lang="scss">
-@import "../scss/variables";
 
 .parent {
 
@@ -217,25 +216,4 @@ import search from "./List/Search"
     }
 }
 
-.btn--icon {
-    max-width: 25px;
-    max-height: 25px;
-    margin: auto;
-}
-
-.btn__add {
-    background-color: $colorMain;
-    width: 40px;
-    height: 40px;
-    align-items: center;
-    display: flex;
-    border-radius: 50%;
-    cursor: pointer;
-    margin-bottom: 50px;
-    bottom: 0;
-    position: fixed;
-    left: 50%;
-    margin-left: -20px;
-    z-index: 6;
-}
 </style>

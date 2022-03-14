@@ -1,3 +1,9 @@
+@import "variables";
+@import "Common/btn";
+@import "List/item";
+@import "Task/label";
+
+
 body {
   margin: 0;
   padding: 0;
@@ -8,4 +14,8 @@ input, textarea {
   &:focus, &:focus-visible, &:focus-within, &:hover, &:target {
     outline-width: 0;
   }
+}
+
+.bottom {
+  height: 80px;
 }

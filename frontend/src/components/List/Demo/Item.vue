@@ -187,6 +187,3 @@ export default {
 };
 </script>
 
-<style lang="scss">
-    @import "src/scss/List/item";
-</style>

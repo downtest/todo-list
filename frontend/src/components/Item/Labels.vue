@@ -111,6 +111,7 @@ export default {
     //display: flex;
     //align-content: flex-start;
     //flex-wrap: wrap;
+    margin-bottom: 30px;
 
     .labels-list {
 

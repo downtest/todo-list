@@ -39,9 +39,11 @@
           :parentId="itemId"
       />
 
-    </div>
+      <div class="btn_add" @click="createChild">
+        <img class="btn__icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
+      </div>
 
-    <div class="bottom"></div>
+    </div>
   </div>
 </template>
 
@@ -85,6 +87,7 @@ export default {
         return null;
       }
     },
+
     itemMessage: {
       get() {
         if (this.item) {
@@ -152,8 +155,10 @@ export default {
   methods: {
     createChild () {
       this.$store.dispatch('todos/createItem', {
-        itemId: this.itemId,
+        parentId: this.itemId,
         message: '',
+      }).then((task) => {
+        this.$router.push({name: 'task-item', params: {itemId: task.id}})
       })
     },
     setTimeHandler(value) {
@@ -173,12 +178,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../scss/variables";
-@import "../../scss/Task/label";
-
-.bottom {
-  height: 40px;
-}
 
 .item {
 
@@ -188,25 +187,4 @@ export default {
   }
 }
 
-.btn--icon {
-  max-width: 25px;
-  max-height: 25px;
-  margin: auto;
-}
-
-.btn__add {
-  background-color: $colorMain;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  display: flex;
-  border-radius: 50%;
-  cursor: pointer;
-  margin-bottom: 50px;
-  bottom: 0;
-  position: fixed;
-  left: 50%;
-  margin-left: -20px;
-  z-index: 6;
-}
 </style>
