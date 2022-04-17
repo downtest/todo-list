@@ -8,7 +8,7 @@ use Framework\Services\DBPostgres;
 use Framework\Services\DBState;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Diactoros\Response\HtmlResponse;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 class Migrate extends BaseAction
 {

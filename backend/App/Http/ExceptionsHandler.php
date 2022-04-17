@@ -26,10 +26,11 @@ class ExceptionsHandler extends FrameworkDefaultExceptionHandler
         }
 
         if ($exception instanceof \PDOException) {
-            var_dump($exception);
+//            var_dump($exception);
             return new JsonResponse([
                 'status' => false,
                 'error' => "Exception! {$exception->getMessage()}",
+                'trace' => $exception->getTraceAsString()
             ], 422);
         }
 

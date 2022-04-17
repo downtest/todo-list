@@ -4,6 +4,7 @@ namespace App\Http\Actions\Api\User;
 
 
 use App\Http\Interfaces\Action;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Exception;
 use Framework\Services\DBPostgres;
@@ -60,7 +61,7 @@ class Update extends Action
 
         return new JsonResponse([
             'status' => true,
-            'user'   => $request->getAttributes() + $user,
+            'user'   => (new UserResource($request->getAttributes() + $user))->toArray(),
         ]);
     }
 }

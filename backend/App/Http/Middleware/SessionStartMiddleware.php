@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Exception;
+use Framework\Services\Headers;
 use Framework\Services\Session;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,6 +21,7 @@ class SessionStartMiddleware implements MiddlewareInterface
         session_start();
 
         Session::fromGlobal();
+        Headers::fromGlobal();
 
         return $handler->handle($request);
     }

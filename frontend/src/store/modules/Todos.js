@@ -158,34 +158,34 @@ const todos = {
 
             commit('setItems', [])
 
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 this.axios.get('api/tasks/get', {params: {
                     collectionId: null,
                 }})
                     .then(({data}) => {
                         commit('setItems', data)
-
-                        resolve(data)
                     })
                     .catch((response) => {
                         console.error(response, `error on Tasks Load`)
                         resolve([])
                     })
-                    .finally(() => {
-                        commit('setInitialized', true)
-
+                    .finally( async () => {
                         if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
                             for (let task of JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS))) {
                                 if (task.isNew && !getters.getById(task.id)) {
-                                    dispatch('createItem', task)
+                                    await dispatch('createItem', task)
                                 } else {
-                                    dispatch('updateItem', {
+                                    await dispatch('updateItem', {
                                         id: task.id,
                                         payload: task,
                                     })
                                 }
                             }
                         }
+
+                        commit('setInitialized', true)
+
+                        resolve(getters.all)
                     })
             })
         },
@@ -246,7 +246,7 @@ const todos = {
          * @param id
          * @param payload
          */
-        updateItem ({commit, state, getters}, {id, payload}) {
+        async updateItem ({commit, state, getters}, {id, payload}) {
             if (!id) {
                 console.warn(payload, `В action updateItem не передан id`)
                 return

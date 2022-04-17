@@ -193,19 +193,19 @@ export default class Parser {
                     return `<input type="checkbox" class="contenteditable-checkbox"> ${matches[1]}<br>`
                 },
             },
-            // {
-            //     // Если строка начинается с буквы или цифры, то это обычный текст, скорее всего и нужно поставить перенос строки
-            //     name: 'Обычный текст (начинается с буквы или цифры)',
-            //     regexp: /(^[\S]|^\s*$)/i,
-            //     handler(matches, line, prevLine, nextLine) {
-            //         // На последней строке перенос не нужен, поэтому проверяем, что это не последняя строка
-            //         if (typeof nextLine === 'string' || nextLine instanceof String) {
-            //             return line + '<br>'
-            //         }
-            //
-            //         return line
-            //     },
-            // },
+            {
+                // Если строка начинается с буквы или цифры, то это обычный текст, скорее всего и нужно поставить перенос строки
+                name: 'Обычный текст (начинается с буквы или цифры)',
+                regexp: /(^\s*$|^[^<])/i,
+                handler(matches, line, prevLine, nextLine) {
+                    // На последней строке перенос не нужен, поэтому проверяем, что это не последняя строка
+                    if (typeof nextLine === 'string' || nextLine instanceof String) {
+                        return line + '<br>'
+                    }
+
+                    return line
+                },
+            },
         ]
     }
     setText(text) {
@@ -244,7 +244,7 @@ export default class Parser {
             return line
         })
 
-        return linesArr.join('<br>')
+        return linesArr.join('')
     }
     toMD(html) {
         if (!html) {
@@ -271,7 +271,8 @@ export default class Parser {
                     // result += node.nodeValue + '\n'
                     result += node.nodeValue
 
-                    if (nextNode && nextNode.nodeName === 'DIV') {
+                    // if (nextNode && (nextNode.nodeName === 'DIV' || nextNode.nodeName === '#text')) {
+                    if (nextNode && (nextNode.nodeName === 'DIV')) {
                         result += '\n'
                     }
 
@@ -284,22 +285,22 @@ export default class Parser {
                     result += '\n'
                     break;
                 case 'H1':
-                    result += `# ${node.innerText}`
+                    result += `# ${node.innerText}\n`
                     break;
                 case 'H2':
-                    result += `## ${node.innerText}`
+                    result += `## ${node.innerText}\n`
                     break;
                 case 'H3':
-                    result += `### ${node.innerText}`
+                    result += `### ${node.innerText}\n`
                     break;
                 case 'H4':
-                    result += `#### ${node.innerText}`
+                    result += `#### ${node.innerText}\n`
                     break;
                 case 'H5':
-                    result += `##### ${node.innerText}`
+                    result += `##### ${node.innerText}\n`
                     break;
                 case 'H6':
-                    result += `###### ${node.innerText}`
+                    result += `###### ${node.innerText}\n`
                     break;
                 case 'INPUT':
                     if (node.className === 'contenteditable-checkbox') {
@@ -309,7 +310,7 @@ export default class Parser {
                     }
                     break;
                 case 'OL':
-                    result += '\n'
+                    // result += '\n'
 
                     node.childNodes.forEach(li => {
                         result +=  '1. ' + li.outerText + '\n'

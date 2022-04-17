@@ -11,6 +11,7 @@ const user = {
 
     state: {
         current: defaultUser,
+        token: null,
     },
     mutations: {
         update(state, payload) {
@@ -20,12 +21,18 @@ const user = {
         updateName(state, payload) {
             state.current.name = payload;
         },
+        setToken(state, token) {
+            state.token = token;
+        },
     },
 
     getters: {
         current(state) {
             return state.current;
-        }
+        },
+        token(state) {
+            return state.token;
+        },
     },
 
     actions: {
@@ -47,6 +54,12 @@ const user = {
                 this.axios.post('/api/user/login', payload)
                     .then(({data}) => {
                         commit('update', data.user)
+                        commit('setToken', data.token)
+
+                        // Устанавливаем токен в заголовок на все дальнейшие запросы
+                        this.axios.defaults.headers['X-User-Token'] = data.token
+                        // Сохраняем токен в LocalStorage
+                        window.localStorage.setItem('ls_todos_user_token', data.token)
 
                         this.dispatch('todos/resetInitialized')
                         resolve(data.user)
@@ -58,16 +71,16 @@ const user = {
         },
         logout({commit, dispatch}) {
             return new Promise((resolve, reject) => {
-                this.axios.post('/api/user/logout')
-                    .then(({data}) => {
-                        commit('update', defaultUser)
+                // Удаляем токен из заголовка на все дальнейшие запросы
+                delete this.axios.defaults.headers['X-User-Token']
+                // Удаляем токен из LocalStorage
+                window.localStorage.removeItem('ls_todos_user_token')
 
-                        this.dispatch('todos/resetInitialized')
-                        resolve(defaultUser)
-                    })
-                    .catch((response) => {
-                        reject(response)
-                    })
+                commit('update', defaultUser)
+
+                this.dispatch('todos/resetInitialized')
+
+                resolve(defaultUser)
             })
         },
         update({commit}, payload) {

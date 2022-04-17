@@ -4,32 +4,10 @@
 
             <tasks-breadcrumb v-if="parentId" :id="parentId"></tasks-breadcrumb>
 
-            <search></search>
-
             <div v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">save ({{$store.getters['todos/getChanges'].length}})</div>
 
-            <div v-if="parent">
-                <h1>{{parent.message.split('\n')[0]}}</h1>
-
-                <div>
-                    <contenteditable
-                        :content="parentMessage"
-                        :handleWordFunction="handleWordFunction"
-                        @setTime="setTimeHandler"
-                    ></contenteditable>
-                </div>
-
-                <label>
-                    <input class="parent--input" type="date" v-model="parentDate">
-                </label>
-
-                <label>
-                    <input class="parent--input" type="time" v-model="parentTime">
-                </label>
-
-                <router-link v-if="parentDate" :to="{name: 'calendarDay', params: {day: parentDate}}">
-                    Посмотреть в календаре
-                </router-link>
+            <div v-if="elements.length <= 0" class="label_tip">
+              У Вас нет ни одной записи, нажмите на кнопку с плюсом ниже чтобы создать заметку, записать рецепт, поставить напоминание...
             </div>
 
             <nested
@@ -55,7 +33,6 @@ import nested from "./List/Nested";
 import tasksBreadcrumb from "./List/Breadcrumb";
 import contenteditable from "./Contenteditable";
 import draggable from "vuedraggable"
-import search from "./List/Search"
 
     export default {
         components: {
@@ -63,7 +40,6 @@ import search from "./List/Search"
             tasksBreadcrumb,
             contenteditable,
             draggable,
-            search,
             Swiper,
             SwiperSlide,
         },

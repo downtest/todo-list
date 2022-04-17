@@ -57,14 +57,14 @@ class SqlColumn
         $sql = '';
         $columnType = $this->standardType($props['type']);
 
-        if (isset($props['max_length']) && !in_array($columnType, ['int', 'int8', 'serial', 'bigserial'])) {
+        if (isset($props['max_length']) && !in_array($columnType, ['int', 'int8', 'smallint', 'bigint', 'serial', 'bigserial'])) {
             $columnType .= "({$props['max_length']})";
         }
 
         $columnProps = [
             $this->columnName,
             $columnType,
-            $props['is_nullable'] ? 'NULL' : 'NOT NULL',
+            isset($props['is_nullable']) ? 'NULL' : 'NOT NULL',
         ];
 
         if (isset($props['column_default'])) {
@@ -75,12 +75,8 @@ class SqlColumn
             $columnProps[] = 'PRIMARY KEY';
         }
 
-        if (!empty($props['autoincrement'])) {
-            exit('NEED TO MAKE AUTOINCREMENT');
-        }
-
         if (!empty($props['foreign'])) {
-            $columnProps[] = $this->getForeignCreateQuery($props['foreign']);
+            $columnProps[] = $this->getForeignCreateQuery($props['foreign'], false);
         }
 
         $sql .= implode(' ', $columnProps);
@@ -282,7 +278,7 @@ class SqlColumn
      * @return string
      * @throws Exception
      */
-    protected function getForeignCreateQuery(array $foreignProps): string
+    protected function getForeignCreateQuery(array $foreignProps, bool $add = false): string
     {
         if (empty($foreignProps['name'])
             || empty($foreignProps['foreign_table'])
@@ -291,8 +287,8 @@ class SqlColumn
             throw new Exception('При описании внешнего ключа должны быть указаны свойства: name, foreign_table, foreign_column');
         }
 
-        $foreignSql = "ADD CONSTRAINT {$foreignProps['name']} FOREIGN KEY ({$this->columnName})
-                REFERENCES {$foreignProps['foreign_table']} ({$foreignProps['foreign_column']})";
+        $foreignSql = ($add ? 'ADD ' : '') . "CONSTRAINT {$foreignProps['name']} " . ($add ? "FOREIGN KEY ({$this->columnName})" : '')
+                ."REFERENCES {$foreignProps['foreign_table']} ({$foreignProps['foreign_column']})";
 
         if (isset($foreignProps['on_update'])) {
             $foreignSql .= ' ON UPDATE ' . $foreignProps['on_update'];

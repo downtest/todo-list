@@ -174,4 +174,49 @@ return [
             'max_length' => null,
         ],
     ],
+    'user_tokens' => [
+        'token' => [
+            'ordinal_position' => 1,
+            'type' => 'string',
+            'primary' => true,
+            'autoincrement' => false,
+            'is_nullable' => false,
+            'max_length' => 100,
+        ],
+        'user_id' => [
+            'ordinal_position' => 2,
+            'type' => 'bigint',
+            'is_nullable' => false,
+            'max_length' => 12,
+            'indexes' => [
+                'user_tokens_user_id' => [
+                    'unique' => false,
+                    'columns' => [
+                        'user_id'
+                    ],
+                ],
+            ],
+        ],
+        'device_header' => [
+            'ordinal_position' => 3,
+            'type' => 'varchar',
+            'is_nullable' => true,
+            'max_length' => 255,
+            'comment' => 'Заголовок устройства',
+        ],
+        'created_at' => [
+            'ordinal_position' => 4,
+            'column_default' => 'CURRENT_TIMESTAMP',
+            'is_nullable' => true,
+            'type' => 'timestamp',
+            'max_length' => null,
+        ],
+        'expire_at' => [
+            'ordinal_position' => 5,
+            'column_default' => null,
+            'is_nullable' => true,
+            'type' => 'timestamp',
+            'max_length' => null,
+        ],
+    ],
 ];

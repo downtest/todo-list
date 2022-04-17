@@ -5,6 +5,7 @@ namespace App\Http\Actions\Api\User;
 
 use App\Http\BusinessServices\Registration;
 use App\Http\Interfaces\Action;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Exception;
 use Framework\Services\Logger;
@@ -70,7 +71,7 @@ class Register extends Action
 
         return new JsonResponse([
             'status' => true,
-            'user' => $registeredUser,
+            'user' => (new UserResource($registeredUser))->toArray(),
         ]);
     }
 

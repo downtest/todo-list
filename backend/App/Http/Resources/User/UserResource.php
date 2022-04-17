@@ -11,6 +11,10 @@ class UserResource extends Resource
 {
     public function toArray(): ?array
     {
-        return Arr::except($this->resource, ['password']) ?: null;
+        return Arr::except($this->resource, [
+            'password',
+            'password_change_hash',
+            'password_change_requested_at',
+        ]) ?: null;
     }
 }

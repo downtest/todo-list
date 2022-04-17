@@ -1,7 +1,12 @@
 @import "variables";
 @import "Common/btn";
+@import "Common/contenteditable";
+@import "Common/labels";
 @import "List/item";
 @import "Task/label";
+@import "Components/search";
+@import "Layout/control-buttons";
+@import "Layout/top-menu";
 
 
 body {
@@ -14,6 +19,10 @@ input, textarea {
   &:focus, &:focus-visible, &:focus-within, &:hover, &:target {
     outline-width: 0;
   }
+}
+
+.top {
+  height: 70px;
 }
 
 .bottom {

@@ -6,7 +6,7 @@ namespace Framework\Http\Actions;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Zend\Diactoros\Response;
+use Laminas\Diactoros\Response\HtmlResponse;
 
 class PageNotFound implements RequestHandlerInterface
 {

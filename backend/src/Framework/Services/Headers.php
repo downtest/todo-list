@@ -9,9 +9,9 @@ use Framework\Services\Interfaces\Service;
 /**
  * Class Session
  * @package Framework\Services
- * @method static Session getInstance
+ * @method static Headers getInstance
  */
-class Session extends Service
+class Headers extends Service
 {
     /**
      * @var self
@@ -27,13 +27,19 @@ class Session extends Service
      * @return static
      * @throws Exception
      */
-    public static function fromGlobal (): self
+    public static function fromGlobal (): Headers
     {
-        $session = static::getInstance();
+        $service = static::getInstance();
 
-        $session->setMany($_SESSION);
+        foreach($_SERVER as $key => $value) {
+            if (substr($key, 0, 5) <> 'HTTP_') {
+                continue;
+            }
+            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+            $service->set($header, $value);
+        }
 
-        return $session;
+        return $service;
     }
 
     /**
@@ -44,7 +50,6 @@ class Session extends Service
     public function set (string $key, $value): self
     {
         $this->values[$key] = $value;
-        $_SESSION[$key] = $value;
 
         return $this;
     }
@@ -56,11 +61,9 @@ class Session extends Service
     public function setMany (array $sessionArr): self
     {
         $this->values = $sessionArr;
-        $_SESSION = $sessionArr;
 
         return $this;
     }
-
 
     /**
      * @return array

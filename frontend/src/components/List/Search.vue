@@ -1,12 +1,15 @@
 <template>
-<div class="component">
-    <img class="icon__search" :src="$store.getters['icons/Search']" alt="Search">
-    <input class="search-input" v-model="phrase" type="text">
-    <img @click="erase" class="icon__erase" :src="$store.getters['icons/Plus']" alt="Clear">
+<div class="search">
+    <img class="icon__search" @click="hidden = !hidden" :src="$store.getters['icons/Search']" alt="Search">
+
+    <div :class="{'search-input': true, hidden: hidden}">
+        <input v-model="phrase" type="text">
+        <img @click="erase" class="icon__erase" :src="$store.getters['icons/Plus']" alt="Clear">
+    </div>
 
     <div class="search-items" v-show="showSearchResults">
         <div class="search-items__item" v-for="task in foundTasks" :key="task.id">
-            <a class="search-items__link" @click="$router.push({name: 'task-list', params: {parentId: task.id}})">{{task.message.split('\n')[0]}}</a>
+            <a class="search-items__link" @click="move(task)">{{task.message.split('\n')[0]}}</a>
         </div>
     </div>
 </div>
@@ -20,6 +23,7 @@ export default {
             phrase: null,
             foundTasks: [],
             showSearchResults: false,
+            hidden: true,
         }
     },
     computed: {
@@ -44,6 +48,12 @@ export default {
     methods: {
         erase() {
             this.phrase = null
+            this.hidden = true
+        },
+        move(task) {
+            this.phrase = null
+            this.hidden = true
+            this.$router.push({name: 'task-item', params: {itemId: task.id}})
         },
     },
     mounted() {
@@ -62,43 +72,3 @@ export default {
     },
 }
 </script>
-
-<style lang="scss" scoped>
-.component {
-    display: flex;
-    justify-content: center;
-}
-
-.icon__erase, .icon__search {
-    max-width: 25px;
-    max-height: 25px;
-}
-
-.icon__erase {
-    transform: rotate(45deg);
-}
-
-.search-input {
-    margin: 0 10px;
-}
-
-.search-items {
-    width: 60%;
-    left: 20%;
-    position: absolute;
-    background-color: #bcbcbc;
-    text-align: left;
-}
-
-.search-items__item {
-    border: 1px solid red;
-    padding: 5px 10px;
-}
-.search-items__item:hover {
-    background-color: rgba(33, 193, 33, 0.5);
-    color: #ededed;
-}
-.search-items__link {
-    cursor: pointer;
-}
-</style>

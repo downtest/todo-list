@@ -1,0 +1,12 @@
+.label {
+
+  &_tip {
+    border: 2px solid $colorMain;
+    background-color: #eaeaea;
+    border-radius: 5px;
+    padding: 10px 5px;
+    margin: 5px;
+    color: $colorDark;
+    font-size: .8em;
+  }
+}

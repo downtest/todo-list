@@ -1,11 +1,24 @@
 <template>
 <div id="app">
-    <div class="current-user">
-        <div class="user--name">
-            {{this.$store.state.user.current.phone}}
-            (#{{this.$store.state.user.current.id}})
-        </div>
-        <div class="user--avatar"></div>
+    <div class="top"></div>
+
+    <div class="top-menu">
+      <div class="current-user">
+          <template v-if="$store.state.user.current.id">
+              <router-link to="/user" class="user--avatar">
+                <img :src="$store.getters['icons/ProfileWhite']" alt="profile" title="profile">
+              </router-link>
+
+              <div class="user--name" v-if="$store.state.user.current.id">
+                {{$store.state.user.current.name || $store.state.user.current.email || $store.state.user.current.phone}}
+              </div>
+          </template>
+          <template v-else>
+              <router-link :to="{name: 'profile'}">Войти</router-link>
+          </template>
+
+          <search></search>
+      </div>
     </div>
 
     <ul class="control-buttons">
@@ -18,27 +31,17 @@
         </li>
 
         <li class="control">
-            <router-link v-if="$route.name === 'task-list'" :to="{name: 'calendarMonth'}">
+            <router-link :to="{name: 'calendarMonth'}">
                 <img class="control--icon" :src="$store.getters['icons/Calendar']" alt="calendar" title="calendar">
                 <span class="control--name">Calendar</span>
             </router-link>
-            <router-link v-else :to="{name: 'task-list'}">
-                <img class="control--icon" :src="$store.getters['icons/Checklist']" alt="Todos" title="Todos">
-                <span class="control--name">Todos</span>
-            </router-link>
         </li>
 
         <li class="control">
-            <img class="control--icon" :src="$store.getters['icons/BellWhite']" alt="Todos" title="Todos">
-            <span class="control--name">Notifications</span>
-        </li>
-
-        <li class="control">
-            <router-link to="/user">
-                <img v-if="$route.name === 'profile' || $route.name === 'registration'" class="control--icon" :src="$store.getters['icons/Profile']" alt="profile" title="profile">
-                <img v-else class="control--icon" :src="$store.getters['icons/ProfileWhite']" alt="profile" title="profile">
-                <span class="control--name">User</span>
-            </router-link>
+          <router-link :to="{name: 'task-list'}">
+            <img class="control--icon" :src="$store.getters['icons/Checklist']" alt="Todos" title="Todos">
+            <span class="control--name">Todos</span>
+          </router-link>
         </li>
     </ul>
 
@@ -54,7 +57,12 @@
 </template>
 
 <script>
+import search from "./components/List/Search"
+
 export default {
+    components: {
+        search,
+    },
     created() {
         console.log(this.$route, `this.$route`)
         console.log(this.$router, `this.$router`)
@@ -81,56 +89,4 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
-
-.controls-push-up {height: 50px}
-.control-buttons {
-    display: flex;
-    list-style-type: none;
-    justify-content: center;
-    position: fixed;
-    padding: 15px 0 15px 0;
-    margin: 0;
-    bottom: -1px;
-    left: 0;
-    width: 100%;
-    z-index: 5;
-    background-color: #fff;
-
-    .control {
-        display: block;
-        width: 25%;
-
-        .control--icon {
-            max-width: 30px;
-            max-height: 30px;
-        }
-
-        .control--name {
-            display: none;
-        }
-
-        a {
-            text-decoration: none;
-        }
-    }
-}
-
-.current-user {
-    //display: flex;
-    flex-direction: row-reverse;
-    display: none;
-
-    .user--avatar {
-      margin-right: 20px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #2c3e50;
-    }
-
-    .user--name {
-      line-height: 50px;
-    }
-}
-
 </style>

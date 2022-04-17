@@ -29,6 +29,10 @@
             <button @click="register">Register</button>
         </div>
 
+        <router-link :to="{name: 'profile'}">
+            На страницу авторизации
+        </router-link>
+
     </div>
 </template>
 

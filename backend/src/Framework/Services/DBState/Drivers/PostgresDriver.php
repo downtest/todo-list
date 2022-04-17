@@ -74,7 +74,10 @@ class PostgresDriver extends DriverInterface
      */
     protected function loadPrimary(): void
     {
-        $tables = array_keys($this->currentState);
+        if (!$tables = array_keys($this->currentState)) {
+            return;
+        }
+
         $primaryKeys = $this->db->query("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type, pg_class.relname AS table
             FROM   pg_index i
             JOIN   pg_attribute a ON a.attrelid = i.indrelid

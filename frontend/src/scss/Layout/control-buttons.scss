@@ -1,0 +1,32 @@
+.control-buttons {
+  display: flex;
+  list-style-type: none;
+  justify-content: center;
+  position: fixed;
+  padding: 15px 0 15px 0;
+  margin: 0;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  z-index: 5;
+  background-color: #fff;
+  border-top: 1px solid #2c3e50;
+
+  .control {
+    display: block;
+    width: 32%;
+
+    .control--icon {
+      max-width: 30px;
+      max-height: 30px;
+    }
+
+    .control--name {
+      display: none;
+    }
+
+    a {
+      text-decoration: none;
+    }
+  }
+}

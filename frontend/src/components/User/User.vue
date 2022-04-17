@@ -1,11 +1,8 @@
 <template>
     <div>
-        <h3>Changind User {{currentUser.phone}}!</h3>
-
         <div v-if="currentUser.id">
-            <pre>{{currentUser}}</pre>
+            <h3>Добро пожаловать!</h3>
 
-            <div>Id: <input v-model="id" disabled="disabled" type="text"></div>
             <div :class="{input: true, 'error': validationErrors.name}">
                 Name: <input :class="{'error-input': validationErrors.name}" v-model="name" type="text" name="name">
                 <div v-if="validationErrors.name" class="error-notification">{{validationErrors.name.join('\n')}}</div>
@@ -24,7 +21,7 @@
         </div>
 
         <div v-else>
-            <div>#{{id}}</div>
+            <h3>Авторизация</h3>
 
             <div :class="{input: true, 'error': validationErrors.email}">
                 Email: <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
@@ -38,6 +35,9 @@
 
             <button @click="login">Login</button>
             <a href="/password-forget">Restore password</a>
+            <router-link :to="{name: 'registration'}">
+                Зарегистрироваться
+            </router-link>
         </div>
 
     </div>

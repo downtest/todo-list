@@ -3,14 +3,18 @@
         <div class="controls">
             <button @click="inspectElement">?</button>
             <button @click="toggleH1">H1</button>
+            <button @click="toggleCheckbox">Checkbox</button>
+            <button @click="toggleOl">Ol</button>
         </div>
+
         <div
-            class="task-message contenteditable-message"
-            v-html="content"
-            :id="'contenteditable-message'"
-            :contenteditable="true"
-            @input="inputEvent"
-        >
+              class="task-message contenteditable-message placeholder"
+              v-html="content"
+              :id="'contenteditable-message'"
+              :contenteditable="true"
+              aria-placeholder="Текст записи..."
+              @input="inputEvent"
+          >
         </div>
     </div>
 </template>
@@ -33,7 +37,7 @@ export default {
             waitingId: null,
             entities: null,
             parser: null,
-            message: '',
+            message: '', // Локальный текст, нужен чтобы фокус не слетал бы с div`а при изменении task.message
         }
     },
     computed: {
@@ -41,7 +45,24 @@ export default {
             return this.parser.setText(this.message).toHtml()
         },
     },
+    watch: {
+        'task.id': {
+            immediate: true,
+            handler() {
+                this.setText()
+            },
+        },
+        '$store.getters.todos/initialized': function() {
+            this.setText()
+        },
+    },
     methods: {
+        /**
+         * Устанавливаем текст для редактирования
+         */
+        setText() {
+            this.message = (this.task.updated && this.task.updated.message) ? this.task.updated.message : this.task.message
+        },
         inputEvent(value) {
             if (!value) {
                 value = document.getElementById('contenteditable-message').childNodes
@@ -94,9 +115,6 @@ export default {
             let range=window.getSelection().getRangeAt(0);
             let sC=range.startContainer,eC=range.endContainer;
             let bE = document.getElementById('contenteditable-message')
-
-          console.log(sC.nodeName, `node`)
-          console.log(sC.parentNode, `parent ${sC.parentNode.nodeName}`)
         },
         saveFocusRange() {
 
@@ -109,7 +127,6 @@ export default {
 
             this.$store.dispatch('range/save')
 
-            let bE = this.$store.getters['range/container']
             let startContainerIndex = this.$store.getters['range/startContainerIndex']
             let endContainerIndex = this.$store.getters['range/endContainerIndex']
             let toText = false
@@ -124,7 +141,11 @@ export default {
 
             // Каждая нода должна быть обработана
             for (let i = startContainerIndex; i <= endContainerIndex; i++) {
-                if (toText && this.$store.getters['range/nodes'][i].classList && this.$store.getters['range/nodes'][i].classList.contains('contenteditable-h')) {
+                if (toText
+                    && this.$store.getters['range/nodes'][i]
+                    && this.$store.getters['range/nodes'][i].classList
+                    && this.$store.getters['range/nodes'][i].classList.contains('contenteditable-h')
+                ) {
                     // Преобразуем в текст
                     let newNode = document.createElement('div')
                     newNode.innerHTML = this.$store.getters['range/nodes'][i].innerHTML + '<br>'.trim()
@@ -148,10 +169,84 @@ export default {
 
             this.inputEvent()
         },
+        // TODO: toggleCheckbox ([] foobar)
+        toggleCheckbox() {
+            this.$store.dispatch('range/init', '#contenteditable-message')
+
+            this.$store.dispatch('range/save')
+
+            let startContainerIndex = this.$store.getters['range/startContainerIndex']
+            let endContainerIndex = this.$store.getters['range/endContainerIndex']
+            let toText = false
+
+            // Просматриваем все ноды и определяем что нужно делать
+            for (let i = startContainerIndex; i <= endContainerIndex; i++) {
+                // console.log(this.$store.getters['range/nodes'][i], i)
+                if (this.$store.getters['range/nodes'][i] && this.$store.getters['range/nodes'][i].classList && this.$store.getters['range/nodes'][i].classList.contains('contenteditable-checkbox')) {
+                    toText = true
+                }
+            }
+
+            // Каждая нода должна быть обработана
+            for (let i = startContainerIndex; i <= endContainerIndex; i++) {
+                // if (!this.$store.getters['range/nodes'][i]) {
+                //   console.log(`contining to except error`)
+                //   continue;
+                // }
+
+                if (toText && this.$store.getters['range/nodes'][i].classList && this.$store.getters['range/nodes'][i].classList.contains('contenteditable-checkbox')) {
+                    // Преобразуем всё в текст
+                    let newNode = document.createTextNode(this.$store.getters['range/nodes'][i].innerText.trim())
+                    // newNode.innerHTML = this.$store.getters['range/nodes'][i].innerText + '<br>'.trim()
+
+                    this.$store.getters['range/nodes'][i].after(newNode)
+                    this.$store.getters['range/nodes'][i].parentNode.removeChild(this.$store.getters['range/nodes'][i])
+                } else if (!toText) {
+                    // Преобразуем всё в чекбоксы
+
+                    if (!this.$store.getters['range/nodes'][i]) {
+                        console.log(this.$store.getters['range/nodes'][i], `node ${i} in interval ${startContainerIndex} ${endContainerIndex}`)
+                        continue
+                    }
+
+                    let text = this.$store.getters['range/nodes'][i].nodeValue || this.$store.getters['range/nodes'][i].innerText
+                    text = text.trim()
+
+                    if (text) {
+                        let newNode = document.createElement('li')
+                        newNode.classList.add('contenteditable-checkbox')
+
+                        let inputNode = document.createElement('input')
+                        inputNode.type = 'checkbox'
+
+                        let textNode = document.createTextNode(text)
+
+                        newNode.appendChild(inputNode)
+                        newNode.appendChild(textNode)
+
+                        this.$store.getters['range/nodes'][i].after(newNode)
+                        this.$store.getters['range/nodes'][i].parentNode.removeChild(this.$store.getters['range/nodes'][i])
+                    }
+                }
+            }
+
+            if (toText) {
+                this.$store.dispatch('range/load')
+            } else {
+                this.$store.dispatch('range/load', {
+                  child : 1,
+                })
+            }
+
+            this.inputEvent()
+        },
+        // TODO: toggleOl (1. foobar)
+        toggleOl() {
+
+        },
     },
     beforeMount() {
         this.parser = new Parser()
-        this.message = this.task.message
     },
 }
 </script>
@@ -159,6 +254,11 @@ export default {
 <style lang="scss">
 .contenteditable-h {
   margin: 0;
+}
+
+.contenteditable-checkbox {
+  display: inline;
+  list-style-type: none;
 }
 
 .node.green {

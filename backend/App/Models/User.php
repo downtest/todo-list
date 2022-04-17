@@ -4,6 +4,8 @@
 namespace App\Models;
 
 
+use Framework\Services\DBPostgres;
+use Framework\Services\Headers;
 use Framework\Services\Session;
 
 class User extends Model
@@ -13,7 +15,8 @@ class User extends Model
      */
     public static string $table = 'users';
 
-    const SESSION_KEY = 'user_id';
+    const SESSION_KEY = 'user_token';
+    const HEADER_KEY = 'X-User-Token';
 
     /**
      * @var ?array
@@ -27,11 +30,16 @@ class User extends Model
     public static function current(): ?array
     {
         if (!static::$current) {
-            if (!$userId = Session::getInstance()->get(static::SESSION_KEY)) {
+            if (!$token = Headers::getInstance()->get(static::HEADER_KEY)) {
                 return null;
             }
 
-            static::$current = static::find($userId);
+            $users = DBPostgres::getInstance()->get("SELECT ".static::$table.".* 
+                FROM ".static::$table."
+                LEFT JOIN user_tokens ON ".static::$table.".id = user_tokens.user_id 
+                WHERE user_tokens.token = ?", [$token]);
+
+            static::$current = $users ? $users[0] : null;
         }
 
         return static::$current;

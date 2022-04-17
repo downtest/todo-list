@@ -1,0 +1,9 @@
+.placeholder:empty::before {
+  //content: "Текст обращения...";
+  content: attr(aria-placeholder);
+  color: #a9a9a9;
+}
+
+.placeholder:empty:focus::before {
+  content: "";
+}

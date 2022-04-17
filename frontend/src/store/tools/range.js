@@ -74,8 +74,24 @@ const range = {
         },
         save({getters, commit}) {
             let range = window.getSelection().getRangeAt(0)
-            let startContainer = range.startContainer.parentNode.classList.contains('contenteditable-message') ? range.startContainer : range.startContainer.parentNode
+
+            // let startContainer = range.startContainer.parentNode.classList.contains('contenteditable-message') ? range.startContainer : range.startContainer.parentNode
+            let startContainer
+
+            if (range.startContainer.classList && range.startContainer.classList.contains('contenteditable-message')) {
+                startContainer = range.startContainer.childNodes[range.startOffset - 1]
+                commit('setStartPosition', startContainer.length)
+            } else {
+                startContainer = range.startContainer
+                commit('setStartPosition', range.startOffset)
+            }
+
+            // let startContainer = range.startContainer.classList && range.startContainer.classList.contains('contenteditable-message') ? range.startContainer.childNodes[range.startOffset] : range.startContainer
+            // let startContainer = range.startContainer
             let endContainer   = range.endContainer.parentNode.classList.contains('contenteditable-message') ? range.endContainer : range.endContainer.parentNode
+
+            // let endContainer   = range.endContainer.classList && range.endContainer.classList.contains('contenteditable-message') ? range.endContainer.childNodes[range.endOffset] : range.endContainer
+            // let endContainer   = range.endContainer
             let nodes = getters.nodes
             let startContainerIndex = nodes.indexOf(startContainer)
             let endContainerIndex = nodes.indexOf(endContainer)
@@ -87,16 +103,35 @@ const range = {
             commit('setEndPosition', range.endOffset)
         },
         load({getters, dispatch}, payload) {
+            if (!payload) payload = {}
+
             let range = document.createRange()
             // range.setStartBefore(getters.nodes[getters.startContainerIndex])
             // range.setEndAfter(getters.nodes[getters.endContainerIndex])
 
-            console.log(getters.nodes[getters.startContainerIndex].firstChild, `start container`)
-
             // range.setStart(getters.nodes[getters.startContainerIndex], getters.startPosition)
-            // TODO не понимаю как выделить с середины
-            range.setStart(getters.nodes[getters.startContainerIndex].firstChild, getters.startPosition)
-            range.setEnd(getters.nodes[getters.endContainerIndex].firstChild, getters.endPosition)
+
+            if (payload.child) {
+                range.setStart(getters.nodes[getters.startContainerIndex].childNodes[payload.child], getters.startPosition)
+                range.setEnd(getters.nodes[getters.endContainerIndex].childNodes[payload.child], getters.endPosition)
+            } else {
+                if (['Text', 'Comment', 'CDataSection'].indexOf(typeof getters.nodes[getters.startContainerIndex]) !== -1) {
+                    // 2ой аргумент должен быть кол-вом символов в ноде
+                    range.setStart(getters.nodes[getters.startContainerIndex], getters.startPosition)
+                } else {
+                    // 2ой аргумент должен быть
+                    range.setStart(getters.nodes[getters.startContainerIndex].childNodes[0], getters.endPosition)
+                }
+
+                if (['Text', 'Comment', 'CDataSection'].indexOf(typeof getters.nodes[getters.endContainerIndex]) !== -1) {
+                    // 2ой аргумент должен быть кол-вом символов в ноде
+                    range.setStart(getters.nodes[getters.endContainerIndex], getters.endPosition)
+                } else {
+                    // 2ой аргумент должен быть
+                    range.setStart(getters.nodes[getters.endContainerIndex].childNodes[0], getters.endPosition)
+                }
+            }
+
 
             // range.startOffset = getters.startPosition
             // range.endOffset   = getters.endPosition

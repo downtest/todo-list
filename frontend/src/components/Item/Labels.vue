@@ -19,7 +19,7 @@
 
     <div>
       <label class="label">
-        <input class="label__input" type="text" v-model="labelInput" :style="`border-color: ${labelColor.background}`">
+        <input class="label__input" placeholder="Текст лейбла..." type="text" v-model="labelInput" :style="`border-color: ${labelColor.background}`">
         <div class="label__name" style="text-align: center"><button class="label-add__btn" @click="addLabel">Добавить</button></div>
       </label>
 
