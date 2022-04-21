@@ -64,12 +64,12 @@ class Login extends Action
             // Токены есть
             $token = $tokens[0];
         } else {
-            $token = UserToken::create([
+            $token = UserToken::create([[
                 'token' => uniqid(),
                 'user_id' => $user['id'],
                 'device_header' => Session::getInstance()->get('User-Agent'),
                 'expire_at' => null,
-            ]);
+            ]]);
         }
 
         return new JsonResponse([
