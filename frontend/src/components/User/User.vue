@@ -3,17 +3,35 @@
         <div v-if="currentUser.id">
             <h3>Добро пожаловать!</h3>
 
+            <div class="input">
+                <div class="input--title">ID:</div>
+                <div class="input--input">
+                    <input v-model="id" disabled="disabled" type="text" name="id">
+                </div>
+            </div>
+
             <div :class="{input: true, 'error': validationErrors.name}">
-                Name: <input :class="{'error-input': validationErrors.name}" v-model="name" type="text" name="name">
-                <div v-if="validationErrors.name" class="error-notification">{{validationErrors.name.join('\n')}}</div>
+                <div class="input--title">Name:</div>
+                <div class="input--input">
+                    <input :class="{'error-input': validationErrors.name}" v-model="name" type="text" name="name">
+                    <div v-if="validationErrors.name" class="error-notification">{{validationErrors.name.join('\n')}}</div>
+                </div>
             </div>
+
             <div :class="{input: true, 'error': validationErrors.email}">
-                Email: <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
-                <div v-if="validationErrors.email" class="error-notification">{{validationErrors.email.join('\n')}}</div>
+                <div class="input--title">Email:</div>
+                <div class="input--input">
+                    <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
+                    <div v-if="validationErrors.email" class="error-notification">{{validationErrors.email.join('\n')}}</div>
+                </div>
             </div>
+
             <div :class="{input: true, 'error': validationErrors.phone}">
-                Phone: <input :class="{'error-input': validationErrors.phone}" v-model="phone" type="text" name="phone">
-                <div v-if="validationErrors.phone" class="error-notification">{{validationErrors.phone.join('\n')}}</div>
+                <div class="input--title">Phone:</div>
+                <div class="input--input">
+                    <input :class="{'error-input': validationErrors.phone}" v-model="phone" type="text" name="phone">
+                    <div v-if="validationErrors.phone" class="error-notification">{{validationErrors.phone.join('\n')}}</div>
+                </div>
             </div>
 
             <button @click="changeUser">Change</button>
@@ -125,7 +143,24 @@ export default {
 
 <style scoped lang="scss">
 .input {
-    width: 100px;
+    display: flex;
+    width: 95%;
+    position: relative;
+    margin-bottom: 10px;
+
+    .input--title {
+        width: 100px;
+        margin: 2px;
+    }
+
+    .input--input {
+        width: 100%;
+        margin: 2px;
+
+        input {
+            width: 90%;
+        }
+    }
 
     &.error {
 
