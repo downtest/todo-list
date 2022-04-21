@@ -66,7 +66,7 @@ class Login extends Action
         } else {
             $token = UserToken::create([
                 'token' => uniqid(),
-                'user_id' => $user->id,
+                'user_id' => $user['id'],
                 'device_header' => Session::getInstance()->get('User-Agent'),
                 'expire_at' => null,
             ]);
