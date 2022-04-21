@@ -85,7 +85,11 @@ abstract class Model
             $columnValues = [];
 
             foreach ($row as $colValue) {
-                $columnValues[] = static::$db->quote($colValue);
+                if (is_null($colValue)) {
+                    $columnValues[] = 'NULL';
+                } else {
+                    $columnValues[] = static::$db->quote($colValue);
+                }
             }
 
             $columnRows[] = '('.implode(',', $columnValues).')';
