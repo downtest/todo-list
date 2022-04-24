@@ -272,7 +272,7 @@ export default class Parser {
                     result += node.nodeValue
 
                     // if (nextNode && (nextNode.nodeName === 'DIV' || nextNode.nodeName === '#text')) {
-                    if (nextNode && (nextNode.nodeName === 'DIV')) {
+                    if (nextNode && (['DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].indexOf(nextNode.nodeName) !== -1)) {
                         result += '\n'
                     }
 
@@ -280,6 +280,12 @@ export default class Parser {
                 case 'DIV':
                     // result += this.toMDFromNodes(node.childNodes) + '\n'
                     result += this.toMDFromNodes(node.childNodes)
+
+                    if (node.childNodes.length > 0 && node.childNodes[node.childNodes.length - 1].nodeName !== 'BR') {
+                        // Последняя нода в DIV`е не является переносом строк
+                        result += '\n'
+                    }
+
                     break;
                 case 'BR':
                     result += '\n'
