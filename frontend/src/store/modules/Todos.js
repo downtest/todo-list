@@ -166,7 +166,7 @@ const todos = {
                         commit('setItems', data)
                     })
                     .catch((response) => {
-                        dispatch('popupNotices/addError', response, { root: true })
+                        dispatch('popupNotices/addError', response.response.data.error, { root: true })
                         console.error(response, `error on Tasks Load`)
                         resolve([])
                     })
@@ -290,7 +290,7 @@ const todos = {
                     return data
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', response, { root: true })
+                    dispatch('popupNotices/addError', response.response.data.error, { root: true })
                     console.error(response, `error on Update Task`)
                 })
         },
@@ -332,7 +332,7 @@ const todos = {
                     return data
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', response, { root: true })
+                    dispatch('popupNotices/addError', response.response.data.error, { root: true })
                     console.error(response, `error on delete Task`)
                 })
         },
@@ -454,7 +454,7 @@ const todos = {
                     return data.tasks
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', response, { root: true })
+                    dispatch('popupNotices/addError', response.response.data.error, { root: true })
                     console.error(response, `error on Update Task`)
                 })
         },

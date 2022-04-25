@@ -202,7 +202,7 @@ class TasksInMongo extends Service
             $result[] = $actualizedTask;
 
             // Рекурсивно добавляем всех дочек
-            if (count(array_filter($tasks, fn($taskInLoop) => $taskInLoop['parentId'] === $task['id'])) > 0) {
+            if (count(array_filter($tasks, fn($taskInLoop) => ($taskInLoop['parentId'] ?? null) === $task['id'])) > 0) {
                 $result = array_merge($result, $this->massUpdateOrCreate($collectionName, $tasks, $actualizedTask['oldId'], $actualizedTask['id']));
             }
         }
