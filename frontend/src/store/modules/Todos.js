@@ -166,7 +166,7 @@ const todos = {
                         commit('setItems', data)
                     })
                     .catch((response) => {
-                        this.$store.dispatch('popupNotices/addError', response)
+                        dispatch('popupNotices/addError', response, { root: true })
                         console.error(response, `error on Tasks Load`)
                         resolve([])
                     })
@@ -271,9 +271,10 @@ const todos = {
          * @param commit
          * @param state
          * @param getters
+         * @param dispatch
          * @param payload
          */
-        dragItem({commit, state, getters}, payload) {
+        dragItem({commit, state, getters, dispatch}, payload) {
             this.axios.post('api/tasks/update', {
                 collectionId: null,
                 id: payload.taskId,
@@ -289,7 +290,7 @@ const todos = {
                     return data
                 })
                 .catch((response) => {
-                    this.$store.dispatch('popupNotices/addError', response)
+                    dispatch('popupNotices/addError', response, { root: true })
                     console.error(response, `error on Update Task`)
                 })
         },
@@ -331,7 +332,7 @@ const todos = {
                     return data
                 })
                 .catch((response) => {
-                    this.$store.dispatch('popupNotices/addError', response)
+                    dispatch('popupNotices/addError', response, { root: true })
                     console.error(response, `error on delete Task`)
                 })
         },
@@ -361,6 +362,7 @@ const todos = {
         },
         /**
          * Action deleteLabel
+         * @param dispatch
          * @param commit
          * @param getters
          * @param id
@@ -423,8 +425,9 @@ const todos = {
          * @param commit
          * @param state
          * @param getters
+         * @param dispatch
          */
-        save({commit, state, getters}) {
+        save({commit, state, getters, dispatch}) {
             if (!getters.unconfirmed.length) {
                 return
             }
@@ -451,7 +454,7 @@ const todos = {
                     return data.tasks
                 })
                 .catch((response) => {
-                    this.$store.dispatch('popupNotices/addError', response)
+                    dispatch('popupNotices/addError', response, { root: true })
                     console.error(response, `error on Update Task`)
                 })
         },

@@ -173,7 +173,7 @@ class TasksInMongo extends Service
      */
     public function massUpdateOrCreate(string $collectionName, array $tasks, ?string $oldParentId = null, ?string $newParentId = null): array
     {
-        $children = array_filter($tasks, fn($task) => $task['parentId'] === $oldParentId);
+        $children = array_filter($tasks, fn($task) => ($task['parentId'] ?? null) === $oldParentId);
         $result = [];
 
         foreach ($children as $task) {
