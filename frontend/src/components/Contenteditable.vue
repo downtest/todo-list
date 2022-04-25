@@ -21,8 +21,8 @@
 
 <script>
 import moment from 'moment'
-// import Parser from '@todo-markdown/parser'
-import Parser from '../../todo-markdown/parser'
+// import Parser from '@modules/parser'
+import Parser from '../../modules/parser'
 
 export default {
     name: 'contenteditable',

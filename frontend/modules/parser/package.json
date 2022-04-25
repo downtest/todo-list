@@ -1,5 +1,5 @@
 {
-  "name": "@todo-markdown/parser",
+  "name": "@modules/parser",
   "version": "0.1.0",
   "private": true,
   "scripts": {

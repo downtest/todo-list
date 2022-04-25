@@ -4,6 +4,7 @@ import user from './modules/User'
 import todos from './modules/Todos'
 
 import icons from './modules/Icons'
+import popupNotices from './modules/PopupNotices'
 
 import range from './tools/range'
 
@@ -17,6 +18,7 @@ const store = createStore({
         user,
         todos,
         icons,
+        popupNotices,
         range,
     },
     strict: debug,

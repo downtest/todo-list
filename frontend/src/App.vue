@@ -2,6 +2,8 @@
 <div id="app">
     <div class="top"></div>
 
+    <popup-notices></popup-notices>
+
     <div class="top-menu">
       <div class="current-user">
           <template v-if="$store.state.user.current.id">
@@ -58,10 +60,12 @@
 
 <script>
 import search from "./components/List/Search"
+import PopupNotices from "./components/PopupNotices"
 
 export default {
     components: {
         search,
+        PopupNotices,
     },
     created() {
         console.log(this.$route, `this.$route`)
