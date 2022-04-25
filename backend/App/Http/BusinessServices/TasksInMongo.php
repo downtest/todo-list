@@ -251,7 +251,7 @@ class TasksInMongo extends Service
             $task['index'] = $maxIndex;
         }
 
-        if ($task['parentId'] || $task['index']) {
+        if (isset($task['parentId']) || isset($task['index'])) {
             TasksInMongo::getInstance()->updateParent(
                 $collectionName,
                 $task['parentId'] ?? null,
