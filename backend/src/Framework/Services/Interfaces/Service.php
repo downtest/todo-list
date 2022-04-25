@@ -19,10 +19,10 @@ abstract class Service
     protected static $instance;
 
     /**
-     * @return self
+     * @return static
      * @throws Exception
      */
-    public static function getInstance(): self
+    public static function getInstance(): static
     {
         if (!static::$instance) {
             static::$instance = static::createInstance();

@@ -4,13 +4,11 @@
 namespace App\Http\Actions\Api\Tasks\Mass;
 
 
+use App\Http\BusinessServices\TasksInMongo;
 use App\Http\Interfaces\Action;
-use App\Http\Resources\Tasks\TaskResource;
 use App\Models\User;
-use Framework\Services\DBMongo;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Laminas\Diactoros\ServerRequest;
 
 class Update extends Action
 {
@@ -23,33 +21,12 @@ class Update extends Action
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $db = DBMongo::getInstance();
         $collectionName = 'tasks'.User::current()['id'];
-        $insertAction = new \App\Http\Actions\Api\Tasks\Insert();
-        $updateAction = new \App\Http\Actions\Api\Tasks\Update();
-        $result = [];
 
-        foreach ($request->getAttribute('tasks') as $task) {
-            $oneTaskRequest = new ServerRequest();
-            foreach ($task as $param => $value) {
-                $oneTaskRequest = $oneTaskRequest->withAttribute($param, $value);
-            }
-
-            if (!empty($task['isNew']) && $task['isNew']) {
-                // Нужно создать
-                if ($errors = $insertAction->getValidationErrors($oneTaskRequest)) {
-                    return $this->validationErrorResponse($errors);
-                }
-
-                $result[] = ['oldId' => $oneTaskRequest->getAttribute('id')] + (new TaskResource($insertAction->handle($oneTaskRequest)->getPayload()))->toArray();
-            } else {
-                // Нужно обновить
-                if ($errors = $updateAction->getValidationErrors($oneTaskRequest)) {
-                    return $this->validationErrorResponse($errors);
-                }
-
-                $result[] = ['oldId' => $oneTaskRequest->getAttribute('id')] + (new TaskResource($updateAction->handle($oneTaskRequest)->getPayload()))->toArray();
-            }
+        try {
+            $result = TasksInMongo::getInstance()->massUpdateOrCreate($collectionName, $request->getAttribute('tasks'));
+        } catch (\Throwable $exception) {
+            return $this->errorResponse(["{$exception->getMessage()} IN {$exception->getFile()} ON LINE {$exception->getLine()}"]);
         }
 
         return $this->successResponse(['tasks' => $result]);

@@ -32,31 +32,10 @@ class Update extends Action
         $db = DBMongo::getInstance();
         $collectionName = 'tasks'.User::current()['id'];
 
-        if (!$task = $db->findById($collectionName, $request->getAttribute('id'))) {
-            return $this->errorResponse(["Не найдена таска {$request->getAttribute('id')}"]);
-        }
-
-        // Если изменён родитель, но не передан индекс в новом родителе
-        if ($request->getAttribute('parentId') && !is_int($request->getAttribute('index'))) {
-            $maxIndex = TasksInMongo::getInstance()->getMaxId($collectionName, $request->getAttribute('parentId'));
-
-            $request = $request->withAttribute('index', $maxIndex);
-        }
-
-        if ($request->getAttribute('parentId') || $request->getAttribute('index')) {
-            TasksInMongo::getInstance()->updateParent(
-                $collectionName,
-                $task['parentId'] ?? null,
-                $request->getAttribute('parentId'),
-                $task['index'] ?? 0,
-                $request->getAttribute('index')
-            );
-        }
-
         try {
-            $db->updateOne($collectionName, Arr::except($request->getAttributes(), ['collectionId', 'isNew', 'confirmed']));
+            TasksInMongo::getInstance()->update($collectionName, $request->getAttributes());
         } catch (\Throwable $exception) {
-            return $this->errorResponse(['Не удалось обновить запись']);
+            return $this->errorResponse(['Не удалось обновить запись: '.$exception->getMessage()]);
         }
 
         return new JsonResponse($db->findById($collectionName, $request->getAttribute('id')));

@@ -170,9 +170,8 @@ export default {
     },
   },
   activated() {
-    console.log(this.itemId, `item ID`)
-
     this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+    this.$store.dispatch('todos/resetFocus')
   },
 }
 </script>

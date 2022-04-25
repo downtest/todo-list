@@ -10,7 +10,7 @@ use Framework\Tools\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Laminas\Diactoros\Response\JsonResponse;
+use Framework\Http\Responses\JsonResponse;
 
 abstract class Action implements RequestHandlerInterface
 {

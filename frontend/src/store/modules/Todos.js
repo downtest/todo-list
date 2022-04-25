@@ -445,6 +445,9 @@ const todos = {
                     console.error(response, `error on Update Task`)
                 })
         },
+        resetFocus({commit}) {
+            commit('setFocusId', null)
+        },
     }
 };
 

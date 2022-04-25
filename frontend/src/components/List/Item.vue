@@ -269,5 +269,10 @@ import Labels from "../Item/Labels"
                 }
             },
         },
+        activated() {
+            // Сбрасываем свайп записи
+            this.showMore = false
+            this.swiper.slidePrev()
+        },
     };
 </script>

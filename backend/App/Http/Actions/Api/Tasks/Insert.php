@@ -32,15 +32,7 @@ class Insert extends Action
         $db = DBMongo::getInstance();
         $collectionName = 'tasks'.User::current()['id'];
 
-        TasksInMongo::getInstance()->addToParent(
-            $collectionName,
-            $request->getAttribute('parentId'),
-            $request->getAttribute('index')
-        );
-
-        $maxIndex = TasksInMongo::getInstance()->getMaxId($collectionName, $request->getAttribute('parentId') ?? null);
-
-        $newId = $db->insertOne($collectionName, Arr::except($request->getAttributes(), ['isNew', 'id', 'confirmed', 'isNew']));
+        $newId = TasksInMongo::getInstance()->create($collectionName, $request->getAttributes());
 
         return new JsonResponse($db->findById($collectionName, $newId));
     }

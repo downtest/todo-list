@@ -9,7 +9,7 @@
 
         <div
               class="task-message contenteditable-message placeholder"
-              v-html="content"
+              v-html="message"
               :id="'contenteditable-message'"
               :contenteditable="true"
               aria-placeholder="Текст записи..."
@@ -40,11 +40,6 @@ export default {
             message: '', // Локальный текст, нужен чтобы фокус не слетал бы с div`а при изменении task.message
         }
     },
-    computed: {
-        content() {
-            return this.parser.setText(this.message).toHtml()
-        },
-    },
     watch: {
         'task.id': {
             immediate: true,
@@ -61,7 +56,16 @@ export default {
          * Устанавливаем текст для редактирования
          */
         setText() {
-            this.message = (this.task.updated && this.task.updated.message) ? this.task.updated.message : this.task.message
+            if (!this.parser) {
+                return
+            }
+
+            let string = (this.task.updated && this.task.updated.message) ? this.task.updated.message : this.task.message
+            this.message = this.parser.setText(string).toHtml()
+
+            if (!string) {
+                document.getElementById('contenteditable-message').innerHTML = ''
+            }
         },
         inputEvent(value) {
             if (!value) {
@@ -248,6 +252,9 @@ export default {
     beforeMount() {
         this.parser = new Parser()
     },
+    activated() {
+        this.setText()
+    },
 }
 </script>
 
@@ -268,6 +275,7 @@ export default {
 .task-message {
   border: 1px solid darkgrey;
   text-align: left;
+  margin: 0 10px;
 }
 
 .word {

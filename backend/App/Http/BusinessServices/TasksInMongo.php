@@ -3,8 +3,10 @@
 
 namespace App\Http\BusinessServices;
 
+use App\Http\Resources\Tasks\TaskResource;
 use Framework\Services\DBMongo;
 use Framework\Services\Interfaces\Service;
+use Framework\Tools\Arr;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -157,6 +159,109 @@ class TasksInMongo extends Service
         }
 
         return $result;
+    }
+
+    /**
+     * Рекурсивно добавляет, либо обновляет все записи(таски) и змассива
+     *
+     * @param string $collectionName
+     * @param array $tasks
+     * @param string|null $oldParentId Старый(временный) родительский ID, по которому ищем запись в массиве
+     * @param string|null $newParentId Новый родительский ID, который
+     * @return array
+     * @throws \Exception
+     */
+    public function massUpdateOrCreate(string $collectionName, array $tasks, ?string $oldParentId = null, ?string $newParentId = null): array
+    {
+        $children = array_filter($tasks, fn($task) => $task['parentId'] === $oldParentId);
+        $result = [];
+
+        foreach ($children as $task) {
+            // Заменяем временный ID на реальный
+            if (!empty($task['parentId']) && $newParentId) {
+                $task['parentId'] = $newParentId;
+            }
+
+            if (!empty($task['isNew']) && $task['isNew']) {
+                // Нужно создать
+                $newId = $this->create($collectionName, $task);
+
+                $actualizedTask = [
+                    'oldId' => $task['id'],
+                    'id' => $newId
+                ] + (new TaskResource($task))->toArray();
+            } else {
+                // Нужно обновить
+                $this->update($collectionName, $task);
+
+                $actualizedTask = [
+                    'oldId' => $task['id'],
+                ] + (new TaskResource($task))->toArray();
+            }
+
+            $result[] = $actualizedTask;
+
+            // Рекурсивно добавляем всех дочек
+            if (count(array_filter($tasks, fn($taskInLoop) => $taskInLoop['parentId'] === $task['id'])) > 0) {
+                $result = array_merge($result, $this->massUpdateOrCreate($collectionName, $tasks, $actualizedTask['oldId'], $actualizedTask['id']));
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Создаём новую запись
+     *
+     * @param string $collectionName
+     * @param array $task
+     * @return string
+     */
+    public function create(string $collectionName, array $task): string
+    {
+        $this->addToParent(
+            $collectionName,
+            $task['parentId'] ?? null,
+            $task['index'] ?? 0
+        );
+
+//        $maxIndex = $this->getMaxId($collectionName, $request->getAttribute('parentId') ?? null);
+
+        return $this->db->insertOne($collectionName, Arr::except($task, ['isNew', 'id', 'confirmed', 'isNew']));
+    }
+
+    /**
+     * Изменение записи
+     *
+     * @param string $collectionName
+     * @param array $task
+     * @return bool
+     * @throws \Exception
+     */
+    public function update(string $collectionName, array $task): bool
+    {
+        if (!$task = $this->db->findById($collectionName, $task['id'])) {
+            throw new \Exception("Не найдена таска #{$task['id']}");
+        }
+
+        // Если изменён родитель, но не передан индекс в новом родителе
+        if ($task['parentId'] && !is_int($task['index'])) {
+            $maxIndex = $this->getMaxId($collectionName, $task['parentId']);
+
+            $task['index'] = $maxIndex;
+        }
+
+        if ($task['parentId'] || $task['index']) {
+            TasksInMongo::getInstance()->updateParent(
+                $collectionName,
+                $task['parentId'] ?? null,
+                $task['parentId'],
+                $task['index'] ?? 0,
+                $task['index']
+            );
+        }
+
+        return $this->db->updateOne($collectionName, Arr::except($task, ['collectionId', 'isNew', 'confirmed']));
     }
 
     /**
