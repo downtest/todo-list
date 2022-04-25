@@ -166,6 +166,7 @@ const todos = {
                         commit('setItems', data)
                     })
                     .catch((response) => {
+                        this.$store.dispatch('popupNotices/addError', response)
                         console.error(response, `error on Tasks Load`)
                         resolve([])
                     })
@@ -287,6 +288,10 @@ const todos = {
 
                     return data
                 })
+                .catch((response) => {
+                    this.$store.dispatch('popupNotices/addError', response)
+                    console.error(response, `error on Update Task`)
+                })
         },
         /**
          * Action deleteItem
@@ -324,6 +329,10 @@ const todos = {
                     window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
                     return data
+                })
+                .catch((response) => {
+                    this.$store.dispatch('popupNotices/addError', response)
+                    console.error(response, `error on delete Task`)
                 })
         },
         addLabel ({state, commit, getters}, {id, label}) {
@@ -442,6 +451,7 @@ const todos = {
                     return data.tasks
                 })
                 .catch((response) => {
+                    this.$store.dispatch('popupNotices/addError', response)
                     console.error(response, `error on Update Task`)
                 })
         },
