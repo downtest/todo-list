@@ -166,7 +166,7 @@ const todos = {
                         commit('setItems', data)
                     })
                     .catch((response) => {
-                        dispatch('popupNotices/addError', response.response.data.error, { root: true })
+                        dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                         console.error(response, `error on Tasks Load`)
                         resolve([])
                     })
@@ -290,7 +290,7 @@ const todos = {
                     return data
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', response.response.data.error, { root: true })
+                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                     console.error(response, `error on Update Task`)
                 })
         },
@@ -332,7 +332,7 @@ const todos = {
                     return data
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', response.response.data.error, { root: true })
+                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                     console.error(response, `error on delete Task`)
                 })
         },
@@ -451,10 +451,15 @@ const todos = {
 
                     window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
+                    dispatch('popupNotices/addSuccess', {
+                        text: `Записи сохранены (${data.tasks.length})`,
+                        duration: 2000
+                    }, { root: true })
+
                     return data.tasks
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', response.response.data.error, { root: true })
+                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                     console.error(response, `error on Update Task`)
                 })
         },

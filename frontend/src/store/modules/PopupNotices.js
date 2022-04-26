@@ -24,35 +24,58 @@ const popupNotices = {
         add(state, payload) {
             state.all.push(payload)
         },
+        update(state, payload) {
+            let index = state.all.findIndex((notice) => notice.id === payload.id)
+            let notice = state.all[index]
+
+            state.all.splice(index, 1, {...payload, ...notice})
+        },
         remove(state, id) {
-            state.all.splice(state.all.findIndex(notice => notice.id === id), 1)
+            let index = state.all.findIndex(notice => notice.id === id)
+
+            if (index >= 0) {
+                state.all.splice(index, 1)
+            }
         },
     },
 
     actions: {
-        addError({commit}, payload) {
-            commit('add', {
-                id: Date.now() + Math.random(),
-                text: payload,
-                type: 'error',
-            })
+        add({commit, dispatch}, payload) {
+            if (!payload.id) {
+                payload.id = Date.now() + Math.random()
+            }
+
+            if (!payload.type) {
+                payload.type = 'error'
+            }
+
+            commit('add', payload)
+
+            if (payload.duration) {
+                setTimeout(() => {
+                    dispatch('remove', payload.id)
+                }, payload.duration)
+            }
         },
-        addWarning({commit}, payload) {
-            commit('add', {
-                id: Date.now() + Math.random(),
-                text: payload,
-                type: 'warning',
-            })
+        addError({dispatch}, payload) {
+            dispatch('add', {...payload, type: 'error'})
         },
-        addSuccess({commit}, payload) {
-            commit('add', {
-                id: Date.now() + Math.random(),
-                text: payload,
-                type: 'success',
-            })
+        addWarning({dispatch}, payload) {
+            dispatch('add', {...payload, type: 'warning'})
         },
-        remove({commit}, id) {
-            commit('remove', id)
+        addSuccess({dispatch}, payload) {
+            dispatch('add', {...payload, type: 'success'})
+        },
+        remove({state, commit}, id) {
+            let notice = state.all.find(notice => notice.id === id)
+
+            if (notice.deprecated) {
+                return
+            }
+
+            commit('update', {id: id, deprecated: true,})
+
+            setTimeout(() => commit('remove', id), 300)
         },
     },
 };

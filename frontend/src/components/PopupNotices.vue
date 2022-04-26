@@ -1,8 +1,15 @@
 <template>
-  <div>
-    <div class="notice notice_error" @click="removeNotice(notice)" v-for="notice in $store.getters['popupNotices/errors']">{{notice.text}}</div>
-    <div class="notice notice_warning" @click="removeNotice(notice)" v-for="notice in $store.getters['popupNotices/warnings']">{{notice.text}}</div>
-    <div class="notice notice_success" @click="removeNotice(notice)" v-for="notice in $store.getters['popupNotices/success']">{{notice.text}}</div>
+  <div class="popup-notices">
+    <div :class="{
+        'notice' : true,
+        'notice_error': notice.type === 'error',
+        'notice_warning': notice.type === 'warning',
+        'notice_success': notice.type === 'success',
+        'deprecated': notice.deprecated,
+      }" v-for="notice in $store.getters['popupNotices/all']">
+      <div class="notice--text">{{notice.text}}</div>
+      <div class="notice--cross" @click="removeNotice(notice)">X</div>
+    </div>
   </div>
 </template>
 
@@ -11,30 +18,13 @@ export default {
   name: "PopupNotifications",
   methods: {
     removeNotice(notice) {
+      if (notice.deprecated) {
+        // Запись уже помечена на удаление
+        return
+      }
+
       this.$store.dispatch('popupNotices/remove', notice.id)
     },
   },
 }
 </script>
-
-<style lang="scss" scoped>
-.notice {
-  margin: 10px;
-  border-radius: 3px;
-
-  &_error {
-    background-color: #720707;
-    color: #dedede;
-  }
-
-  &_warning {
-    background-color: #e5833b;
-    color: #232323;
-  }
-
-  &_success {
-    background-color: #00850c;
-    color: #e5e5e5;
-  }
-}
-</style>
