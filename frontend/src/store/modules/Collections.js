@@ -3,14 +3,18 @@ const collections = {
 
     state: {
         collections: [],
-        currentUserId: null,
+        currentCollection: null,
+        loadedForUser: null,
     },
     mutations: {
         setCollections(state, payload) {
             state.collections = payload;
         },
-        setCurrentUserId(state, payload) {
-            state.currentUserId = payload;
+        setCurrentCollection(state, payload) {
+            state.currentCollection = payload;
+        },
+        setLoadedForUser(state, payload) {
+            state.loadedForUser = payload;
         },
     },
 
@@ -18,24 +22,33 @@ const collections = {
         all(state) {
             return state.collections;
         },
-        currentUserId(state) {
-            return state.currentUserId;
+        current(state) {
+            return state.collections.find(collection => collection.id === state.currentCollection);
         },
     },
 
     actions: {
-        load({getters, commit}, userId) {
-            if (getters.cu)
-
-            this.axios.post(`/api/user/login`,)
-                .then(({data}) => {
-                    commit('setCollections', data)
-                    commit('setCurrentUserId', userId)
+        load({getters, commit, state}, userId) {
+            if (state.loadedForUser === userId) {
+                return new Promise((resolve) => {
+                    resolve()
                 })
+            }
+
+            return new Promise((resolve, reject) => {
+                this.axios.post(`/api/collections/get`)
+                    .then(({data}) => {
+                        commit('setLoadedForUser', userId)
+                        commit('setCollections', data.collections)
+                        commit('setCurrentCollection', data.currentCollection)
+
+                        resolve(data)
+                    })
+            })
 
             // commit('update')
         },
     },
 };
 
-export default user;
+export default collections;

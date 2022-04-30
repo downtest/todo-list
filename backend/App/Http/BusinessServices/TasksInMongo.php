@@ -245,7 +245,7 @@ class TasksInMongo extends Service
         }
 
         // Если изменён родитель, но не передан индекс в новом родителе
-        if ($task['parentId'] && !is_int($task['index'])) {
+        if ($task['parentId'] &&  empty($task['index'])) {
             $maxIndex = $this->getMaxId($collectionName, $task['parentId']);
 
             $task['index'] = $maxIndex;

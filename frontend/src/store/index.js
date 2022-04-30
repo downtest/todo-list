@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import collections from './modules/Collections'
 import counter from './modules/Counter'
 import user from './modules/User'
 import todos from './modules/Todos'
@@ -14,6 +15,7 @@ const debug = process.env.NODE_ENV !== 'production'
 
 const store = createStore({
     modules: {
+        collections,
         counter,
         user,
         todos,

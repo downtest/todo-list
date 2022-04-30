@@ -1,7 +1,6 @@
 <template>
     <div>
         <div class="controls">
-            <button @click="inspectElement">?</button>
             <button @click="toggleH1">H1</button>
             <button @click="toggleCheckbox">Checkbox</button>
             <button @click="toggleOl">Ol</button>
@@ -114,11 +113,6 @@ export default {
               // sel.removeAllRanges();
               // sel.addRange(range)
             })
-        },
-        inspectElement() {
-            let range=window.getSelection().getRangeAt(0);
-            let sC=range.startContainer,eC=range.endContainer;
-            let bE = document.getElementById('contenteditable-message')
         },
         saveFocusRange() {
 

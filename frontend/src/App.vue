@@ -68,8 +68,15 @@ export default {
         PopupNotices,
     },
     created() {
-        console.log(this.$route, `this.$route`)
-        console.log(this.$router, `this.$router`)
+        // console.log(this.$route, `this.$route`)
+        // console.log(this.$router, `this.$router`)
+
+        this.$store.dispatch('collections/load').then((data) => {
+          this.$store.dispatch('todos/load', {
+            clientId: data.user ? data.user.id : null,
+            collectionId: data.currentCollection ? data.currentCollection : null,
+          })
+        })
 
         this.$store.dispatch('user/current')
         // document.title = this.$route.matched[0]['meta']['title'];

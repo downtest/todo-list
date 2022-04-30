@@ -3,6 +3,7 @@
 namespace App\Http\Actions\Api\Collections;
 
 use App\Http\Interfaces\Action;
+use App\Models\User;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,7 +25,9 @@ class Get extends Action
 
         return $this->successResponse([
             'status' => true,
+            'user' => User::current(),
             'collections' => $collections,
+            'currentCollection' => '1',
         ]);
     }
 }

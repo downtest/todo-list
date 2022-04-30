@@ -53,6 +53,21 @@ const todos = {
                 return {...task.updated, id: task.id}
             })
         },
+        getTaskChanges: (state, getters) => id => {
+            let task = getters.all.find(task => task.id === id)
+
+            if (!task) return null
+
+            if (task.isNew) {
+                return task
+            }
+
+            if (task.updated) {
+                return {...task.updated, id: task.id}
+            }
+
+            return null
+        },
         prepareUnconfirmedForServer: (state) => {
             return state.items.filter(task => task.updated || task.isNew).map(task => {
                 let formedTask = {...task, ...task.updated}
@@ -149,7 +164,7 @@ const todos = {
         },
     },
     actions: {
-        async load ({state, commit, dispatch, getters}) {
+        async load ({state, commit, dispatch, getters}, payload) {
             if (getters.initialized) {
                 return new Promise((resolve, reject) => {
                     resolve(getters.all)
@@ -160,7 +175,8 @@ const todos = {
 
             return new Promise(async (resolve, reject) => {
                 this.axios.get('api/tasks/get', {params: {
-                    collectionId: null,
+                    clientId: payload.clientId,
+                    collectionId: payload.collectionId,
                 }})
                     .then(({data}) => {
                         commit('setItems', data)
@@ -435,6 +451,46 @@ const todos = {
             this.axios.post('api/tasks/mass/update', {
                 collectionId: null,
                 tasks: getters.prepareUnconfirmedForServer
+            })
+                .then(({data}) => {
+                    // commit('updateItems', data.tasks)
+
+                    for (let task of data.tasks) {
+                        console.log(task, `updating ${task.id}`)
+
+                        commit('updateItem', {
+                            id: task.oldId || task.id,
+                            payload: {...task, updated: null, isNew: false,},
+                            instant: true,
+                        })
+                    }
+
+                    window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+
+                    dispatch('popupNotices/addSuccess', {
+                        text: `Записи сохранены (${data.tasks.length})`,
+                        duration: 2000
+                    }, { root: true })
+
+                    return data.tasks
+                })
+                .catch((response) => {
+                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
+                    console.error(response, `error on Update Task`)
+                })
+        },
+        /**
+         * Action save - сохранение одной таски
+         * @param commit
+         * @param state
+         * @param getters
+         * @param dispatch
+         * @param task
+         */
+        saveOneTask({commit, state, getters, dispatch}, task) {
+            this.axios.post('api/tasks/update', {
+                collectionId: null,
+                ...task
             })
                 .then(({data}) => {
                     // commit('updateItems', data.tasks)

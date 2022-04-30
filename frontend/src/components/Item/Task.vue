@@ -4,7 +4,10 @@
 
       <breadcrumb v-if="itemId" :id="itemId"></breadcrumb>
 
-      <div v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">save ({{$store.getters['todos/getChanges'].length}})</div>
+      <template v-if="this.$store.getters['todos/getTaskChanges'](itemId)">
+        <button @click="this.$store.dispatch('todos/resetChanges', itemId)">Сбросить изменения</button>
+        <button @click="this.$store.dispatch('todos/save')">Сохранить</button>
+      </template>
 
       <div v-if="item">
         <div>
@@ -108,10 +111,12 @@ export default {
     },
     itemDate: {
       get() {
-        if (this.item) {
-          return this.item.date;
+        if (this.item && this.item.updated) {
+          return this.item.updated.date
+        } else if (this.item) {
+          return this.item.date
         } else {
-          return null;
+          return null
         }
       },
       set(date) {
@@ -125,10 +130,12 @@ export default {
     },
     itemTime: {
       get() {
-        if (this.item) {
-          return this.item.time;
+        if (this.item && this.item.updated) {
+          return this.item.updated.time
+        } else if (this.item) {
+          return this.item.time
         } else {
-          return null;
+          return null
         }
       },
       set(time) {
