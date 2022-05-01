@@ -110,7 +110,7 @@ class DBMongo extends Service
 
         return $this->client->$collectionName->updateOne(
             ['_id' => new ObjectId($taskId)],
-            ['$set' => Arr::except($payload, ['taskId', 'collectionId'])]
+            ['$set' => $payload]
         )->getModifiedCount() > 0;
     }
 

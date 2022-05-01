@@ -490,33 +490,29 @@ const todos = {
         saveOneTask({commit, state, getters, dispatch}, task) {
             this.axios.post('api/tasks/update', {
                 collectionId: null,
-                ...task
+                task: {...task, ...task.updated},
             })
                 .then(({data}) => {
                     // commit('updateItems', data.tasks)
 
-                    for (let task of data.tasks) {
-                        console.log(task, `updating ${task.id}`)
-
-                        commit('updateItem', {
-                            id: task.oldId || task.id,
-                            payload: {...task, updated: null, isNew: false,},
-                            instant: true,
-                        })
-                    }
+                    commit('updateItem', {
+                        id: data.oldId || data.id,
+                        payload: {...data, updated: null, isNew: false,},
+                        instant: true,
+                    })
 
                     window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
                     dispatch('popupNotices/addSuccess', {
-                        text: `Записи сохранены (${data.tasks.length})`,
+                        text: `Запись сохранена`,
                         duration: 2000
                     }, { root: true })
 
-                    return data.tasks
+                    return data
                 })
                 .catch((response) => {
-                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                     console.error(response, `error on Update Task`)
+                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                 })
         },
         resetFocus({commit}) {

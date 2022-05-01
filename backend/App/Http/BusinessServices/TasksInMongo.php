@@ -240,7 +240,7 @@ class TasksInMongo extends Service
      */
     public function update(string $collectionName, array $task): bool
     {
-        if (!$task = $this->db->findById($collectionName, $task['id'])) {
+        if (!$taskTmp = $this->db->findById($collectionName, $task['id'])) {
             throw new \Exception("Не найдена таска #{$task['id']}");
         }
 
@@ -261,7 +261,7 @@ class TasksInMongo extends Service
             );
         }
 
-        return $this->db->updateOne($collectionName, Arr::except($task, ['collectionId', 'isNew', 'confirmed']));
+        return $this->db->updateOne($collectionName, Arr::except($task, ['collectionId', 'taskId', 'isNew', 'confirmed', 'updated']));
     }
 
     /**

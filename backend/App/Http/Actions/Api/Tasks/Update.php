@@ -15,15 +15,21 @@ use Laminas\Diactoros\Response\JsonResponse;
 
 class Update extends Action
 {
+    /**
+     * Првоерка валидации проходит в \App\Http\Interfaces\Action::getValidationErrors()
+     *
+     * @param ServerRequestInterface $request
+     * @return string[] Массив ошибок
+     */
     public function validationRules(ServerRequestInterface $request): array
     {
         return [
             'collectionId' => ['nullable', 'string'],
-            'id' => ['required', 'string'],
-            'index' => ['nullable', 'number'],
-            'parentId' => ['nullable', 'string'],
-            'message' => ['nullable', 'string'],
-            'labels' => ['nullable', 'array'],
+            'task.id' => ['required', 'string'],
+            'task.index' => ['nullable', 'number'],
+            'task.parentId' => ['nullable', 'string'],
+            'task.message' => ['nullable', 'string'],
+            'task.labels' => ['nullable', 'array'],
         ];
     }
 
@@ -31,13 +37,14 @@ class Update extends Action
     {
         $db = DBMongo::getInstance();
         $collectionName = 'tasks'.User::current()['id'];
+        $taskInput = $request->getAttribute('task');
 
         try {
-            TasksInMongo::getInstance()->update($collectionName, $request->getAttributes());
+            TasksInMongo::getInstance()->update($collectionName, $taskInput);
         } catch (\Throwable $exception) {
             return $this->errorResponse(['Не удалось обновить запись: '.$exception->getMessage()]);
         }
 
-        return new JsonResponse($db->findById($collectionName, $request->getAttribute('id')));
+        return new JsonResponse($db->findById($collectionName, $taskInput['id']));
     }
 }
