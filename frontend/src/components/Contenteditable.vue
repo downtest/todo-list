@@ -1,13 +1,24 @@
 <template>
-    <div>
-        <div class="controls">
-            <button @click="toggleH1">H1</button>
-            <button @click="toggleCheckbox">Checkbox</button>
-            <button @click="toggleOl">Ol</button>
+    <div class="contenteditable">
+        <div class="contenteditable--controls">
+            <div class="control" @click="toggleH1">
+              <img class="control-img" :src="$store.getters['icons/ContenteditableControls']['H1']" alt="">
+              <span class="control-text">Заголовок 1</span>
+            </div>
+
+            <div class="control" @click="toggleCheckbox">
+              <img class="control-img" :src="$store.getters['icons/ContenteditableControls']['CheckBox']" alt="">
+              <span class="control-text">Чек-бокс</span>
+            </div>
+
+            <div class="control" @click="toggleOl">
+              <img class="control-img" :src="$store.getters['icons/ContenteditableControls']['NumberList']" alt="">
+              <span class="control-text">Список</span>
+            </div>
         </div>
 
         <div
-              class="task-message contenteditable-message placeholder"
+              class="task-message contenteditable--message placeholder"
               v-html="message"
               :id="'contenteditable-message'"
               :contenteditable="true"

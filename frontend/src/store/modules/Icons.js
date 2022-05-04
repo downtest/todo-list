@@ -21,6 +21,10 @@ import Search from '../../../assets/icons/temp/search.svg'
 import Trash from '../../../assets/icons/temp/trash.svg'
 import Undo from '../../../assets/icons/temp/undo.png'
 
+import HeaderH1 from '../../../assets/icons/temp/contenteditable-controls/heading-h1.svg'
+import CheckBox from '../../../assets/icons/temp/contenteditable-controls/checkbox.svg'
+import NumberList from '../../../assets/icons/temp/contenteditable-controls/number-list.svg'
+
 const icons = {
     namespaced: true,
 
@@ -47,6 +51,13 @@ const icons = {
         Search: () => Search,
         Trash: () => Trash,
         Undo: () => Undo,
+        ContenteditableControls() {
+            return {
+                H1: HeaderH1,
+                CheckBox: CheckBox,
+                NumberList: NumberList,
+            }
+        },
     },
 }
 

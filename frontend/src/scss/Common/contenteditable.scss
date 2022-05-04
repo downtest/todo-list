@@ -1,3 +1,38 @@
+.contenteditable {
+  margin: 20px 0;
+
+  .contenteditable--controls {
+    display: flex;
+    margin: 5px 10px;
+
+    .control {
+      display: flex;
+      align-items: center;
+      margin-right: 5px;
+      padding-right: 5px;
+      border-right: 1px solid $colorDark;
+
+      .control-img {
+        width: 20px;
+        max-height: 20px;
+        padding: 0 25px;
+      }
+
+      .control-text {
+        display: none;
+      }
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+
+  .contenteditable--message {
+
+  }
+}
+
 .placeholder:empty::before {
   //content: "Текст обращения...";
   content: attr(aria-placeholder);
