@@ -64,13 +64,16 @@ class DBMongo extends Service
         );
     }
 
-    public function find(string $collectionName, array $conditions = [], array $options = []): array
+    public function find(?string $collectionName, array $conditions = [], array $options = []): array
     {
         $result = [];
-        $cursor = $this->client->$collectionName->find($conditions, $options);
 
-        foreach ($cursor as $value) {
-            $result[] = ['id' => (string)$value['_id']] + $value->getArrayCopy();
+        if ($collectionName) {
+            $cursor = $this->client->$collectionName->find($conditions, $options);
+
+            foreach ($cursor as $value) {
+                $result[] = ['id' => (string)$value['_id']] + $value->getArrayCopy();
+            }
         }
 
         return $result;
