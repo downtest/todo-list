@@ -1,7 +1,10 @@
 @import "variables";
+@import "Collections/collections";
+@import "Collections/collections-link";
 @import "Common/animations";
 @import "Common/btn";
 @import "Common/contenteditable";
+@import "Common/input";
 @import "Common/labels";
 @import "List/item";
 @import "Task/label";
@@ -24,7 +27,7 @@ input, textarea {
 }
 
 .top {
-  height: 70px;
+  height: 40px;
 }
 
 .bottom {

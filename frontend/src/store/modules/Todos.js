@@ -206,7 +206,7 @@ const todos = {
                     })
             })
         },
-        async loadFromStorage ({state, commit}) {
+        loadFromStorage ({state, commit}) {
             return new Promise((resolve, reject) => {
                 if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
                     commit('setItems', JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)))
@@ -215,7 +215,7 @@ const todos = {
                 return resolve(state.items)
             })
         },
-        async createItem ({commit, state, getters}, payload) {
+        createItem ({commit, state, getters}, payload) {
             // Временный id, настоящий придёт с сервера
             let tempId = (new String(Date.now() + Math.random())).toString()
             let newTaskData = {
@@ -237,8 +237,6 @@ const todos = {
             return newTaskData
         },
         resetInitialized({commit}) {
-            console.log(`todos init is reseted`)
-
             return commit('setInitialized', false)
         },
         /**

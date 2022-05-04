@@ -3,7 +3,9 @@
 
 namespace App\Http\BusinessServices;
 
+use App\Models\Collection;
 use App\Models\User;
+use App\Models\UserToken;
 use Framework\Services\DBPostgres;
 use Framework\Services\Interfaces\Service;
 
@@ -63,7 +65,30 @@ class Registration extends Service
             throw new \Exception("Пользователь {$email} есть, но пароли не совпадают");
         } else {
             // Выходит, что пользователя нет, либо нет пароля
-            return $this->db->get('INSERT INTO '.User::$table.' (email, password) VALUES (?, ?) RETURNING *', [$email, $userHashedPassword])[0] ?? null;
+            $user = $this->db->get('INSERT INTO '.User::$table.' (email, password) VALUES (?, ?) RETURNING *', [$email, $userHashedPassword])[0] ?? null;
+
+            if (!$user) {
+                throw new \Exception("Не удалось зарегистрировать пользователя");
+            }
+
+            // Создание коллекции
+            $this->db->get('INSERT INTO '.Collection::$table.' (id, name, owner_id, created_at, is_own) VALUES (?, ?, ?, ?, ?)', [
+                uniqid(),
+                'Мои записи',
+                $user['id'],
+                'NOW()',
+                'true',
+            ]);
+
+            // Создание токена
+            $this->db->get('INSERT INTO '.UserToken::$table.' (token, user_id, device_header, created_at) VALUES (?, ?, ?, ?)', [
+                uniqid(),
+                $user['id'],
+                $_SERVER['HTTP_USER_AGENT'],
+                'NOW()',
+            ]);
+
+            return $user;
         }
     }
 

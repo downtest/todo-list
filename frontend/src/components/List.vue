@@ -4,11 +4,16 @@
 
             <tasks-breadcrumb v-if="parentId" :id="parentId"></tasks-breadcrumb>
 
+            <router-link v-if="$store.getters['collections/current']" to="/collections" class="collections-link">
+                <img class="collections-link--icon" :src="$store.getters['icons/Briefcase']" alt="collections" title="collections">
+                <span class="collections-link--name">{{$store.getters['collections/current']['name']}}</span>
+            </router-link>
+
             <button v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/resetAllChanges')">Сбросить</button>
             <button v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">Сохранить ({{$store.getters['todos/getChanges'].length}})</button>
 
             <div v-if="elements.length <= 0" class="label_tip">
-              У Вас нет ни одной записи, нажмите на кнопку с плюсом ниже чтобы создать заметку, записать рецепт, поставить напоминание...
+                У Вас нет ни одной записи, нажмите на кнопку с плюсом ниже чтобы создать заметку, записать рецепт, поставить напоминание...
             </div>
 
             <nested
@@ -163,12 +168,6 @@ import draggable from "vuedraggable"
             setTimeHandler(value) {
                 this.parentDatetime = value
             },
-        },
-        activated() {
-            this.$store.dispatch('todos/load', {
-              clientId: this.$store.getters['user/current']['id'],
-              collectionId: this.$store.getters['collections/current'] ? this.$store.getters['collections/current']['id'] : null,
-            })
         },
         // Swiper setup
         setup() {

@@ -177,7 +177,9 @@ export default {
     },
   },
   activated() {
-    this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+    if (this.$store.getters['user/current']['id']) {
+        this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+    }
     this.$store.dispatch('todos/resetFocus')
   },
 }

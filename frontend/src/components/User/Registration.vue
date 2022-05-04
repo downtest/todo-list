@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3>Registration</h3>
+        <h3>Регистрация</h3>
 
         <ul class="errors">
             <li v-for="error in validationErrors.common">{{error}}</li>
@@ -12,23 +12,33 @@
         </div>
         <div v-else>
             <div :class="{input: true, 'error': validationErrors.email}">
-                Email: <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
+              <div class="input--title">Email*:</div>
+              <div class="input--input">
+                <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
                 <div v-if="validationErrors.email" class="error-notification">{{validationErrors.email.join('\n')}}</div>
+              </div>
             </div>
 
             <div :class="{input: true, 'error': validationErrors.phone}">
-                Phone: <input :class="{'error-input': validationErrors.phone}" v-model="phone" type="text" name="phone">
+              <div class="input--title">Phone:</div>
+              <div class="input--input">
+                <input :class="{'error-input': validationErrors.phone}" v-model="phone" type="text" name="phone">
                 <div v-if="validationErrors.phone" class="error-notification">{{validationErrors.phone.join('\n')}}</div>
+              </div>
             </div>
 
             <div :class="{input: true, 'error': validationErrors.password}">
-                Password: <input :class="{'error-input': validationErrors.password}" v-model="password" type="text" name="password">
+              <div class="input--title">Password*:</div>
+              <div class="input--input">
+                <input :class="{'error-input': validationErrors.password}" v-model="password" type="text" name="password">
                 <div v-if="validationErrors.password" class="error-notification">{{validationErrors.password.join('\n')}}</div>
+              </div>
             </div>
 
-            <button @click="register">Register</button>
+            <button @click="register">Зарегистрироваться</button>
         </div>
 
+        <br>
         <router-link :to="{name: 'profile'}">
             На страницу авторизации
         </router-link>
@@ -71,26 +81,3 @@ export default {
     },
 }
 </script>
-
-<style scoped lang="scss">
-.errors {
-    color: #ae2a2a;
-}
-
-.input {
-    width: 100px;
-
-    &.error {
-
-        .error-input {
-            border-color: #ae2a2a;
-            font-size: .7em;
-        }
-
-        .error-notification {
-            color: #ae2a2a;
-            font-size: .7em;
-        }
-    }
-}
-</style>

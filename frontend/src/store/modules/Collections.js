@@ -3,15 +3,15 @@ const collections = {
 
     state: {
         collections: [],
-        currentCollection: null,
+        currentCollectionId: null,
         loadedForUser: null,
     },
     mutations: {
         setCollections(state, payload) {
             state.collections = payload;
         },
-        setCurrentCollection(state, payload) {
-            state.currentCollection = payload;
+        setCurrentCollectionId(state, payload) {
+            state.currentCollectionId = payload;
         },
         setLoadedForUser(state, payload) {
             state.loadedForUser = payload;
@@ -23,12 +23,16 @@ const collections = {
             return state.collections;
         },
         current(state) {
-            return state.collections.find(collection => collection.id === state.currentCollection);
+            if (state.collections.length <= 0) {
+                return null
+            }
+
+            return state.collections.find(collection => collection.id === state.currentCollectionId);
         },
     },
 
     actions: {
-        load({getters, commit, state}, userId) {
+        load({dispatch, getters, commit, state}, userId) {
             if (state.loadedForUser === userId) {
                 return new Promise((resolve) => {
                     resolve()
@@ -40,9 +44,12 @@ const collections = {
                     .then(({data}) => {
                         commit('setLoadedForUser', userId)
                         commit('setCollections', data.collections)
-                        commit('setCurrentCollection', data.currentCollection)
+                        commit('setCurrentCollectionId', data.currentCollection)
 
                         resolve(data)
+                    })
+                    .catch((response) => {
+                        dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                     })
             })
 

@@ -5,33 +5,10 @@
     <popup-notices></popup-notices>
 
     <div class="top-menu">
-      <div class="current-user">
-          <template v-if="$store.state.user.current.id">
-              <router-link to="/user" class="user--avatar">
-                <img :src="$store.getters['icons/ProfileWhite']" alt="profile" title="profile">
-              </router-link>
-
-              <div class="user--name" v-if="$store.state.user.current.id">
-                {{$store.state.user.current.name || $store.state.user.current.email || $store.state.user.current.phone}}
-              </div>
-          </template>
-          <template v-else>
-              <router-link :to="{name: 'profile'}">Войти</router-link>
-          </template>
-
-          <search></search>
-      </div>
+        <search></search>
     </div>
 
     <ul class="control-buttons">
-        <li class="control">
-            <router-link to="/collections">
-                <img v-if="$route.name === 'collections'" class="control--icon" :src="$store.getters['icons/Briefcase']" alt="collections" title="collections">
-                <img v-else class="control--icon" :src="$store.getters['icons/BriefcaseWhite']" alt="collections" title="collections">
-                <span class="control--name">Calendar</span>
-            </router-link>
-        </li>
-
         <li class="control">
             <router-link :to="{name: 'calendarMonth'}">
                 <img class="control--icon" :src="$store.getters['icons/Calendar']" alt="calendar" title="calendar">
@@ -43,6 +20,14 @@
           <router-link :to="{name: 'task-list'}">
             <img class="control--icon" :src="$store.getters['icons/Checklist']" alt="Todos" title="Todos">
             <span class="control--name">Todos</span>
+          </router-link>
+        </li>
+
+        <li class="control">
+          <router-link :to="{name: 'profile'}">
+            <img v-if="$route.name === 'profile'" class="control--icon" :src="$store.getters['icons/Profile']" alt="profile" title="profile">
+            <img v-else class="control--icon" :src="$store.getters['icons/ProfileWhite']" alt="profile" title="profile">
+            <span class="control--name">Profile</span>
           </router-link>
         </li>
     </ul>
@@ -71,12 +56,14 @@ export default {
         // console.log(this.$route, `this.$route`)
         // console.log(this.$router, `this.$router`)
 
-        this.$store.dispatch('collections/load').then((data) => {
-          this.$store.dispatch('todos/load', {
-            clientId: data.user ? data.user.id : null,
-            collectionId: data.currentCollection ? data.currentCollection : null,
+        if (this.$store.getters['user/current']['id']) {
+          this.$store.dispatch('collections/load').then((data) => {
+            this.$store.dispatch('todos/load', {
+              clientId: data.user ? data.user.id : null,
+              collectionId: data.currentCollection ? data.currentCollection : null,
+            })
           })
-        })
+        }
 
         this.$store.dispatch('user/current')
         // document.title = this.$route.matched[0]['meta']['title'];

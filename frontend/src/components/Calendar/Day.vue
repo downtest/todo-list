@@ -129,11 +129,6 @@ export default {
             return result
         },
     },
-    watch: {
-        day() {
-            this.reloadTasks()
-        },
-    },
     methods: {
         handleWheel: function () {
             if (this.scrollingEvent) {
@@ -204,9 +199,6 @@ export default {
                     this.scrollToCurrent(true)
                 })
         },
-    },
-    activated() {
-        this.reloadTasks()
     },
 }
 </script>

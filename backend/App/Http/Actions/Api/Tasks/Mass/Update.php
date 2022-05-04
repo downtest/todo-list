@@ -21,7 +21,7 @@ class Update extends Action
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $collectionName = 'tasks'.User::current()['id'];
+        $collectionName = User::getDefaultCollectionForCurrentUser();
 
         try {
             $result = TasksInMongo::getInstance()->massUpdateOrCreate($collectionName, $request->getAttribute('tasks'));

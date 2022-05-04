@@ -1,6 +1,5 @@
 .search {
   width: 30px;
-  position: relative;
 
   .icon__search {
 
@@ -13,7 +12,7 @@
     position: absolute;
     transition: 1s;
     top: 0;
-    left: 30px;
+    left: 5px;
 
     &.hidden {
       display: none;
@@ -37,6 +36,7 @@
     position: absolute;
     background-color: #bcbcbc;
     text-align: left;
+    left: 5px;
 
     .search-items__item {
       border: 1px solid red;

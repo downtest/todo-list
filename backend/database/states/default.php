@@ -83,8 +83,15 @@ return [
             'type' => 'varchar',
             'max_length' => null,
         ],
-        'created_at' => [
+        'is_own' => [
             'ordinal_position' => 4,
+            'column_default' => 'false', // там будет преобразование в строку
+            'is_nullable' => false,
+            'type' => 'boolean',
+            'max_length' => null,
+        ],
+        'created_at' => [
+            'ordinal_position' => 5,
             'column_default' => 'CURRENT_TIMESTAMP',
             'is_nullable' => true,
             'type' => 'date',

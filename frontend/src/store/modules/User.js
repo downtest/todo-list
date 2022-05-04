@@ -23,6 +23,16 @@ const user = {
         },
         setToken(state, token) {
             state.token = token;
+
+            if (token) {
+                // Устанавливаем токен в заголовок на все дальнейшие запросы
+                this.axios.defaults.headers['X-User-Token'] = token
+                // Сохраняем токен в LocalStorage
+                window.localStorage.setItem('ls_todos_user_token', token)
+            } else {
+                delete this.axios.defaults.headers['X-User-Token']
+                window.localStorage.removeItem('ls_todos_user_token')
+            }
         },
     },
 
@@ -41,6 +51,7 @@ const user = {
                 this.axios.post('/api/user/register', payload)
                     .then(({data}) => {
                         commit('update', data.user)
+                        commit('setToken', data.token)
 
                         resolve(data.user)
                     })
@@ -56,10 +67,21 @@ const user = {
                         commit('update', data.user)
                         commit('setToken', data.token)
 
-                        // Устанавливаем токен в заголовок на все дальнейшие запросы
-                        this.axios.defaults.headers['X-User-Token'] = data.token
-                        // Сохраняем токен в LocalStorage
-                        window.localStorage.setItem('ls_todos_user_token', data.token)
+                        // Устанавливаем коллекции
+                        if (data.collections) {
+                            commit('collections/setCollections', data.collections, {root: true})
+                        }
+
+                        if (data.currentCollection) {
+                            commit('collections/setCurrentCollectionId', data.currentCollection.id, {root: true})
+                        }
+
+                        if (data.user) {
+                            dispatch('todos/load', {
+                                clientId: data.user['id'],
+                                collectionId: data.currentCollection ? data.currentCollection.id : null,
+                            }, {root: true})
+                        }
 
                         this.dispatch('todos/resetInitialized')
                         resolve(data.user)
@@ -71,12 +93,15 @@ const user = {
         },
         logout({commit, dispatch}) {
             return new Promise((resolve, reject) => {
-                // Удаляем токен из заголовка на все дальнейшие запросы
-                delete this.axios.defaults.headers['X-User-Token']
-                // Удаляем токен из LocalStorage
-                window.localStorage.removeItem('ls_todos_user_token')
-
                 commit('update', defaultUser)
+                commit('setToken', null)
+
+                // Сбрасываем таски
+                dispatch('todos/loadFromStorage', null, {root: true})
+
+                // Сбрасываем коллекции
+                commit('collections/setCollections', [], {root: true})
+                commit('collections/setCurrentCollectionId', null, {root: true})
 
                 this.dispatch('todos/resetInitialized')
 
@@ -96,11 +121,27 @@ const user = {
                     })
             })
         },
-        current({commit, getters}) {
+        current({dispatch, commit, getters}) {
             return new Promise((resolve, reject) => {
                 this.axios.post('/api/user/current')
                     .then(({data}) => {
                         commit('update', {...data.user, permissions: data.permissions})
+
+                        // Устанавливаем коллекции
+                        commit('collections/setCollections', data.collections, {root: true})
+
+                        if (data.currentCollection) {
+                            commit('collections/setCurrentCollectionId', data.currentCollection.id, {root: true})
+                        }
+
+                        if (data.user) {
+                            dispatch('todos/load', {
+                                clientId: data.user['id'],
+                                collectionId: data.currentCollection ? data.currentCollection.id : null,
+                            }, {root: true})
+                        } else {
+                            dispatch('todos/loadFromStorage', null, {root: true})
+                        }
 
                         resolve(getters.current)
                     })

@@ -1,7 +1,10 @@
 <template>
     <div class="collections">
         <div class="collection" v-for="collection in collections">
-            <span>#{{collection.id}} {{collection.name}}</span>
+            <small class="collection--id">#{{collection.id}}</small>
+            <router-link class="collection--name" :to="{name: 'task-list', params: {collectionId: collection.id}}">
+                {{collection.name}}
+            </router-link>
         </div>
     </div>
 </template>
@@ -26,17 +29,15 @@
         },
         computed: {
             collections() {
-                return [{id: 'f43f4f43f',name: 'Personal',}, {id: 'h76kj87kk87j', name: 'Working'}]
+                return this.$store.getters['collections/all']
             },
         },
         methods: {
         },
         mounted() {
-            this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+            if (this.$store.getters['user/current']['id']) {
+                this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
+            }
         },
     }
 </script>
-
-<style lang="scss">
-
-</style>

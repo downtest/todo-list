@@ -1,0 +1,33 @@
+.input {
+  display: flex;
+  width: 95%;
+  position: relative;
+  margin-bottom: 10px;
+
+  .input--title {
+    width: 140px;
+    margin: 2px;
+  }
+
+  .input--input {
+    width: 100%;
+    margin: 2px;
+
+    input {
+      width: 90%;
+    }
+  }
+
+  &.error {
+
+    .error-input {
+      border-color: #ae2a2a;
+      font-size: .7em;
+    }
+
+    .error-notification {
+      color: #ae2a2a;
+      font-size: .7em;
+    }
+  }
+}

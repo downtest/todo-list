@@ -36,7 +36,7 @@ class Update extends Action
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $db = DBMongo::getInstance();
-        $collectionName = 'tasks'.User::current()['id'];
+        $collectionName = User::getDefaultCollectionForCurrentUser();
         $taskInput = $request->getAttribute('task');
 
         try {

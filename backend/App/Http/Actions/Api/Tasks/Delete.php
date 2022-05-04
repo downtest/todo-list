@@ -25,7 +25,7 @@ class Delete extends Action
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $db = DBMongo::getInstance();
-        $collectionName = 'tasks'.User::current()['id'];
+        $collectionName = User::getDefaultCollectionForCurrentUser();
 
         if (!$task = $db->findById($collectionName, $request->getAttribute('taskId'))) {
             return $this->errorResponse(["Не найдена таска {$request->getAttribute('taskId')}"]);

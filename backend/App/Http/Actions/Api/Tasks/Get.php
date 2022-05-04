@@ -31,7 +31,7 @@ class Get extends Action
         }
 
         $db = DBMongo::getInstance();
-        $collectionName = 'tasks'.User::current()['id'];
+        $collectionName = User::getDefaultCollectionForCurrentUser();
         $collection = $db->find($collectionName, []);
 
         return new JsonResponse(TaskResource::collection($collection));

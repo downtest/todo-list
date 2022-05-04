@@ -21,7 +21,7 @@ const routes = [
     {path: '/calendar/month/:month?', name: 'calendarMonth', component: MonthLayout, meta: {title: 'Calendar'}, props: (route) => ({ month: /^\d{4}\-\d{2}$/.test(route.params.month) ? route.params.month : undefined }) },
     {path: '/calendar/day/:day', name: 'calendarDay', component: Day, meta: {title: 'Day'}, props: (route) => ({ day: /^\d{4}\-\d{2}\-\d{2}$/.test(route.params.day) ? route.params.day : undefined }) },
     {path: '/collections', name: 'collections', component: Collections, meta: {title: 'Collections'} },
-    {path: '/list/:parentId?', name: 'task-list', component: List, meta: {title: 'List'}, props: true },
+    {path: '/list/:collectionId?', name: 'task-list', component: List, meta: {title: 'List'}, props: true },
     {path: '/item/:itemId?', name: 'task-item', component: Task, meta: {title: 'Task'}, props: true },
 ]
 

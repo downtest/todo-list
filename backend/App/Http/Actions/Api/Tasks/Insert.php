@@ -30,7 +30,7 @@ class Insert extends Action
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $db = DBMongo::getInstance();
-        $collectionName = 'tasks'.User::current()['id'];
+        $collectionName = User::getDefaultCollectionForCurrentUser();
 
         $newId = TasksInMongo::getInstance()->create($collectionName, $request->getAttributes());
 

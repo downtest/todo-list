@@ -41,21 +41,38 @@
         <div v-else>
             <h3>Авторизация</h3>
 
+            <small></small>
+
             <div :class="{input: true, 'error': validationErrors.email}">
-                Email: <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
+              <div class="input--title">Email:</div>
+              <div class="input--input">
+                <input :class="{'error-input': validationErrors.email}" v-model="email" type="text" name="email">
                 <div v-if="validationErrors.email" class="error-notification">{{validationErrors.email.join('\n')}}</div>
+              </div>
             </div>
 
             <div :class="{input: true, 'error': validationErrors.password}">
-                Password: <input :class="{'error-input': validationErrors.password}" v-model="password" type="text" name="password">
+              <div class="input--title">Password:</div>
+              <div class="input--input">
+                <input :class="{'error-input': validationErrors.password}" v-model="password" type="text" name="password">
                 <div v-if="validationErrors.password" class="error-notification">{{validationErrors.password.join('\n')}}</div>
+              </div>
             </div>
 
             <button @click="login">Login</button>
-            <a href="/password-forget">Restore password</a>
-            <router-link :to="{name: 'registration'}">
-                Зарегистрироваться
-            </router-link>
+
+            <div>
+                <br>
+                <router-link :to="{name: 'password-forget'}">
+                    Забыли пароль?
+                </router-link>
+
+                <br>
+                <br>
+                <router-link :to="{name: 'registration'}">
+                    Зарегистрироваться
+                </router-link>
+            </div>
         </div>
 
     </div>
@@ -140,39 +157,3 @@ export default {
     },
 }
 </script>
-
-<style scoped lang="scss">
-.input {
-    display: flex;
-    width: 95%;
-    position: relative;
-    margin-bottom: 10px;
-
-    .input--title {
-        width: 100px;
-        margin: 2px;
-    }
-
-    .input--input {
-        width: 100%;
-        margin: 2px;
-
-        input {
-            width: 90%;
-        }
-    }
-
-    &.error {
-
-        .error-input {
-            border-color: #ae2a2a;
-            font-size: .7em;
-        }
-
-        .error-notification {
-            color: #ae2a2a;
-            font-size: .7em;
-        }
-    }
-}
-</style>

@@ -53,7 +53,6 @@ class SqlColumn
             $props = $this->state;
         }
 
-//        $sql = 'ADD COLUMN ';
         $sql = '';
         $columnType = $this->standardType($props['type']);
 
@@ -166,8 +165,8 @@ class SqlColumn
 
         if (!$this->currentState) {
             // Совершенно новая колонка
-            if ($createColumnsArr = $this->getCreateQuery()) {
-                $result['create'][] = 'ALTER TABLE ' . $this->tableName . PHP_EOL . $createColumnsArr;
+            if ($createColumnsStr = $this->getCreateQuery()) {
+                $result['create'][] = 'ALTER TABLE ' . $this->tableName . PHP_EOL . ' ADD COLUMN ' . $createColumnsStr;
             }
         } elseif ($this->isChanged()) {
             // Колонку надо изменить

@@ -6,6 +6,7 @@ namespace App\Http\Actions\Api\User;
 use App\Http\BusinessServices\Registration;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
+use App\Models\Collection;
 use App\Models\User;
 use App\Models\UserToken;
 use Exception;
@@ -72,10 +73,16 @@ class Login extends Action
             ]]);
         }
 
+
+        // Получаем коллекции
+        $userCollections = Collection::query("SELECT * FROM ".Collection::$table." WHERE owner_id = {$user['id']} ORDER BY created_at");
+
         return new JsonResponse([
             'status' => true,
             'user' => (new UserResource($user))->toArray(),
             'token' => $token['token'],
+            'collections' => $userCollections ?? [],
+//            'currentCollection' => array_filter($userCollections ?? [], fn ($collection) => $collection['is_own'])[0] ?? null,
         ]);
     }
 }

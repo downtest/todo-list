@@ -7,6 +7,7 @@ use App\Http\BusinessServices\Registration;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
+use App\Models\UserToken;
 use Exception;
 use Framework\Services\Logger;
 use Framework\Services\Session;
@@ -66,12 +67,10 @@ class Register extends Action
             ]);
         }
 
-        // Логинимся
-        Session::getInstance()->set(User::SESSION_KEY, $registeredUser['id']);
-
         return new JsonResponse([
             'status' => true,
             'user' => (new UserResource($registeredUser))->toArray(),
+            'token' => UserToken::findByUserId($registeredUser['id'])['token'] ?? null,
         ]);
     }
 
