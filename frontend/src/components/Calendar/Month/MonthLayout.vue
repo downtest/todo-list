@@ -192,6 +192,9 @@ import moment from "moment"
                 })
             },
         },
+        activated() {
+            this.scrollToCurrent(true)
+        },
     }
 </script>
 
