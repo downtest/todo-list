@@ -2,8 +2,10 @@ import Bell from '../../../assets/icons/temp/bell.png'
 import BellWhite from '../../../assets/icons/temp/bell-white.png'
 import Briefcase from '../../../assets/icons/temp/briefcase.png'
 import BriefcaseWhite from '../../../assets/icons/temp/briefcase-white.png'
-import Calendar from '../../../assets/icons/temp/calendar.svg'
-import Checklist from '../../../assets/icons/temp/checklist.png'
+import Calendar from '../../../assets/icons/menu/calendar-2.svg'
+import CalendarWhite from '../../../assets/icons/menu/calendar-2-white.svg'
+import Checklist from '../../../assets/icons/menu/checkbox-list.svg'
+import ChecklistWhite from '../../../assets/icons/menu/checkbox-list-white.svg'
 import Clock from '../../../assets/icons/temp/clock.svg'
 import Dots from '../../../assets/icons/temp/dots.png'
 import DotsWhite from '../../../assets/icons/temp/dots-white.png'
@@ -14,8 +16,8 @@ import Pen from '../../../assets/icons/temp/pen.png'
 import PenWhite from '../../../assets/icons/temp/pen-white.png'
 import Plus from '../../../assets/icons/temp/plus.svg'
 import PlusWhite from '../../../assets/icons/temp/plus-white.svg'
-import Profile from '../../../assets/icons/temp/profile.png'
-import ProfileWhite from '../../../assets/icons/temp/profile-white.png'
+import Profile from '../../../assets/icons/menu/profile.svg'
+import ProfileWhite from '../../../assets/icons/menu/profile-white.svg'
 import RightArrow from '../../../assets/icons/temp/right_arrow.svg'
 import Search from '../../../assets/icons/temp/search.svg'
 import Trash from '../../../assets/icons/temp/trash.svg'
@@ -34,7 +36,9 @@ const icons = {
         Briefcase: () => Briefcase,
         BriefcaseWhite: () => BriefcaseWhite,
         Calendar: () => Calendar,
+        CalendarWhite: () => CalendarWhite,
         Checklist: () => Checklist,
+        ChecklistWhite: () => ChecklistWhite,
         Clock: () => Clock,
         Dots: () => Dots,
         DotsWhite: () => DotsWhite,

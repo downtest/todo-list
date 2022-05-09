@@ -3,7 +3,7 @@
   list-style-type: none;
   justify-content: center;
   position: fixed;
-  padding: 15px 0 15px 0;
+  padding: 5px 0 5px 0;
   margin: 0;
   bottom: -1px;
   left: 0;
@@ -16,17 +16,28 @@
     display: block;
     width: 32%;
 
-    .control--icon {
-      max-width: 30px;
-      max-height: 30px;
-    }
+    .control--link {
+      display: inline-block;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
 
-    .control--name {
-      display: none;
-    }
+      &__active {
+        background: $colorDark;
+      }
 
-    a {
-      text-decoration: none;
+      .link--icon {
+        height: 30px;
+        margin-top: 7px;
+      }
+
+      .link--name {
+        display: none;
+      }
+
+      a {
+        text-decoration: none;
+      }
     }
   }
 }

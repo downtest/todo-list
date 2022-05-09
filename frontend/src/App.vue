@@ -10,24 +10,26 @@
 
     <ul class="control-buttons">
         <li class="control">
-            <router-link :to="{name: 'calendarMonth'}">
-                <img class="control--icon" :src="$store.getters['icons/Calendar']" alt="calendar" title="calendar">
-                <span class="control--name">Calendar</span>
+            <router-link :class="{'control--link': true, 'control--link__active': $route.name === 'calendarMonth'}" :to="{name: 'calendarMonth'}">
+                <img v-if="$route.name === 'calendarMonth'" class="link--icon" :src="$store.getters['icons/CalendarWhite']" alt="calendar">
+                <img v-else class="link--icon" :src="$store.getters['icons/Calendar']" alt="calendar">
+                <span class="link--name">Calendar</span>
             </router-link>
         </li>
 
         <li class="control">
-          <router-link :to="{name: 'task-list'}">
-            <img class="control--icon" :src="$store.getters['icons/Checklist']" alt="Todos" title="Todos">
-            <span class="control--name">Todos</span>
+          <router-link :class="{'control--link': true, 'control--link__active': $route.name === 'task-list'}" :to="{name: 'task-list'}">
+            <img v-if="$route.name === 'task-list'" class="link--icon" :src="$store.getters['icons/ChecklistWhite']" alt="Todos">
+            <img v-else class="link--icon" :src="$store.getters['icons/Checklist']" alt="Todos">
+            <span class="link--name">Todos</span>
           </router-link>
         </li>
 
         <li class="control">
-          <router-link :to="{name: 'profile'}">
-            <img v-if="$route.name === 'profile'" class="control--icon" :src="$store.getters['icons/Profile']" alt="profile" title="profile">
-            <img v-else class="control--icon" :src="$store.getters['icons/ProfileWhite']" alt="profile" title="profile">
-            <span class="control--name">Profile</span>
+          <router-link :class="{'control--link': true, 'control--link__active': $route.name === 'profile'}" :to="{name: 'profile'}">
+            <img v-if="$route.name === 'profile'" class="link--icon" :src="$store.getters['icons/ProfileWhite']" alt="profile">
+            <img v-else class="link--icon" :src="$store.getters['icons/Profile']" alt="profile">
+            <span class="link--name">Profile</span>
           </router-link>
         </li>
     </ul>
