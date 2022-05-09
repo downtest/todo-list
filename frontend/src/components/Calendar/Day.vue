@@ -191,6 +191,8 @@ export default {
                 parentId: null,
                 date: moment.format('YYYY-MM-DD'),
                 message: '',
+            }).then((task) => {
+                this.$router.push({name: 'task-item', params: {itemId: task.id}})
             })
         },
         reloadTasks() {

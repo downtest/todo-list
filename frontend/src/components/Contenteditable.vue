@@ -257,7 +257,7 @@ export default {
     beforeMount() {
         this.parser = new Parser()
     },
-    activated() {
+    mounted() {
         this.setText()
     },
 }

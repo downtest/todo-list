@@ -75,26 +75,37 @@ const range = {
         save({getters, commit}) {
             let range = window.getSelection().getRangeAt(0)
 
-            // let startContainer = range.startContainer.parentNode.classList.contains('contenteditable-message') ? range.startContainer : range.startContainer.parentNode
-            let startContainer
+            let startContainer,endContainer
 
-            if (range.startContainer.classList && range.startContainer.classList.contains('contenteditable-message')) {
+            if (range.startContainer.classList && range.startContainer.classList.contains('contenteditable--message')) {
                 startContainer = range.startContainer.childNodes[range.startOffset - 1]
-                commit('setStartPosition', startContainer.length)
-            } else {
+            } else if (range.startContainer.parentNode.classList && range.startContainer.parentNode.classList.contains('contenteditable--message')) {
                 startContainer = range.startContainer
-                commit('setStartPosition', range.startOffset)
+            } else {
+                startContainer = range.startContainer.parentNode
             }
 
-            // let startContainer = range.startContainer.classList && range.startContainer.classList.contains('contenteditable-message') ? range.startContainer.childNodes[range.startOffset] : range.startContainer
-            // let startContainer = range.startContainer
-            let endContainer   = range.endContainer.parentNode.classList.contains('contenteditable-message') ? range.endContainer : range.endContainer.parentNode
+            if (range.endContainer.classList && range.endContainer.classList.contains('contenteditable--message')) {
+                endContainer = range.endContainer.childNodes[range.endOffset - 1]
+            } else if (range.endContainer.parentNode.classList && range.endContainer.parentNode.classList.contains('contenteditable--message')) {
+                endContainer = range.endContainer
+            } else {
+                endContainer = range.endContainer.parentNode
+            }
 
-            // let endContainer   = range.endContainer.classList && range.endContainer.classList.contains('contenteditable-message') ? range.endContainer.childNodes[range.endOffset] : range.endContainer
+            // let startContainer = range.startContainer.classList && range.startContainer.classList.contains('contenteditable--message') ? range.startContainer.childNodes[range.startOffset] : range.startContainer
+            // let startContainer = range.startContainer
+            // endContainer   = range.endContainer.parentNode.classList.contains('contenteditable--message') ? range.endContainer : range.endContainer.parentNode
+
+            // let endContainer   = range.endContainer.classList && range.endContainer.classList.contains('contenteditable--message') ? range.endContainer.childNodes[range.endOffset] : range.endContainer
             // let endContainer   = range.endContainer
-            let nodes = getters.nodes
-            let startContainerIndex = nodes.indexOf(startContainer)
-            let endContainerIndex = nodes.indexOf(endContainer)
+
+            let startContainerIndex = getters.nodes.indexOf(startContainer)
+            let endContainerIndex = getters.nodes.indexOf(endContainer)
+
+            console.log(getters.nodes, `nodes`)
+            console.log(startContainer, `startContainer, index ${startContainerIndex}`)
+            console.log(endContainer, `endContainer, index ${endContainerIndex}`)
 
             commit('setRange', range)
             commit('setStartContainerIndex', startContainerIndex)
@@ -118,17 +129,23 @@ const range = {
                 if (['Text', 'Comment', 'CDataSection'].indexOf(typeof getters.nodes[getters.startContainerIndex]) !== -1) {
                     // 2ой аргумент должен быть кол-вом символов в ноде
                     range.setStart(getters.nodes[getters.startContainerIndex], getters.startPosition)
-                } else {
+                } else if (getters.nodes[getters.startContainerIndex].childNodes.length > 0) {
                     // 2ой аргумент должен быть
                     range.setStart(getters.nodes[getters.startContainerIndex].childNodes[0], getters.endPosition)
+                } else {
+                    // 2ой аргумент должен быть
+                    range.setStart(getters.nodes[getters.startContainerIndex], getters.endPosition)
                 }
 
                 if (['Text', 'Comment', 'CDataSection'].indexOf(typeof getters.nodes[getters.endContainerIndex]) !== -1) {
                     // 2ой аргумент должен быть кол-вом символов в ноде
                     range.setStart(getters.nodes[getters.endContainerIndex], getters.endPosition)
+                } else if (getters.nodes[getters.startContainerIndex].childNodes.length > 0) {
+                    // 2ой аргумент должен быть
+                    range.setStart(getters.nodes[getters.startContainerIndex].childNodes[0], getters.endPosition)
                 } else {
                     // 2ой аргумент должен быть
-                    range.setStart(getters.nodes[getters.endContainerIndex].childNodes[0], getters.endPosition)
+                    range.setStart(getters.nodes[getters.startContainerIndex], getters.endPosition)
                 }
             }
 
