@@ -202,6 +202,9 @@ export default {
                 })
         },
     },
+    activated() {
+        this.scrollToCurrent(true)
+    },
 }
 </script>
 
