@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\BusinessServices;
+namespace App\Http\BusinessServices\User;
 
 use App\Models\User;
 use Framework\Services\DBPostgres;
