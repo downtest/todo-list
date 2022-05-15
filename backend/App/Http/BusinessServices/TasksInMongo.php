@@ -15,6 +15,8 @@ use MongoDB\BSON\ObjectId;
  */
 class TasksInMongo extends Service
 {
+    protected static $instance;
+
     protected DBMongo $db;
 
     public function __construct()

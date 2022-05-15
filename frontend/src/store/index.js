@@ -29,7 +29,7 @@ const store = createStore({
 
 store.axios = axios.create({
     baseURL: process.env.VUE_APP_BACKEND_HOST,
-    withCredentials: true,
+    withCredentials: false,
     headers: {
         'X-User-Token': window.localStorage.getItem('ls_todos_user_token') || store.getters['user/token'],
     },

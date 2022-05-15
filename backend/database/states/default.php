@@ -18,20 +18,10 @@ return [
             'is_nullable' => true,
             'max_length' => '200',
         ],
-        'email' => [
-            'type' => 'varchar',
-            'is_nullable' => true,
-            'max_length' => '200',
-        ],
         'password' => [
             'type' => 'varchar',
             'is_nullable' => true,
             'max_length' => '200',
-        ],
-        'phone' => [
-            'type' => 'varchar',
-            'is_nullable' => true,
-            'max_length' => '18',
         ],
         'password_change_requested_at' => [
             'comment' => 'Время в которое запросили смену пароля',
@@ -224,6 +214,82 @@ return [
             'is_nullable' => true,
             'type' => 'timestamp',
             'max_length' => null,
+        ],
+    ],
+    'user_contacts' => [
+        'id' => [
+            'type' => 'bigint',
+            'primary' => true,
+            'ordinal_position' => 1,
+            'autoincrement' => true,
+            'is_nullable' => false,
+        ],
+        'contact_id' => [
+            'type' => 'int',
+            'ordinal_position' => 2,
+            'is_nullable' => true,
+            'indexes' => [
+                'user_contacts_contact_id' => [
+                    'unique' => false,
+                    'columns' => [
+                        'contact_id'
+                    ],
+                ],
+            ],
+            'foreign' => [
+                'name' => 'foreign_user_contacts_contact_id',
+                'foreign_table' => 'lib_contacts',
+                'foreign_column' => 'id',
+                'on_update' => 'CASCADE',
+                'on_delete' => 'CASCADE',
+            ],
+        ],
+        'user_id' => [
+            'type' => 'int',
+            'ordinal_position' => 3,
+            'is_nullable' => true,
+            'indexes' => [
+                'user_contacts_user_id' => [
+                    'unique' => false,
+                    'columns' => [
+                        'user_id'
+                    ],
+                ],
+            ],
+            'foreign' => [
+                'name' => 'foreign_user_contacts_user_id',
+                'foreign_table' => 'users',
+                'foreign_column' => 'id',
+                'on_update' => 'CASCADE',
+                'on_delete' => 'CASCADE',
+            ],
+        ],
+        'value' => [
+            'type' => 'varchar',
+            'ordinal_position' => 4,
+            'is_nullable' => true,
+            'max_length' => 255,
+        ],
+    ],
+    'lib_contacts' => [
+        'id' => [
+            'type' => 'int',
+            'primary' => true,
+            'ordinal_position' => 1,
+            'autoincrement' => true,
+            'is_nullable' => false,
+        ],
+        'name' => [
+            'type' => 'varchar',
+            'ordinal_position' => 2,
+            'is_nullable' => false,
+            'max_length' => 100,
+        ],
+        'title' => [
+            'type' => 'varchar',
+            'ordinal_position' => 3,
+            'is_nullable' => false,
+            'max_length' => 100,
         ],
     ],
 ];

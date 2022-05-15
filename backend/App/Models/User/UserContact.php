@@ -1,0 +1,16 @@
+<?php
+
+
+namespace App\Models\User;
+
+use App\Models\Model;
+
+class UserContact extends Model
+{
+    /**
+     * @var string
+     */
+    public static string $table = 'user_contacts';
+
+
+}

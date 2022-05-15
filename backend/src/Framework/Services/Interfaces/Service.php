@@ -14,16 +14,17 @@ abstract class Service
      * у наследника Session может быть в instance экземпляр DBPostgres,
      * если DBPostgres::getInstance() вызван раньше
      *
-     * @var self
+     * @var static
      */
     protected static $instance;
 
     /**
-     * @return static
+     * @return self
      * @throws Exception
      */
-    public static function getInstance(): static
+    public static function getInstance(): self
     {
+//        print_r('getting '.static::class. PHP_EOL);
         if (!static::$instance) {
             static::$instance = static::createInstance();
         }
@@ -33,6 +34,7 @@ abstract class Service
 
     protected static function createInstance(): self
     {
+//        print_r('creating '.static::class. PHP_EOL);
         return new static();
     }
 }

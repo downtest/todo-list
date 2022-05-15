@@ -6,8 +6,8 @@
             <li v-for="error in validationErrors.common">{{error}}</li>
         </ul>
 
-        <div v-if="currentUser.id">
-            Вы уже зарегистрированы
+        <div v-if="currentUser && currentUser.id">
+            Вы зарегистрированы
             <pre>{{currentUser}}</pre>
         </div>
         <div v-else>
@@ -75,6 +75,10 @@ export default {
                 .catch(({response}) => {
                     if (response && response.data && response.data.errors) {
                         this.validationErrors = response.data.errors
+                    }
+
+                    if (response && response.data && response.data.error) {
+                      this.$store.dispatch('popupNotices/addError', {text: response.data.error})
                     }
                 })
         },

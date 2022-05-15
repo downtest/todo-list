@@ -165,7 +165,7 @@ const todos = {
     },
     actions: {
         async load ({state, commit, dispatch, getters}, payload) {
-            if (getters.initialized) {
+            if (getters.initialized && !payload.force) {
                 return new Promise((resolve, reject) => {
                     resolve(getters.all)
                 })

@@ -15,6 +15,8 @@ use Framework\Services\Interfaces\Service;
  */
 class Registration extends Service
 {
+    protected static $instance;
+
     protected DBPostgres $db;
 
     protected string $email;
@@ -39,7 +41,7 @@ class Registration extends Service
     public function getExistedUser()
     {
         if ($this->email || ($this->existedUser && $this->existedUser['email'] !== $this->email)) {
-            $this->existedUser = $this->db->get('SELECT * FROM '.User::$table.' WHERE email = ?', [$this->email])[0] ?? null;
+            $this->existedUser = User::findByEmail($this->email);
         }
 
         return $this->existedUser;
@@ -65,7 +67,11 @@ class Registration extends Service
             throw new \Exception("Пользователь {$email} есть, но пароли не совпадают");
         } else {
             // Выходит, что пользователя нет, либо нет пароля
-            $user = $this->db->get('INSERT INTO '.User::$table.' (email, password) VALUES (?, ?) RETURNING *', [$email, $userHashedPassword])[0] ?? null;
+            $user = $this->db->get('INSERT INTO '.User::$table.' (password) VALUES (?) RETURNING *', [$userHashedPassword])[0] ?? null;
+
+            if ($contact = User\UserContact::first('SELECT * FROM lib_contacts WHERE name = ?', ['email'])) {
+                $emailContact = $this->db->get('INSERT INTO '.User\UserContact::$table.' (contact_id, user_id, value) VALUES (?, ?, ?) RETURNING *', [$contact['id'], $user['id'], $email])[0] ?? null;
+            }
 
             if (!$user) {
                 throw new \Exception("Не удалось зарегистрировать пользователя");

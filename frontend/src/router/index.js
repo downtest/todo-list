@@ -8,6 +8,7 @@ import Task from "../components/Item/Task";
 import Registration from "../components/User/Registration";
 import PasswordForget from "../components/User/PasswordForget";
 import PasswordReset from "../components/User/PasswordReset";
+import Oauth from "../components/External/Oauth";
 
 const NotFound = { template: '<div>404</div>' }
 
@@ -23,6 +24,7 @@ const routes = [
     {path: '/collections', name: 'collections', component: Collections, meta: {title: 'Collections'} },
     {path: '/list/:collectionId?', name: 'task-list', component: List, meta: {title: 'List'}, props: true },
     {path: '/item/:itemId?', name: 'task-item', component: Task, meta: {title: 'Task'}, props: true },
+    {path: '/external/oauth/:service', name: 'external-oauth', component: Oauth, meta: {title: 'Oauth verify'}, props: true },
 ]
 
 const router = createRouter({

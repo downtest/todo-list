@@ -27,6 +27,8 @@ import HeaderH1 from '../../../assets/icons/temp/contenteditable-controls/headin
 import CheckBox from '../../../assets/icons/temp/contenteditable-controls/checkbox.svg'
 import NumberList from '../../../assets/icons/temp/contenteditable-controls/number-list.svg'
 
+import VK from '../../../assets/icons/oauth/vk.svg'
+
 const icons = {
     namespaced: true,
 
@@ -60,6 +62,11 @@ const icons = {
                 H1: HeaderH1,
                 CheckBox: CheckBox,
                 NumberList: NumberList,
+            }
+        },
+        Oauth() {
+            return {
+                vk: VK,
             }
         },
     },

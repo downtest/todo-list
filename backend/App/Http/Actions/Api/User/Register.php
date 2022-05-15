@@ -36,6 +36,7 @@ class Register extends Action
     public function handle(RequestInterface $request): ResponseInterface
     {
         $service = Registration::getInstance();
+        $loginService = \App\Http\BusinessServices\Login::getInstance();
 
         $getExistedUser = $service->setEmail($request->getAttribute('email', ''))->getExistedUser();
 
@@ -43,16 +44,14 @@ class Register extends Action
             if (Registration::hash($getExistedUser['password']) !== Registration::hash($request->getAttribute('password', ''))) {
                 return $this->errorResponse([
                     'code' => 'email-exists',
-                    'common' => ["Пользователь {$getExistedUser['email']} уже существует"],
+                    'common' => ["Пользователь {$request->getAttribute('email', '')} уже существует"],
                 ]);
             } else {
                 // Логинимся
-                Session::getInstance()->set(User::SESSION_KEY, $getExistedUser['id']);
+                $loginServiceResult = $loginService->setUser($getExistedUser)->getLoginData();
+                $loginServiceResult['user'] = (new UserResource($loginServiceResult['user']))->toArray();
 
-                return $this->successResponse([
-                    'status' => true,
-                    'user' => $getExistedUser,
-                ]);
+                return $this->successResponse($loginServiceResult);
             }
         }
 
@@ -67,11 +66,10 @@ class Register extends Action
             ]);
         }
 
-        return new JsonResponse([
-            'status' => true,
-            'user' => (new UserResource($registeredUser))->toArray(),
-            'token' => UserToken::findByUserId($registeredUser['id'])['token'] ?? null,
-        ]);
+        $loginServiceResult = $loginService->setUser($registeredUser)->getLoginData();
+        $loginServiceResult['user'] = (new UserResource($registeredUser))->toArray();
+
+        return $this->successResponse($loginServiceResult);
     }
 
     public static function formatPhone(string $phone): string

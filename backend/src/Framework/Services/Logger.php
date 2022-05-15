@@ -17,36 +17,39 @@ class Logger extends Service
      */
     protected static $instance;
 
-    public function error(string $error)
+    protected function getDirectoryPath(): string
     {
-        $directory = $_SERVER['DOCUMENT_ROOT'].'/resources';
-        $fullPath = $directory.'/'.date('Y-m-d').".log";
+        return './../resources/logs';
+    }
+
+    protected function getFullPath(): string
+    {
+        return $this->getDirectoryPath().'/'.date('Y-m-d').".log";
+    }
+
+    protected function log(string $type, string $error, array $context = []): void
+    {
+        $directory = $this->getDirectoryPath();
+        $fullPath = $this->getFullPath();
 
         if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
+          mkdir($directory, 0755, true);
         }
 
         file_put_contents(
             $fullPath,
-            date('H:i:s').": ERROR: $error\n",
-            FILE_APPEND
+            date('d.m.Y H:i:s').": {$type}: $error\n" . ($context ? print_r($context, true) : '') . PHP_EOL
         );
     }
 
-    public function info(string $info)
+    public function error(string $error, array $context = [])
     {
-        $directory = $_SERVER['DOCUMENT_ROOT'].'/resources';
-        $fullPath = $directory.'/'.date('Y-m-d').".log";
+        $this->log('ERROR', $error, $context);
+    }
 
-        if (!file_exists($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        file_put_contents(
-            $fullPath,
-            date('H:i:s').": INFO: $info\n",
-            FILE_APPEND
-        );
+    public function info(string $info, array $context = [])
+    {
+        $this->log('INFO', $info, $context);
     }
 
 }

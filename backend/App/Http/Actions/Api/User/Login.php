@@ -36,53 +36,21 @@ class Login extends Action
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
-        $user = User::current();
-        $db = DBPostgres::getInstance();
+        $service = \App\Http\BusinessServices\Login::getInstance();
 
-        if (!$user) {
-            // Запрашиваем юзера в БД
-            $user = $db->get('SELECT * FROM users WHERE email = ? AND password = ?', [
+        $result = $service
+            ->byEmail(
                 $request->getAttribute('email'),
-                Registration::hash($request->getAttribute('password'))
-            ])[0] ?? null;
-        }
+                $request->getAttribute('password')
+            );
 
-        if (!$user) {
-            // Юзер не найден
-            return new JsonResponse([
-                'status' => false,
-                'errors' => ['email' => ["Не найден пользователь по email`у {$request->getAttribute('email')}, либо пароль не совпадает"]],
-            ], 422);
-        }
+        if ($result['status']) {
+            $result['user'] = (new UserResource($result['user']))->toArray();
 
-        // Создаём токен
-        if ($tokens = $db->get('SELECT * 
-            FROM user_tokens 
-            WHERE (expire_at < CURRENT_TIMESTAMP OR expire_at IS NULL)
-              AND user_id = ?',
-            [$user['id']]
-        )) {
-            // Токены есть
-            $token = $tokens[0];
+            return $this->successResponse($result);
         } else {
-            $token = UserToken::create([[
-                'token' => uniqid(),
-                'user_id' => $user['id'],
-                'device_header' => Session::getInstance()->get('User-Agent'),
-                'expire_at' => null,
-            ]]);
+            // Юзер не найден
+            return $this->errorResponse($result, 422);
         }
-
-
-        // Получаем коллекции
-        $userCollections = Collection::query("SELECT * FROM ".Collection::$table." WHERE owner_id = {$user['id']} ORDER BY created_at");
-
-        return new JsonResponse([
-            'status' => true,
-            'user' => (new UserResource($user))->toArray(),
-            'token' => $token['token'],
-            'collections' => $userCollections ?? [],
-//            'currentCollection' => array_filter($userCollections ?? [], fn ($collection) => $collection['is_own'])[0] ?? null,
-        ]);
     }
 }

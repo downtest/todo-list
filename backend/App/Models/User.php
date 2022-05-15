@@ -6,7 +6,6 @@ namespace App\Models;
 
 use Framework\Services\DBPostgres;
 use Framework\Services\Headers;
-use Framework\Services\Session;
 
 class User extends Model
 {
@@ -34,15 +33,27 @@ class User extends Model
                 return null;
             }
 
-            $users = DBPostgres::getInstance()->get("SELECT ".static::$table.".* 
+            static::$current = User::first("SELECT ".static::$table.".* 
                 FROM ".static::$table."
                 LEFT JOIN user_tokens ON ".static::$table.".id = user_tokens.user_id 
                 WHERE user_tokens.token = ?", [$token]);
-
-            static::$current = $users ? $users[0] : null;
         }
 
         return static::$current;
+    }
+
+    public static function findByEmail(string $email): ?array
+    {
+        return static::first('SELECT users.* 
+                FROM '.User::$table.' 
+                LEFT JOIN '.User\UserContact::$table.' ON users.id = user_contacts.user_id
+                LEFT JOIN lib_contacts ON lib_contacts.id = user_contacts.contact_id
+                WHERE lib_contacts.name = ? 
+                    AND user_contacts.value = ?'
+        , [
+            'email',
+            $email,
+        ]);
     }
 
     /**

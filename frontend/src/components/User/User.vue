@@ -41,7 +41,11 @@
         <div v-else>
             <h3>Авторизация</h3>
 
-            <small></small>
+            <div class="auth-buttons">
+              <a class="auth-button" @click="openVkOAuth">
+                <img :src="$store.getters['icons/Oauth']['vk']" alt="vk">
+              </a>
+            </div>
 
             <div :class="{input: true, 'error': validationErrors.email}">
               <div class="input--title">Email:</div>
@@ -117,6 +121,10 @@ export default {
                     if (response && response.data && response.data.errors) {
                         this.validationErrors = response.data.errors
                     }
+
+                    if (response && response.data && response.data.error) {
+                        this.$store.dispatch('popupNotices/addError', {text: response.data.error})
+                    }
                 })
         },
         logout() {
@@ -153,6 +161,19 @@ export default {
                     this.validationErrors = response.data.errors
                 }
             })
+        },
+        openVkOAuth() {
+            let oauthUrl = process.env.VUE_APP_EXTERNAL_OAUTH_FULL_URL
+            let vkUrl = this.$router.resolve({
+              name: 'external-oauth',
+              params: {service: 'vk'}
+            }).fullPath
+
+            window.open(
+                `https://oauth.vk.com/authorize?client_id=8156687&redirect_uri=${oauthUrl}/vk&display=page&scope=4194304`,
+                "_blank",
+                "toolbar=1, scrollbars=1, resizable=1, width=" + 600 + ", height=" + 400
+            )
         },
     },
 }

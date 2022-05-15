@@ -48,7 +48,11 @@ app.component('item', Item)
 app.component('nested', Nested)
 
 app.use(store)
+// Помещаем ссылку на vuex в window, чтобы иметь доступ к vuex`у из дочернего окна
+window.$store = store
+
 app.use(router)
+window.$router = router
 
 app.use(VueAxios, axios)
 

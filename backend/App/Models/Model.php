@@ -62,12 +62,27 @@ abstract class Model
         return static::$db->query($sql);
     }
 
+    public static function get(string $sql, array $placeholders = []): array
+    {
+        if (!static::$db) {
+            static::$db = DBPostgres::getInstance();
+        }
+
+        return static::$db->get($sql, $placeholders);
+    }
+
+    public static function first(string $sql, array $placeholders = []): ?array
+    {
+        return static::get($sql, $placeholders)[0] ?? null;
+    }
+
     /**
      * @param array $array Массив новых строк (каждая новая строка- ассоциативный массив с названием колонки в ключе)
+     * @param array $upsertConflictTarget Если передан этот массив(например, [id, name]), то запрос будет проверять в БД колонки из массива и делать update, если значения из колонок уже есть в БД. Передача параметра сделает из запроса UPSERT
      * @return array
      * @throws \Exception
      */
-    public static function create(array $array): array
+    public static function create(array $array, array $upsertConflictTarget = []): array
     {
         if (!static::$db) {
             static::$db = DBPostgres::getInstance();
@@ -96,6 +111,20 @@ abstract class Model
         }
 
         $sql .= implode(',', $columnRows);
+
+        // ON CONFLICT (id) DO UPDATE
+        if ($upsertConflictTarget) {
+            $sql .= ' ON CONFLICT ('.implode(',', $upsertConflictTarget).') DO UPDATE SET ';
+
+            $columnsToUpdate = [];
+
+            foreach (array_keys($array[0]) as $column) {
+                $columnsToUpdate[] = "$column = excluded.$column";
+            }
+
+            $sql .= implode(',', $columnsToUpdate);
+        }
+
         $sql .= ' RETURNING *';
 
         return static::$db->query($sql);

@@ -1,4 +1,5 @@
 process.env.VUE_APP_BACKEND_HOST = process.env.BACKEND_HOST
+process.env.VUE_APP_EXTERNAL_OAUTH_FULL_URL = process.env.EXTERNAL_OAUTH_FULL_URL
 
 module.exports = {
     runtimeCompiler: true,
