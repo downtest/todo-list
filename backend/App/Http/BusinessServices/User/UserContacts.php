@@ -17,7 +17,7 @@ class UserContacts extends Service
 
     protected DBPostgres $db;
 
-    protected User $user;
+    protected array $user;
 
     protected array $libContacts;
 
@@ -37,7 +37,7 @@ class UserContacts extends Service
         return $this;
     }
 
-    public function setUser(User $user): static
+    public function setUser(array $user): static
     {
         $this->user = $user;
 
@@ -67,7 +67,7 @@ class UserContacts extends Service
 
             $dataToInsert[] = [
                 'contact_id' => $this->libContacts[$contactName]['id'],
-                'user_id' => $this->user->id,
+                'user_id' => $this->user['id'],
                 'value' => $value,
             ];
         }
