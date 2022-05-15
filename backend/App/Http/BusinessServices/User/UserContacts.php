@@ -19,7 +19,7 @@ class UserContacts extends Service
 
     protected array $user;
 
-    protected array $libContacts;
+    protected array $libContacts = [];
 
     public function __construct()
     {
