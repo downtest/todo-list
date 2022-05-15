@@ -114,13 +114,17 @@ abstract class Model
 
         // ON CONFLICT (id) DO UPDATE
         if ($upsertConflictTarget) {
-            $sql .= ' ON CONFLICT ('.implode(',', $upsertConflictTarget).') WHERE'.PHP_EOL;
+            $sql .= ' ON CONFLICT ('.implode(',', $upsertConflictTarget).')'.PHP_EOL;
+
+            $indexPredicates = [];
 
             foreach ($upsertConflictTarget as $column) {
-                $sql .= "(({$column})::text = (excluded.{$column})::text)".PHP_EOL;
+                $indexPredicates[] = "(({$column})::text = (excluded.{$column})::text)";
             }
 
-            $sql .= ' DO UPDATE SET ';
+            $sql .= 'WHERE' .PHP_EOL. implode("\n AND", $indexPredicates);
+
+            $sql .= ' DO UPDATE SET '.PHP_EOL;
 
             $columnsToUpdate = [];
 
