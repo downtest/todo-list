@@ -38,7 +38,8 @@ class Logger extends Service
 
         file_put_contents(
             $fullPath,
-            date('d.m.Y H:i:s').": {$type}: $error\n" . ($context ? print_r($context, true) : '') . PHP_EOL
+            date('d.m.Y H:i:s').": {$type}: $error\n" . ($context ? print_r($context, true) : '') . PHP_EOL,
+            FILE_APPEND
         );
     }
 
