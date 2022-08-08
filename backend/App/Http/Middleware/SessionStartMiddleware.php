@@ -21,7 +21,6 @@ class SessionStartMiddleware implements MiddlewareInterface
         session_start();
 
         Session::fromGlobal();
-        Headers::fromGlobal();
 
         return $handler->handle($request);
     }

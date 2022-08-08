@@ -7,6 +7,7 @@ use App\Models\Collection;
 use App\Models\User;
 use App\Models\UserToken;
 use Framework\Services\DBPostgres;
+use Framework\Services\Headers;
 use Framework\Services\Interfaces\Service;
 use Framework\Services\Session;
 
@@ -83,7 +84,7 @@ class Login extends Service
             $token = UserToken::create([[
                 'token' => uniqid(),
                 'user_id' => $this->user['id'],
-                'device_header' => Session::getInstance()->get('User-Agent'),
+                'device_header' => Headers::getInstance()->get('User-Agent'),
                 'expire_at' => null,
             ]]);
         }

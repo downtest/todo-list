@@ -25,11 +25,18 @@ class Current extends Action
             $userCollections = Collection::query("SELECT * FROM ".Collection::$table." WHERE owner_id = {$user['id']} ORDER BY created_at");
         }
 
-        return new JsonResponse([
-            'status' => true,
-            'user' => (new UserResource($user))->toArray(),
-            'permissions' => [],
-            'collections' => $userCollections ?? [],
+        $service = \App\Http\BusinessServices\Login::getInstance();
+
+        $loginData = $service
+            ->setUser($user)
+            ->getLoginData();
+
+        return new JsonResponse($loginData + [
+//            'status' => true,
+//            'user' => (new UserResource($user))->toArray(),
+//            'permissions' => [],
+//            'collections' => $userCollections ?? [],
+//            'contacts' => UserContacts::getInstance()->setUser($user)->get(),
 //            'currentCollection' => array_filter($userCollections ?? [], fn ($collection) => $collection['is_own'])[0] ?? null,
         ]);
     }

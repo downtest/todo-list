@@ -3,6 +3,7 @@
 namespace App\Http\Actions\Api\User;
 
 
+use App\Http\BusinessServices\User\UserContacts;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
@@ -22,7 +23,8 @@ class Update extends Action
             'id' => ['required','int'],
             'name' => ['nullable','string'],
             'email' => ['nullable','email'],
-            'phone' => ['required','string'],
+            'phone' => ['nullable','string'],
+            'firebaseToken' => ['nullable','string'],
         ];
     }
 
@@ -41,23 +43,23 @@ class Update extends Action
             return $this->errorResponse(['Вы не можете изменять этого пользователя']);
         }
 
-        try {
+        // TODO: Изменять email
+
+        if ($request->getAttribute('name')) {
             $db->prepare("UPDATE ".User::$table." SET 
                 name=?,
-                email=?,
-                phone=?
                 WHERE id = ?
             ", [
                 $request->getAttribute('name'),
-                $request->getAttribute('email'),
-                $phone,
                 $request->getAttribute('id'),
             ]);
-        } catch (\Throwable $exception) {
-            Logger::getInstance()->error($exception->getMessage());
-
-            return $this->errorResponse(["Не удалось обновить пользователя"]);
         }
+
+        UserContacts::getInstance()->setUser($user)->update([
+//                'email' => $request->getAttribute('email'),
+            'phone' => $phone,
+            'firebase_token' => $request->getAttribute('firebaseToken'),
+        ]);
 
         return new JsonResponse([
             'status' => true,

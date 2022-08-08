@@ -1,5 +1,7 @@
 import { createStore } from 'vuex'
 import collections from './modules/Collections'
+import contacts from './modules/User/Contacts'
+import firebase from './modules/User/Firebase'
 import counter from './modules/Counter'
 import user from './modules/User'
 import todos from './modules/Todos'
@@ -16,6 +18,8 @@ const debug = process.env.NODE_ENV !== 'production'
 const store = createStore({
     modules: {
         collections,
+        contacts,
+        firebase,
         counter,
         user,
         todos,

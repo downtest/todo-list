@@ -17,6 +17,9 @@ const todos = {
         initialized(state){
             return state.initialized
         },
+        loading(state){
+            return state.loading
+        },
         all(state){
             return state.items
         },
@@ -109,6 +112,9 @@ const todos = {
         setInitialized(state, initialized) {
             state.initialized = initialized
         },
+        setLoading (state, value) {
+            state.loading = value
+        },
         setItems (state, items) {
             state.items = items
         },
@@ -172,6 +178,7 @@ const todos = {
             }
 
             commit('setItems', [])
+            commit('setLoading', true)
 
             return new Promise(async (resolve, reject) => {
                 this.axios.get('api/tasks/get', {params: {
@@ -179,6 +186,12 @@ const todos = {
                     collectionId: payload.collectionId,
                 }})
                     .then(({data}) => {
+                        if (data.error) {
+                            console.error(data, `Ошибка при загрузке тасок`)
+
+                            return
+                        }
+
                         commit('setItems', data)
                     })
                     .catch((response) => {
@@ -201,6 +214,7 @@ const todos = {
                         }
 
                         commit('setInitialized', true)
+                        commit('setLoading', false)
 
                         resolve(getters.all)
                     })

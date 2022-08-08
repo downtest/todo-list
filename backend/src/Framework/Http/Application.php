@@ -48,33 +48,21 @@ class Application
 
     public function run()
     {
-        try {
-            $middlewares = $this->pipeline->findMiddlewaresByUri($this->request->getUri()->getPath());
+        $middlewares = $this->pipeline->findMiddlewaresByUri($this->request->getUri()->getPath());
 
-            foreach ($middlewares as $middleware) {
-                $this->pipeline->pipe(new $middleware);
-            }
-
-            $action = $this->router->resolve();
-
-            if (method_exists($action, 'validationRules') && $validationErrors = $action->validationRules($this->request)) {
-                $this->pipeline->pipe(new Validator($action, $validationErrors));
-            }
-
-            $response = $this->pipeline->process($this->request, $action);
-
-            $this->emitter->emit($response);
-        } catch (\Throwable $exception) {
-            if (class_exists('\App\Http\ExceptionsHandler')) {
-                $exceptionHandler = (new \App\Http\ExceptionsHandler($this->request))->handle($exception);
-            } else {
-                $exceptionHandler = (new FrameworkExceptionHandler($this->request))->handle($exception);
-            }
-
-            http_response_code($exceptionHandler->getStatusCode());
-
-            echo $exceptionHandler->getBody();
+        foreach ($middlewares as $middleware) {
+            $this->pipeline->pipe(new $middleware);
         }
+
+        $action = $this->router->resolve();
+
+        if (method_exists($action, 'validationRules') && $validationErrors = $action->validationRules($this->request)) {
+            $this->pipeline->pipe(new Validator($action, $validationErrors));
+        }
+
+        $response = $this->pipeline->process($this->request, $action);
+
+        $this->emitter->emit($response);
     }
 
     /**

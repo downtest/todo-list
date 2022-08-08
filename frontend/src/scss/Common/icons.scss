@@ -1,0 +1,19 @@
+.icon {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+
+.icon__bell {
+
+}
+
+.bell__cross {
+  position: absolute;
+  width: 100%;
+  height: 5px;
+  background: #111111;
+  left: 0;
+  top: 0;
+  transform: rotate(135deg);
+}

@@ -11,22 +11,24 @@
   "dependencies": {
     "@modules/parser": "file:modules/parser",
     "axios": "^0.21.4",
-    "core-js": "^3.18.2",
-    "moment": "^2.29.1",
-    "swiper": "^7.0.8",
-    "vue": "^3.2.19",
-    "vue-axios": "^3.3.7",
+    "core-js": "^3.22.5",
+    "firebase": "^9.8.1",
+    "moment": "^2.29.3",
+    "swiper": "^7.4.1",
+    "vue": "^3.2.33",
+    "vue-axios": "^3.4.1",
     "vue-moment-lib": "^1.2.2",
-    "vue-router": "^4.0.11",
+    "vue-router": "^4.0.15",
     "vuedraggable": "^4.1.0",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "@vue/cli": "^5.0.0-beta.4",
-    "@vue/cli-service": ">5.0.0-beta.4",
-    "@vue/compiler-sfc": "^3.2.19",
-    "sass": "^1.42.1",
-    "sass-loader": "^10"
+    "@vue/cli": "^5.0.4",
+    "@vue/cli-service": ">5.0.0",
+    "vue-loader": "^17.0.0",
+    "@vue/compiler-sfc": "^3.2.33",
+    "sass": "^1.51.0",
+    "sass-loader": "^10.2.1"
   },
   "eslintConfig": {
     "root": true,

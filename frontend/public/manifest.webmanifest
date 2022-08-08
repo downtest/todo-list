@@ -1,0 +1,8 @@
+{
+  "name": "Listodo.ru",
+  "short_name": "Listodo",
+  "start_url": ".",
+  "display": "fullscreen",
+  "background_color": "#fff",
+  "description": "Notes with attaching files and calendar."
+}

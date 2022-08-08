@@ -36,25 +36,15 @@ class Next implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        try {
-            if (empty($this->queue)) {
-                $this->queue = null;
-                return $this->fallbackHandler->handle($request);
-            }
-
-            $middleware = array_shift($this->queue);
-            $next = clone $this; // deep clone is not used intentionally
-            $this->queue = null; // mark queue as processed at this nesting level
-
-            return $middleware->process($request, $next);
-        } catch(Throwable $exception) {
-            if (class_exists('\App\Http\ExceptionsHandler')) {
-                $exceptionHandler = new \App\Http\ExceptionsHandler($request);
-            } else {
-                $exceptionHandler = new FrameworkExceptionHandler($request);
-            }
-
-            return $exceptionHandler->handle($exception);
+        if (empty($this->queue)) {
+            $this->queue = null;
+            return $this->fallbackHandler->handle($request);
         }
+
+        $middleware = array_shift($this->queue);
+        $next = clone $this; // deep clone is not used intentionally
+        $this->queue = null; // mark queue as processed at this nesting level
+
+        return $middleware->process($request, $next);
     }
 }

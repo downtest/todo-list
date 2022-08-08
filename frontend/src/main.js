@@ -1,3 +1,8 @@
+/**
+ * Используется для лендинга
+ */
+
+
 import { createApp } from 'vue'
 import Demo from './Demo'
 import List from './components/Demo/List'

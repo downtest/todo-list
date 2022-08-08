@@ -17,13 +17,13 @@ class AuthMiddleware implements MiddlewareInterface
         // TODO: Implement process() method.
 
         if (0) {
-            return new Response("bad", 403);
+            return new HtmlResponse("bad", 403);
         }
 
         $response = $handler->handle($request);
 
         if($response instanceof PageNotFound) {
-            return new Response("catched)");
+            return new HtmlResponse("catched)");
         }
 
         return $response;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Laminas\Diactoros\Response\HtmlResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -14,7 +15,7 @@ class ApiMiddleware implements MiddlewareInterface
     {
         // TODO: Implement process() method.
         if (0) {
-            return new \Zend\Diactoros\Response("bad", 403);
+            return new HtmlResponse("bad", 403);
         }
 
         return $handler->handle($request);

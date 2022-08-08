@@ -1,5 +1,6 @@
 process.env.VUE_APP_BACKEND_HOST = process.env.BACKEND_HOST
 process.env.VUE_APP_EXTERNAL_OAUTH_FULL_URL = process.env.EXTERNAL_OAUTH_FULL_URL
+process.env.VUE_APP_FIREBASE_VAPID_KEY = process.env.FIREBASE_VAPID_KEY
 
 module.exports = {
     runtimeCompiler: true,

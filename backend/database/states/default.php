@@ -235,6 +235,14 @@ return [
                         'contact_id'
                     ],
                 ],
+                'user_contacts_contact_id_user_id_value_index' => [
+                    'unique' => true,
+                    'columns' => [
+                        'contact_id',
+                        'user_id',
+                        'value',
+                    ],
+                ],
             ],
             'foreign' => [
                 'name' => 'foreign_user_contacts_contact_id',
@@ -271,6 +279,7 @@ return [
             'max_length' => 255,
         ],
     ],
+    'user_firebase_tokens' => require 'default/user_firebase_tokens.php',
     'lib_contacts' => [
         'id' => [
             'type' => 'int',
@@ -284,6 +293,14 @@ return [
             'ordinal_position' => 2,
             'is_nullable' => false,
             'max_length' => 100,
+            'indexes' => [
+                'lib_contacts_name_index' => [
+                    'unique' => true,
+                    'columns' => [
+                        'name'
+                    ],
+                ],
+            ],
         ],
         'title' => [
             'type' => 'varchar',
@@ -292,4 +309,5 @@ return [
             'max_length' => 100,
         ],
     ],
+
 ];

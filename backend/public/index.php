@@ -23,17 +23,10 @@ function error_handler($errno, $errstr, $file, $line) {
         $exceptionHandler = (new FrameworkExceptionHandler())->handle(new Exception("$errType: $errstr IN FILE $file ON LINE $line"));
     }
 
-    http_response_code($exceptionHandler->getStatusCode());
+    // Браузер почему-то не показывает тело, если статус не 200
+//    http_response_code($exceptionHandler->getStatusCode());
 
     exit($exceptionHandler->getBody());
 }
 
-require '../vendor/autoload.php';
-
-$request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals();
-
-(new \Framework\Http\Application(
-    $request,
-    new \Framework\Http\Middleware\PipelineHttp(),
-    new \Framework\Http\Router\RouterHttp($request)
-))->run();
+require './app.php';

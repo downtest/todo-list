@@ -9,9 +9,9 @@ use Framework\Services\DBPostgres;
 class UserToken extends Model
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public static string $table = 'user_tokens';
+    public static ?string $table = 'user_tokens';
 
     /**
      * @throws \Exception

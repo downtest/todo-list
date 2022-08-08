@@ -1,4 +1,4 @@
-<template>
+ <template>
 <div id="app">
     <div class="top"></div>
 
@@ -6,6 +6,7 @@
 
     <div class="top-menu">
         <search></search>
+        <push-notifications></push-notifications>
     </div>
 
     <ul class="control-buttons">
@@ -48,11 +49,13 @@
 <script>
 import search from "./components/List/Search"
 import PopupNotices from "./components/PopupNotices"
+import PushNotifications from "./components/PushNotifications"
 
 export default {
     components: {
         search,
         PopupNotices,
+        PushNotifications,
     },
     created() {
         // console.log(this.$route, `this.$route`)

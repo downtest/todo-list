@@ -12,14 +12,21 @@
             <button v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/resetAllChanges')">Сбросить</button>
             <button v-if="this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">Сохранить ({{$store.getters['todos/getChanges'].length}})</button>
 
-            <div v-if="elements.length <= 0" class="label_tip">
-                У Вас нет ни одной записи, нажмите на кнопку с плюсом ниже чтобы создать заметку, записать рецепт, поставить напоминание...
+
+            <div v-if="$store.getters['todos/loading']">
+                Loading...
             </div>
 
-            <nested
-                v-model="elements"
-                :parentId="parentId"
-            />
+            <div v-else>
+                <div v-if="elements.length <= 0" class="label_tip">
+                    У Вас нет ни одной записи, нажмите на кнопку с плюсом ниже чтобы создать заметку, записать рецепт, поставить напоминание...
+                </div>
+
+                <nested
+                    v-model="elements"
+                    :parentId="parentId"
+                />
+            </div>
 
             <div class="btn_add" @click="createChild">
                 <img class="btn__icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">

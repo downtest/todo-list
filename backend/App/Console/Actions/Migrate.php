@@ -36,6 +36,6 @@ class Migrate extends BaseAction
 
         }
 
-        return new HtmlResponse($response);
+        return new HtmlResponse($response . 'Migration completed!'. PHP_EOL);
     }
 }

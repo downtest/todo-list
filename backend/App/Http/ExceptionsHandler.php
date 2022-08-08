@@ -4,6 +4,7 @@
 namespace App\Http;
 
 
+use App\Http\Exceptions\AppException;
 use Framework\Http\Exceptions\ValidationException;
 use Framework\Http\ExceptionsHandler as FrameworkDefaultExceptionHandler;
 use Framework\Services\Logger;
@@ -19,7 +20,25 @@ class ExceptionsHandler extends FrameworkDefaultExceptionHandler
      */
     public function handle(?Throwable $exception): ResponseInterface
     {
-        Logger::getInstance()->error("Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}\n" . print_r($exception->getTrace(), true));
+        $context = [];
+
+        if ($lastStep = $exception->getTrace()[0]) {
+            $context['file'] = $lastStep['file'] .':'. $lastStep['line'];
+        }
+
+        if ($exception instanceof AppException) {
+            $context += $exception->getContext();
+
+            Logger::getInstance()->error("Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}\n", $context);
+
+            return new JsonResponse([
+                'status' => false,
+                'error' => "Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}",
+            ], 422);
+        }
+
+
+        Logger::getInstance()->error("Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}\n", $context);
 
         if ($exception instanceof ValidationException) {
             return new JsonResponse([

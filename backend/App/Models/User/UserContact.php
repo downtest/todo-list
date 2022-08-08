@@ -8,9 +8,9 @@ use App\Models\Model;
 class UserContact extends Model
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public static string $table = 'user_contacts';
+    public static ?string $table = 'user_contacts';
 
 
 }

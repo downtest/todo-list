@@ -10,9 +10,9 @@ use Framework\Services\Headers;
 class User extends Model
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public static string $table = 'users';
+    public static ?string $table = 'users';
 
     const SESSION_KEY = 'user_token';
     const HEADER_KEY = 'X-User-Token';

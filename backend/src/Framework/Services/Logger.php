@@ -33,7 +33,7 @@ class Logger extends Service
         $fullPath = $this->getFullPath();
 
         if (!file_exists($directory)) {
-          mkdir($directory, 0755, true);
+          mkdir($directory, 0777, true);
         }
 
         file_put_contents(

@@ -7,8 +7,8 @@ namespace App\Models;
 class Collection extends Model
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public static string $table = 'collections';
+    public static ?string $table = 'collections';
 
 }

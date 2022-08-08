@@ -3,6 +3,8 @@
 namespace Framework\Services;
 
 
+use App\Http\Exceptions\AppException;
+use App\Http\Exceptions\SqlException;
 use Exception;
 use Framework\Services\Interfaces\Service;
 use PDO;
@@ -71,23 +73,31 @@ class DBPostgres extends Service
 
     public function query(string $sql): array
     {
-        $result = $this->pdo->query($sql, $this->pdo::FETCH_ASSOC);
+        try {
+            $result = $this->pdo->query($sql, $this->pdo::FETCH_ASSOC);
 
-        if (isset($this->pdo->errorInfo()[2])) {
-            throw new Exception($this->pdo->errorInfo()[2]);
+            if (isset($this->pdo->errorInfo()[2])) {
+                throw new Exception($this->pdo->errorInfo()[2]);
+            }
+
+            return $result->fetchAll();
+        } catch (\Throwable $exception) {
+            throw new AppException($exception->getMessage(), 0, null, ['sql' => $sql]);
         }
-
-        return $result->fetchAll();
     }
     public function exec(string $sql): int
     {
-        $result = $this->pdo->exec($sql);
+        try {
+            $result = $this->pdo->exec($sql);
 
-        if (isset($this->pdo->errorInfo()[2])) {
-            throw new Exception($this->pdo->errorInfo()[2]);
+            if (isset($this->pdo->errorInfo()[2])) {
+                throw new AppException($this->pdo->errorInfo()[2], 0, null, ['sql' => $sql]);
+            }
+
+            return $result;
+        } catch (\Throwable $exception) {
+            throw new AppException($exception->getMessage(), 0, null, ['sql' => $sql]);
         }
-
-        return $result;
     }
 
     /**
@@ -97,16 +107,21 @@ class DBPostgres extends Service
      * @param string $sql
      * @param array $params
      * @return bool
+     * @throws Exception
      */
     public function prepare(string $sql, array $params = []): bool
     {
-        $query = $this->pdo->prepare($sql);
+        try {
+            $query = $this->pdo->prepare($sql);
 
-        if (!$query) {
-            throw new Exception("Не удалось подготовить запроc {$sql}");
+            if (!$query) {
+                throw new Exception("Не удалось подготовить запроc {$sql}");
+            }
+
+            return $query->execute($params);
+        } catch (\Throwable $exception) {
+            throw new AppException($exception->getMessage(), 0, null, ['sql' => $sql, 'params' => $params]);
         }
-
-        return $query->execute($params);
     }
 
     /**
@@ -119,15 +134,19 @@ class DBPostgres extends Service
      */
     public function get(string $sql, array $params = []): array
     {
-        $query = $this->pdo->prepare($sql);
+        try {
+            $query = $this->pdo->prepare($sql);
 
-        if (!$query) {
-            throw new Exception("Не удалось подготовить запроc {$sql}");
+            if (!$query) {
+                throw new Exception("Не удалось подготовить запроc {$sql}");
+            }
+
+            $query->execute($params);
+
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $exception) {
+            throw new AppException($exception->getMessage(), 0, null, ['sql' => $sql, 'params' => $params]);
         }
-
-        $query->execute($params);
-
-        return $query->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function quote(string $arg): string

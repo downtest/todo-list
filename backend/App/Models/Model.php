@@ -4,14 +4,15 @@
 namespace App\Models;
 
 
+use App\Http\Exceptions\AppException;
 use Framework\Services\DBPostgres;
 
-abstract class Model
+class Model
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public static string $table;
+    public static ?string $table = null;
 
     /**
      * @var string
@@ -78,11 +79,18 @@ abstract class Model
 
     /**
      * @param array $array Массив новых строк (каждая новая строка- ассоциативный массив с названием колонки в ключе)
-     * @param array $upsertConflictTarget Если передан этот массив(например, [id, name]), то запрос будет проверять в БД колонки из массива и делать update, если значения из колонок уже есть в БД. Передача параметра сделает из запроса UPSERT
+     * @param array|null $upsertConflictTarget Если передан этот массив(например, [id, name]), то запрос будет проверять в БД колонки из массива и делать update, если значения из колонок уже есть в БД. Передача параметра сделает из запроса UPSERT
+     * @param string|null $tableName
+     * @param bool $useIndexPredicate
      * @return array
      * @throws \Exception
      */
-    public static function create(array $array, array $upsertConflictTarget = []): array
+    public static function create(
+        array $array,
+        ?array $upsertConflictTarget = [],
+        ?string $tableName = null,
+        bool $useIndexPredicate = true
+    ): array
     {
         if (!static::$db) {
             static::$db = DBPostgres::getInstance();
@@ -92,7 +100,11 @@ abstract class Model
             throw new \Exception("При создании записей передано пустое значение в качестве записи");
         }
 
-        $sql = "INSERT INTO ".static::$table.' ';
+        if (!$tableName && !static::$table) {
+            throw new \Exception("Не задано имя таблицы перед запросом create");
+        }
+
+        $sql = "INSERT INTO ".($tableName ?? static::$table).' ';
         $sql .= '('.implode(',', array_keys($array[0])).') VALUES ';
         $columnRows = [];
 
@@ -116,13 +128,15 @@ abstract class Model
         if ($upsertConflictTarget) {
             $sql .= ' ON CONFLICT ('.implode(',', $upsertConflictTarget).')'.PHP_EOL;
 
-            $indexPredicates = [];
-
-            foreach ($upsertConflictTarget as $column) {
-                $indexPredicates[] = "(({$column})::text = (excluded.{$column})::text)";
-            }
-
-            $sql .= 'WHERE' .PHP_EOL. implode("\n AND", $indexPredicates);
+//            if ($useIndexPredicate) {
+//                $indexPredicates = [];
+//
+//                foreach ($upsertConflictTarget as $column) {
+//                    $indexPredicates[] = "(({$column})::text = (excluded.{$column})::text)";
+//                }
+//
+//                $sql .= 'WHERE' .PHP_EOL. implode("\n AND", $indexPredicates);
+//            }
 
             $sql .= ' DO UPDATE SET '.PHP_EOL;
 
@@ -136,6 +150,43 @@ abstract class Model
         }
 
         $sql .= ' RETURNING *';
+
+        return static::$db->query($sql);
+    }
+
+    /**
+     * @param array $updateArr Ассоциативный массив новых параметров [name => Peter, age => 23]
+     * @param array $conditionArr Массив массивов условий []
+     * @return array
+     * @throws AppException
+     */
+    public static function update(array $updateArr, array $conditionArr = []): array
+    {
+        $sql = 'UPDATE '.static::$table.PHP_EOL;
+
+        if ($updateArr) {
+            $sql .= 'SET'.PHP_EOL;
+
+            $setArray = [];
+
+            foreach ($updateArr as $key => $value) {
+                $setArray[] = static::$db->quote($key).'=\''.static::$db->quote($value).'\''.PHP_EOL;
+            }
+
+            $sql .= implode(','.PHP_EOL, $setArray);
+        }
+
+        if ($conditionArr) {
+            $sql .= 'WHERE';
+
+            $whereArray = [];
+
+            foreach ($conditionArr as $condition) {
+                $whereArray[] = static::$db->quote($key).'=\''.static::$db->quote($value).'\''.PHP_EOL;
+            }
+
+            $sql .= implode('AND ', $whereArray);
+        }
 
         return static::$db->query($sql);
     }

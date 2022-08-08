@@ -71,4 +71,28 @@ class Arr
             return !in_array($key, $exceptValues);
         }, ARRAY_FILTER_USE_KEY);
     }
+
+    /**
+     * Возвращает многомерный массив из указанных ключей
+     *
+     * @param array|null $array $array
+     * @param array $onlyValues
+     * @return array
+     */
+    public static function only(?array $array, array $onlyValues = []): array
+    {
+        if (!$array) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($array as $key => $value) {
+            foreach ($onlyValues as $keyName) {
+                $result[$key][$keyName] = $value[$keyName];
+            }
+        }
+
+        return $result;
+    }
 }

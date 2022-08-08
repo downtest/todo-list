@@ -1,9 +1,11 @@
+node_modules
+
 *.log
 
 .idea
 .env
 
-/frontend/node_modules
 /frontend/dist
+/frontend/config/firebase
 
 /backend/vendor

@@ -7,8 +7,13 @@ require './vendor/autoload.php';
 
 $request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals();
 
-(new \Framework\Http\Application(
-    $request,
-    new \Framework\Http\Middleware\PipelineConsole(),
-    new \Framework\Http\Router\RouterConsole($request)
-))->run();
+try {
+    (new \Framework\Http\Application(
+        $request,
+        new \Framework\Http\Middleware\PipelineConsole(),
+        new \Framework\Http\Router\RouterConsole($request)
+    ))->run();
+} catch (\Throwable $exception) {
+    echo "{$exception->getMessage()}\n";
+}
+

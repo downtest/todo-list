@@ -14,7 +14,6 @@ const NotFound = { template: '<div>404</div>' }
 
 const routes = [
     {path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
-    {path: '/', name: 'list', component: List, meta: {title: 'Main page'}},
     {path: '/user', name: 'profile', component: User, meta: {title: 'User'}},
     {path: '/registration', name: 'registration', component: Registration, meta: {title: 'Registration'}},
     {path: '/password-forget', name: 'password-forget', component: PasswordForget, meta: {title: 'Password forget'}},
@@ -22,7 +21,7 @@ const routes = [
     {path: '/calendar/month/:month?', name: 'calendarMonth', component: MonthLayout, meta: {title: 'Calendar'}, props: (route) => ({ month: /^\d{4}\-\d{2}$/.test(route.params.month) ? route.params.month : undefined }) },
     {path: '/calendar/day/:day', name: 'calendarDay', component: Day, meta: {title: 'Day'}, props: (route) => ({ day: /^\d{4}\-\d{2}\-\d{2}$/.test(route.params.day) ? route.params.day : undefined }) },
     {path: '/collections', name: 'collections', component: Collections, meta: {title: 'Collections'} },
-    {path: '/list/:collectionId?', name: 'task-list', component: List, meta: {title: 'List'}, props: true },
+    {path: '/list/:collectionId?', alias: '/', name: 'task-list', component: List, meta: {title: 'List'}, props: true },
     {path: '/item/:itemId?', name: 'task-item', component: Task, meta: {title: 'Task'}, props: true },
     {path: '/external/oauth/:service', name: 'external-oauth', component: Oauth, meta: {title: 'Oauth verify'}, props: true },
 ]

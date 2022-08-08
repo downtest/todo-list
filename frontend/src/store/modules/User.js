@@ -99,7 +99,12 @@ const user = {
                 // Сбрасываем таски
                 dispatch('todos/loadFromStorage', null, {root: true})
 
+                // Сбрасываем firebase ключи
+                commit('firebase/setLoadedForUser', null, {root: true})
+                commit('firebase/setTokens', [], {root: true})
+
                 // Сбрасываем коллекции
+                commit('collections/setLoadedForUser', null, {root: true})
                 commit('collections/setCollections', [], {root: true})
                 commit('collections/setCurrentCollectionId', null, {root: true})
 
@@ -126,6 +131,9 @@ const user = {
                 this.axios.post('/api/user/current')
                     .then(({data}) => {
                         commit('update', {...data.user, permissions: data.permissions})
+
+                        // Устанавливаем контакты
+                        commit('contacts/setContacts', data.contacts, {root: true})
 
                         // Устанавливаем коллекции
                         commit('collections/setCollections', data.collections, {root: true})

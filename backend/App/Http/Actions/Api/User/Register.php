@@ -72,8 +72,12 @@ class Register extends Action
         return $this->successResponse($loginServiceResult);
     }
 
-    public static function formatPhone(string $phone): string
+    public static function formatPhone(?string $phone = null): ?string
     {
+        if (!$phone){
+            return null;
+        }
+
         return '+'.str_replace(['+','(',')',' ','-'], '', $phone);
     }
 }

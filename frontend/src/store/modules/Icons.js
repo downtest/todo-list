@@ -1,4 +1,4 @@
-import Bell from '../../../assets/icons/temp/bell.png'
+import Bell from '../../../assets/icons/user/bell.svg'
 import BellWhite from '../../../assets/icons/temp/bell-white.png'
 import Briefcase from '../../../assets/icons/temp/briefcase.png'
 import BriefcaseWhite from '../../../assets/icons/temp/briefcase-white.png'

@@ -31,6 +31,7 @@ services:
     restart: always
     volumes:
       - ./backend:/www
+      - ./frontend/config/firebase/listodo-6a00c-firebase-adminsdk-6qpds-575a893522.json:/www/config/firebase.json
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
     env_file:
       - .env
@@ -58,10 +59,11 @@ services:
     command: sh -c 'yarn install && yarn build'
 
   postgres:
-    image: postgres:13.4-alpine3.14
+    image: postgres:14.3-alpine3.15
     restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./pg-dumps:/pg-dumps
     ports:
       - 5432:5432
     environment:
@@ -81,7 +83,7 @@ services:
     volumes:
       - mongo-data:/data/db
     ports:
-      - 27017:27017
+      - ${MONGO_PORT:-27017}:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
