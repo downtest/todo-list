@@ -11,6 +11,7 @@ import Dots from '../../../assets/icons/temp/dots.png'
 import DotsWhite from '../../../assets/icons/temp/dots-white.png'
 import EyeCrossed from '../../../assets/icons/temp/eye_crossed.svg'
 import EyeOpened from '../../../assets/icons/temp/eye_opened.svg'
+import Logo from '../../../assets/icons/listodo-logo-full.svg'
 import Move from '../../../assets/icons/temp/move.png'
 import Pen from '../../../assets/icons/temp/pen.png'
 import PenWhite from '../../../assets/icons/temp/pen-white.png'
@@ -46,6 +47,7 @@ const icons = {
         DotsWhite: () => DotsWhite,
         EyeCrossed: () => EyeCrossed,
         EyeOpened: () => EyeOpened,
+        Logo: () => Logo,
         Move: () => Move,
         Pen: () => Pen,
         PenWhite: () => PenWhite,

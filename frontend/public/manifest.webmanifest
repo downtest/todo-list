@@ -3,6 +3,12 @@
   "short_name": "Listodo",
   "start_url": ".",
   "display": "fullscreen",
-  "background_color": "#fff",
-  "description": "Notes with attaching files and calendar."
+  "background_color": "#E0FFFF",
+  "description": "Notes with attaching files and calendar.",
+  "icons": [
+    {
+      "src": "listodo-logo.svg",
+      "sizes": "72x72"
+    }
+  ]
 }

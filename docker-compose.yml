@@ -21,7 +21,7 @@ services:
       - "80:80"
       - "443:443"
 
-  php:
+  php: &php
     build:
       context: ./docker/php
       args:
@@ -38,6 +38,10 @@ services:
     working_dir: /www
     expose:
       - 9000
+
+  web-pushes:
+    <<: *php
+    command: sh -c 'php console webPushes'
 
 #  nunit:
 #    image: nginx/unit:1.16.0-minimal

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\BusinessServices;
+namespace App\Services;
 
 use App\Models\Collection;
 use App\Models\User;

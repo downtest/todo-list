@@ -3,7 +3,7 @@
 namespace App\Http\Actions\Api\User;
 
 
-use App\Http\BusinessServices\Registration;
+use App\Services\Registration;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
 use App\Models\Collection;
@@ -36,7 +36,7 @@ class Login extends Action
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
-        $service = \App\Http\BusinessServices\Login::getInstance();
+        $service = \App\Services\Login::getInstance();
 
         $result = $service
             ->byEmail(

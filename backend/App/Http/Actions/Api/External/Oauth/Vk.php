@@ -2,9 +2,9 @@
 
 namespace App\Http\Actions\Api\External\Oauth;
 
-use App\Http\BusinessServices\Login;
-use App\Http\BusinessServices\Registration;
-use App\Http\BusinessServices\User\UserContacts;
+use App\Services\Login;
+use App\Services\Registration;
+use App\Services\User\UserContacts;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;

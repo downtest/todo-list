@@ -75,7 +75,7 @@ class User extends Model
             return null;
         }
 
-        return "tasks{$collection[0]['owner_id']}_{$collection[0]['id']}";
+        return Collection::computeCollectionName($collection[0]['owner_id'], $collection[0]['id']);
     }
 
 }

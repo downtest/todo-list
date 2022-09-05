@@ -4,7 +4,7 @@
 namespace App\Http\Actions\Api\Tasks;
 
 
-use App\Http\BusinessServices\TasksInMongo;
+use App\Services\TasksInMongo;
 use App\Http\Interfaces\Action;
 use App\Models\User;
 use Framework\Services\DBMongo;

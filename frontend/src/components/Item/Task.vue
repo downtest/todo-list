@@ -111,10 +111,10 @@ export default {
     },
     itemDate: {
       get() {
-        if (this.item && this.item.updated) {
-          return this.item.updated.date
+        if (this.item && this.item.updated && 'date' in this.item.updated) {
+          return this.item.updated.date ?? null
         } else if (this.item) {
-          return this.item.date
+          return this.item.date ?? null
         } else {
           return null
         }
@@ -130,10 +130,10 @@ export default {
     },
     itemTime: {
       get() {
-        if (this.item && this.item.updated) {
-          return this.item.updated.time
+        if (this.item && this.item.updated && 'time' in this.item.updated) {
+          return this.item.updated.time ?? null
         } else if (this.item) {
-          return this.item.time
+          return this.item.time ?? null
         } else {
           return null
         }

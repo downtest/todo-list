@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\BusinessServices;
+namespace App\Services;
 
 use App\Http\Resources\Tasks\TaskResource;
 use Framework\Services\DBMongo;

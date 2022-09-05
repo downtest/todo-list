@@ -3,7 +3,7 @@
 namespace App\Http\Actions\Api\User\Password;
 
 
-use App\Http\BusinessServices\Registration;
+use App\Services\Registration;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;

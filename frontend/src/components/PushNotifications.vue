@@ -1,19 +1,17 @@
 <template>
-    <div>
+    <div class="menu--icon-btn">
         <span class="icon" @click="toggleBellHandler">
             <img class="icon" :src="$store.getters['icons/Bell']" alt="Bell">
             <span v-if="!current" class="bell__cross"></span>
         </span>
 
-        <button @click="testPushHandler">Test</button>
+<!--        <button @click="testPushHandler">Test</button>-->
     </div>
 </template>
 
 <script>
 import {getToken, getMessaging, onMessage} from "firebase/messaging";
 import firebase from "../web-pushes/firebase";
-
-console.log(`on messages registered`)
 
 const messaging = getMessaging()
 
@@ -49,7 +47,9 @@ export default {
     methods: {
         toggleBellHandler() {
             if (this.current) {
-                this.deleteTokenHandler()
+                if (window.confirm('Push-уведомления на этом устройстве будут отключены')) {
+                    this.deleteTokenHandler()
+                }
             } else {
                 this.getTokenHandler()
             }
@@ -66,6 +66,8 @@ export default {
                     this.$store.dispatch('firebase/store', {
                         userId: this.$store.getters['user/current']['id'],
                         firebaseToken: currentToken,
+                    }).then(() => {
+                        this.$store.dispatch('popupNotices/addSuccess', {text: 'Уведомления включены', duration: 3000})
                     })
                 } else {
                     // Show permission request UI

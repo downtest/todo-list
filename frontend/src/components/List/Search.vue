@@ -1,15 +1,15 @@
 <template>
-<div class="search">
+<div class="menu--icon-btn search">
     <img class="icon__search" @click="hidden = !hidden" :src="$store.getters['icons/Search']" alt="Search">
 
     <div :class="{'search-input': true, hidden: hidden}">
-        <input v-model="phrase" type="text">
+        <input class="search-input--input" v-model="phrase" type="text">
         <img @click="erase" class="icon__erase" :src="$store.getters['icons/Plus']" alt="Clear">
     </div>
 
     <div class="search-items" v-show="showSearchResults">
-        <div class="search-items__item" v-for="task in foundTasks" :key="task.id">
-            <a class="search-items__link" @click="move(task)">{{task.message.split('\n')[0]}}</a>
+        <div class="search-items__item" v-for="task in foundTasks" :key="task.id" @click="move(task)">
+            <a class="search-items__link">{{task.message.split('\n')[0]}}</a>
         </div>
     </div>
 </div>
@@ -58,7 +58,7 @@ export default {
     },
     mounted() {
         window.addEventListener('click', (event) => {
-            if (event.target.classList.contains('search-input')) {
+            if (event.target.classList.contains('search-input--input')) {
                 // Клик по инпуту
                 this.showSearchResults = true
             } else if (event.target.classList.contains('search-items__link')) {

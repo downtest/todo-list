@@ -25,7 +25,7 @@ class Current extends Action
             $userCollections = Collection::query("SELECT * FROM ".Collection::$table." WHERE owner_id = {$user['id']} ORDER BY created_at");
         }
 
-        $service = \App\Http\BusinessServices\Login::getInstance();
+        $service = \App\Services\Login::getInstance();
 
         $loginData = $service
             ->setUser($user)

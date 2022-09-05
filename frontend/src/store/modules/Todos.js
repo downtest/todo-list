@@ -140,6 +140,37 @@ const todos = {
         updateItem(state, {id, payload, instant}) {
             let task = state.items.find(item => item.id === id)
             let index = state.items.findIndex(item => item.id === id)
+            let newData = {...task, ...task.updated, ...payload}
+
+            if (newData.date && newData.time) {
+                let splittedDate = newData.date.split('-')
+                let splittedTime = newData.time.split(':')
+                let dateTime = new Date(splittedDate[0], splittedDate[1], splittedDate[2], splittedTime[0], splittedTime[1])
+                let utcDate = dateTime.getUTCDate() < 10 ? '0'+dateTime.getUTCDate() : dateTime.getUTCDate()
+                let utcMonth = dateTime.getUTCMonth() < 10 ? '0'+dateTime.getUTCMonth() : dateTime.getUTCMonth()
+                let utcHours = dateTime.getUTCHours() < 10 ? '0'+dateTime.getUTCHours() : dateTime.getUTCHours()
+                let utcMinutes = dateTime.getUTCMinutes() < 10 ? '0'+dateTime.getUTCMinutes() : dateTime.getUTCMinutes()
+
+                payload.date_utc = `${dateTime.getUTCFullYear()}-${utcMonth}-${utcDate}`
+                payload.time_utc = `${utcHours}:${utcMinutes}`
+            } else if (newData.date) {
+                // console.log(newData.date.split('-'), `date`)
+
+                payload.date_utc = newData.date
+                payload.time_utc = null
+            } else if (newData.time) {
+                let splittedTime = newData.time.split(':')
+                let dateTime = new Date()
+
+                dateTime.setHours(splittedTime[0])
+                dateTime.setMinutes(splittedTime[1])
+
+                let utcHours = dateTime.getUTCHours() < 10 ? '0'+dateTime.getUTCHours() : dateTime.getUTCHours()
+                let utcMinutes = dateTime.getUTCMinutes() < 10 ? '0'+dateTime.getUTCMinutes() : dateTime.getUTCMinutes()
+
+                payload.date_utc = null
+                payload.time_utc = `${utcHours}:${utcMinutes}`
+            }
 
             // Обновляем, чтобы vue реактивно обновил бы компонент, отображающий таску(если обновлять свойства, то реактивности не будет)
             if (task.isNew || instant) {
@@ -147,7 +178,7 @@ const todos = {
                 state.items.splice(index, 1, {...task, ...payload})
             } else {
                 // Сохраняем изменения в отдельное свойство, чтобы все изменения можно было бы сбросить
-                state.items.splice(index, 1, {...task, updated: payload})
+                state.items.splice(index, 1, {...task, updated: {...task.updated, ...payload}})
             }
         },
         /**

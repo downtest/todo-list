@@ -1,12 +1,14 @@
  <template>
 <div id="app">
-    <div class="top"></div>
-
     <popup-notices></popup-notices>
 
-    <div class="top-menu">
-        <search></search>
-        <push-notifications></push-notifications>
+    <div class="top">
+        <img :src="$store.getters['icons/Logo']" class="top--logo">
+
+        <div class="top-menu">
+            <search></search>
+            <push-notifications></push-notifications>
+        </div>
     </div>
 
     <ul class="control-buttons">

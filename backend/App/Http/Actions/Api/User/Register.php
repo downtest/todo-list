@@ -3,7 +3,7 @@
 namespace App\Http\Actions\Api\User;
 
 
-use App\Http\BusinessServices\Registration;
+use App\Services\Registration;
 use App\Http\Interfaces\Action;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
@@ -36,7 +36,7 @@ class Register extends Action
     public function handle(RequestInterface $request): ResponseInterface
     {
         $service = Registration::getInstance();
-        $loginService = \App\Http\BusinessServices\Login::getInstance();
+        $loginService = \App\Services\Login::getInstance();
 
         $getExistedUser = $service->setEmail($request->getAttribute('email', ''))->getExistedUser();
 
