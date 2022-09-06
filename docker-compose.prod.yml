@@ -9,6 +9,10 @@ services:
     depends_on:
       - nodejs
 
+  web-pushes:
+    <<: *php
+    command: sh -c 'php console webPushes'
+
   certbot:
     image: certbot/certbot
     volumes:

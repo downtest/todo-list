@@ -1,8 +1,6 @@
 {
   "name": "Listodo.ru",
   "short_name": "Listodo",
-  "start_url": ".",
-  "display": "fullscreen",
   "background_color": "#E0FFFF",
   "description": "Notes with attaching files and calendar.",
   "icons": [
@@ -10,5 +8,7 @@
       "src": "listodo-logo.svg",
       "sizes": "72x72"
     }
-  ]
+  ],
+  "start_url": "/list",
+  "display": "standalone",
 }

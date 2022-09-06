@@ -21,11 +21,15 @@
         <label class="label">
           <div class="label__name">Дата</div>
           <input class="label__input" type="date" v-model="itemDate">
+          &nbsp;&nbsp;
+          <img class="btn-icon" :src="$store.getters['icons/Trash']" @click="itemDate = null" alt="clear" title="Clear">
         </label>
 
         <label class="label">
           <div class="label__name">Время</div>
           <input class="label__input" type="time" v-model="itemTime">
+          &nbsp;&nbsp;
+          <img class="btn-icon" :src="$store.getters['icons/Trash']" @click="itemTime = null" alt="clear" title="Clear">
         </label>
 
         <router-link v-if="itemDate" :to="{name: 'calendarDay', params: {day: itemDate}}">
