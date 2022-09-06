@@ -229,7 +229,7 @@ class TasksInMongo extends Service
 
 //        $maxIndex = $this->getMaxId($collectionName, $request->getAttribute('parentId') ?? null);
 
-        return $this->db->insertOne($collectionName, Arr::except($task, ['isNew', 'id', 'confirmed', 'isNew']));
+        return $this->db->insertOne($collectionName, Arr::except($task, ['isNew', 'id', 'confirmed']));
     }
 
     /**

@@ -22,6 +22,7 @@ class TaskResource extends Resource
             'date_utc' => $this->resource['date_utc'] ?? null,
             'time' => $this->resource['time'] ?? null,
             'time_utc' => $this->resource['time_utc'] ?? null,
+            'informed' => $this->resource['informed'] ?? null,
         ];
     }
 }
