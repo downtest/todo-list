@@ -81,11 +81,6 @@ class WebPushes extends BaseAction
 //                print_r("collection {$collectionName}\n");
 
                 foreach ($tasksToInform as $task) {
-                    $this->dbMongo->updateOne($collectionName, [
-                        'id' => $task['id'],
-                        'informed' => date('Y-m-d H:i:s'),
-                    ]);
-
                     $result = FireBase::getInstance()->sendMulticast(
                         'LisToDo.ru',
                         $task['time'].' '.explode(PHP_EOL, $task['message'])[0],
@@ -94,6 +89,11 @@ class WebPushes extends BaseAction
                     );
 
                     if ($result) {
+                        $this->dbMongo->updateOne($collectionName, [
+                            'id' => $task['id'],
+                            'informed' => date('Y-m-d H:i:s'),
+                        ]);
+
                         echo date('Y-m-d H:i:s')." $collectionName, отправлено: $result\n";
                     }
                 }
