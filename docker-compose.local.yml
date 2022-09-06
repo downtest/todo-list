@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web-pushes:
+    restart: 'no'
+    command: echo 'exit (only for prod)'
+
+  postgres:
+    ports:
+      - 5432:5432
+
+  mongo:
+    ports:
+      - ${MONGO_PORT:-27017}:27017
