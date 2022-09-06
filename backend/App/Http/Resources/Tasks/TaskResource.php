@@ -19,7 +19,9 @@ class TaskResource extends Resource
             'children' => $this->resource['children'] ?? [], // Массив дочерних id
             'labels' => $this->resource['labels'] ?? [],
             'date' => $this->resource['date'] ?? null,
+            'date_utc' => $this->resource['date_utc'] ?? null,
             'time' => $this->resource['time'] ?? null,
+            'time_utc' => $this->resource['time_utc'] ?? null,
         ];
     }
 }
