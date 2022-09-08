@@ -130,6 +130,10 @@ const user = {
             return new Promise((resolve, reject) => {
                 this.axios.post('/api/user/current')
                     .then(({data}) => {
+                        if (!data.status) {
+                            return
+                        }
+
                         commit('update', {...data.user, permissions: data.permissions})
 
                         // Устанавливаем контакты

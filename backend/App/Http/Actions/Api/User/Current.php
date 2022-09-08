@@ -21,8 +21,10 @@ class Current extends Action
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
-        if ($user = User::current()) {
-            $userCollections = Collection::query("SELECT * FROM ".Collection::$table." WHERE owner_id = {$user['id']} ORDER BY created_at");
+        if (!$user = User::current()) {
+            return new JsonResponse([
+                'status' => false,
+            ]);
         }
 
         $service = \App\Services\Login::getInstance();

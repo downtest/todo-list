@@ -12,7 +12,11 @@ class Get extends Action
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $user = User::current();
+        if (!$user = User::current()) {
+            return $this->successResponse([
+                'tokens' => [],
+            ]);
+        }
 
         $tokens = User\UserFirebaseToken::get('SELECT * FROM '.User\UserFirebaseToken::$table.' WHERE user_id = ?', [$user['id']]);
 

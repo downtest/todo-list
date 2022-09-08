@@ -1,18 +1,17 @@
-FROM php:8.1.10-fpm-alpine3.16
+FROM php:8.1.10-fpm-buster
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
 WORKDIR /var/www/html
 
-RUN apk update \
-    && apk add --no-cache $PHPIZE_DEPS \
-
-    # Создаём такого же пользователя, как и на хосте
-    && addgroup -S $GROUP_ID && adduser -S $USER_ID -G $GROUP_ID \
+RUN apt update \
+    # Создаём такого же пользователя, как и на хосте \
+    && addgroup --gid $GROUP_ID --force-badname $GROUP_ID \
+    && adduser --gid $GROUP_ID --force-badname $USER_ID \
 
     # Устанавливаем расширения php
-    && apk --no-cache add postgresql-dev \
+    && apt-get install -y libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && pecl install redis-5.3.7 mongodb-1.14.0 \
     # Включаем расширения
@@ -20,7 +19,7 @@ RUN apk update \
     && echo "extension=mongodb.so" > $PHP_INI_DIR/conf.d/mongo.ini \
 
     # Git
-    && apk add git \
+    && apt install git-all \
 
     # Use the default production configuration
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \

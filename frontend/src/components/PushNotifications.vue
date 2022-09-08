@@ -56,6 +56,7 @@ export default {
         },
         getTokenHandler() {
             if (!this.$store.getters['user/current']['id']) {
+                this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, авторизуйтесь'})
                 console.log(`Пользователь не авторизован, нельзя принимать push-уведомления`)
                 return;
             }

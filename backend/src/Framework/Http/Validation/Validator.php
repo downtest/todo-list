@@ -60,7 +60,7 @@ class Validator implements MiddlewareInterface
             } else {
                 $ruleParts = explode(':', $rule);
                 $ruleName = ucfirst(array_shift($ruleParts)) . 'Rule';
-                $arguments = explode(',', array_shift($ruleParts));
+                $arguments = explode(',', $ruleParts ? $ruleParts[0] : '');
                 $ruleClassName = "\Framework\Http\Validation\Rules\\{$ruleName}";
 
                 if (!class_exists($ruleClassName)) {

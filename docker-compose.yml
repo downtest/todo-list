@@ -36,7 +36,6 @@ services:
     env_file:
       - .env
     working_dir: /www
-    command: sh -c 'composer install'
 
   web-pushes:
     <<: *php
