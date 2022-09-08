@@ -1,4 +1,4 @@
-FROM php:8.0.9-fpm-alpine3.14
+FROM php:8.1.10-fpm-alpine3.16
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -14,7 +14,7 @@ RUN apk update \
     # Устанавливаем расширения php
     && apk --no-cache add postgresql-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
-    && pecl install redis-5.3.4 mongodb-1.10.0 \
+    && pecl install redis-5.3.7 mongodb-1.14.0 \
     # Включаем расширения
     && docker-php-ext-enable redis pdo pgsql \
     && echo "extension=mongodb.so" > $PHP_INI_DIR/conf.d/mongo.ini \
