@@ -338,9 +338,7 @@ const todos = {
         dragItem({commit, state, getters, dispatch}, payload) {
             this.axios.post('api/tasks/update', {
                 collectionId: null,
-                id: payload.taskId,
-                parentId: payload.parentId,
-                index: payload.index,
+                task: payload,
             })
                 .then(async ({data}) => {
                     if (!data.id) {

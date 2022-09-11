@@ -39,7 +39,22 @@ class TasksInMongo extends Service
             $this->addToParent($collectionName, $newParentId, $newIndex);
         } else {
             // Изменяем индекс внутри одного родителя
-            if ($oldIndex > $newIndex) {
+            if ($newIndex === 0) {
+                // Перетащили в самое начало
+                $this->db->updateMany(
+                    $collectionName,
+                    [
+                        'parentId' => ['$eq' => $newParentId],
+                        '$or' => [
+                            ['index' => ['$gte' => 0],],
+                            ['index' => ['$type' => 'null'],],
+                        ],
+                    ],
+                    // Увеличиваем поле index на 1
+                    ['$inc' => ['index' => 1]]
+                );
+            } elseif ($oldIndex && $oldIndex > $newIndex) {
+                // Увеличили индекс(опустил ниже)
                 $this->db->updateMany(
                     $collectionName,
                     [
@@ -53,6 +68,7 @@ class TasksInMongo extends Service
                     ['$inc' => ['index' => 1]]
                 );
             } else {
+                // Уменьшили индекс(подняли выше)
                 $this->db->updateMany(
                     $collectionName,
                     [
@@ -62,7 +78,7 @@ class TasksInMongo extends Service
                             '$lte' => $newIndex
                         ],
                     ],
-                    // Увеличиваем поле index на 1
+                    // Уменьшаем поле index на 1
                     ['$inc' => ['index' => -1]]
                 );
             }
@@ -165,6 +181,7 @@ class TasksInMongo extends Service
 
     /**
      * Рекурсивно добавляет, либо обновляет все записи(таски) и змассива
+     * Корректно работает только при первом создании, когда добавляем и первый уровень(parentId = null), и, если нужно, последующие
      *
      * @param string $collectionName
      * @param array $tasks
@@ -177,6 +194,7 @@ class TasksInMongo extends Service
     {
         $children = array_filter($tasks, fn($task) => ($task['parentId'] ?? null) === $oldParentId);
         $result = [];
+        $handledTaskIds = [];
 
         foreach ($children as $task) {
             // Заменяем временный ID на реальный
@@ -184,24 +202,10 @@ class TasksInMongo extends Service
                 $task['parentId'] = $newParentId;
             }
 
-            if (!empty($task['isNew']) && $task['isNew']) {
-                // Нужно создать
-                $newId = $this->create($collectionName, $task);
-
-                $actualizedTask = [
-                    'oldId' => $task['id'],
-                    'id' => $newId
-                ] + (new TaskResource($task))->toArray();
-            } else {
-                // Нужно обновить
-                $this->update($collectionName, $task);
-
-                $actualizedTask = [
-                    'oldId' => $task['id'],
-                ] + (new TaskResource($task))->toArray();
-            }
+            $actualizedTask = $this->createOrUpdate($collectionName, $task);
 
             $result[] = $actualizedTask;
+            $handledTaskIds[] = $task['id'];
 
             // Рекурсивно добавляем всех дочек
             if (count(array_filter($tasks, fn($taskInLoop) => ($taskInLoop['parentId'] ?? null) === $task['id'])) > 0) {
@@ -209,7 +213,33 @@ class TasksInMongo extends Service
             }
         }
 
+        $unhandledTasks = array_filter($tasks, fn($task) => !in_array($task['id'], $handledTaskIds, true));
+
+        foreach ($unhandledTasks as $task) {
+            $this->createOrUpdate($collectionName, $task);
+        }
+
         return $result;
+    }
+
+    public function createOrUpdate(string $collectionName, array $task): array
+    {
+        if (isset($task['isNew']) && $task['isNew']) {
+            // Нужно создать
+            $newId = $this->create($collectionName, $task);
+
+            return [
+                'oldId' => $task['id'],
+                'id' => $newId,
+            ] + (new TaskResource($task))->toArray();
+        } else {
+            // Нужно обновить
+            $this->update($collectionName, $task);
+
+            return [
+                'oldId' => $task['id'],
+            ] + (new TaskResource($task))->toArray();
+        }
     }
 
     /**
@@ -240,30 +270,32 @@ class TasksInMongo extends Service
      * @return bool
      * @throws \Exception
      */
-    public function update(string $collectionName, array $task): bool
+    public function update(string $collectionName, array $taskChanges): bool
     {
-        if (!$taskTmp = $this->db->findById($collectionName, $task['id'])) {
-            throw new \Exception("Не найдена таска #{$task['id']}");
+        if (!$taskTmp = $this->db->findById($collectionName, $taskChanges['id'])) {
+            throw new \Exception("Не найдена таска #{$taskChanges['id']}");
         }
+
 
         // Если изменён родитель, но не передан индекс в новом родителе
-        if ($task['parentId'] &&  empty($task['index'])) {
-            $maxIndex = $this->getMaxId($collectionName, $task['parentId']);
+//        if ($taskChanges['parentId'] && empty($taskChanges['index'])) {
+//            echo "\nsetting index max\n";
+//            $maxIndex = $this->getMaxId($collectionName, $taskChanges['parentId']);
+//
+//            $taskChanges['index'] = $maxIndex;
+//        }
 
-            $task['index'] = $maxIndex;
-        }
-
-        if (isset($task['parentId']) || isset($task['index'])) {
+        if (isset($taskChanges['parentId']) || isset($taskChanges['index'])) {
             TasksInMongo::getInstance()->updateParent(
                 $collectionName,
-                $task['parentId'] ?? null,
-                $task['parentId'],
-                $task['index'] ?? 0,
-                $task['index']
+                $taskTmp['parentId'] ?? null,
+                $taskChanges['parentId'] ?? null,
+                $taskTmp['index'] ?? 0,
+                $taskChanges['index'] ?? 0
             );
         }
 
-        return $this->db->updateOne($collectionName, Arr::except($task, ['collectionId', 'taskId', 'isNew', 'confirmed', 'updated']));
+        return $this->db->updateOne($collectionName, Arr::except($taskChanges, ['collectionId', 'taskId', 'isNew', 'confirmed', 'updated']));
     }
 
     /**

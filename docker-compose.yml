@@ -39,6 +39,10 @@ services:
 
   web-pushes:
     <<: *php
+    depends_on:
+      - postgres
+      - mongo
+      - php
     command: sh -c 'php console webPushes'
 
 #  nunit:

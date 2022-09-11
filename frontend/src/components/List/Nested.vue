@@ -51,7 +51,7 @@ import draggable from "vuedraggable"
                     ghostClass: "item__ghost",
                     chosenClass: "item__chosen",
                     dragClass: "item__drag",
-                    delay: 200,
+                    // delay: 100,
                     delayOnTouchOnly: true,
                     forceFallback: true,
                 },
@@ -67,20 +67,16 @@ import draggable from "vuedraggable"
                     if (!eventElem.element.isNew) {
                         // Отправляем запрос на сервер для изменения позиции таски только если таска уже сохранена на сервере
                         this.$store.dispatch('todos/dragItem', {
-                            taskId: eventElem.element.id, // ID таски
+                            id: eventElem.element.id, // ID таски
                             parentId: this.parentId, // ID родителя
                             index: eventElem.newIndex // индекс в новом родителе
                         });
                     }
-
-                    // this.$store.dispatch("todos/updateParent", {
-                    //     id: value.added.element.id,
-                    //     parentId: this.parentId ? this.parentId  : 0,
-                    //     newIndex: value.added.newIndex,
-                    // });
                 }
             },
             onStart(value) {
+                return
+
                 if (this.$store.state.todos.focusId) {
                     // При начале перетаскивания сворачиваем редактирование таски
                     this.$store.commit('todos/setFocusId', null)
