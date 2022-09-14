@@ -15,10 +15,15 @@
 
     <script type="application/javascript">
         if ('serviceWorker' in navigator) {
-            // Service workers are supported. Use them.
-            window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            });
+            navigator.serviceWorker.register('/cache-sw.js');
+
+            // FireBase (push уведомления)
+            navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+
+            // window.addEventListener('load', function () {
+            //
+            // });
         }
     </script>
 </body>
