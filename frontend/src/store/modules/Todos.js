@@ -1,6 +1,7 @@
 import moment from "moment"
 
 const LS_TODOS_UNCONFIRMED_ITEMS = 'ls_todos_unconfirmed_items'
+const LS_TODOS_ITEMS_CACHE = 'ls_todos_items_cache'
 
 const todos = {
     namespaced: true,
@@ -202,6 +203,7 @@ const todos = {
     },
     actions: {
         async load ({state, commit, dispatch, getters}, payload) {
+            // TODO: СОхранение в кеш браузера для offline работы
             if (getters.initialized && !payload.force) {
                 return new Promise((resolve, reject) => {
                     resolve(getters.all)
@@ -224,11 +226,17 @@ const todos = {
                         }
 
                         commit('setItems', data)
+                        window.localStorage.setItem(LS_TODOS_ITEMS_CACHE, JSON.stringify(data))
                     })
                     .catch((response) => {
                         dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
                         console.error(response, `error on Tasks Load`)
-                        resolve([])
+
+                        if (window.localStorage.getItem(LS_TODOS_ITEMS_CACHE)) {
+                            resolve(JSON.parse(window.indexedDB.getItem(LS_TODOS_ITEMS_CACHE)))
+                        } else {
+                            resolve([])
+                        }
                     })
                     .finally( async () => {
                         if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
