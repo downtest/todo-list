@@ -13,18 +13,6 @@
 <body>
     <div id="app"></div>
 
-    <script type="application/javascript">
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/cache-sw.js');
-
-            // FireBase (push уведомления)
-            navigator.serviceWorker.register('/firebase-messaging-sw.js');
-
-
-            // window.addEventListener('load', function () {
-            //
-            // });
-        }
-    </script>
+    <script src="/service-workers.js" type="application/javascript"></script>
 </body>
 </html>
