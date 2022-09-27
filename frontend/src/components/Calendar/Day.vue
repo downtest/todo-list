@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="list">
     <h1>
         <span class="month-header" @click="$router.push({name: 'calendarMonth', params: {month: today.format('YYYY-MM')}})">{{monthsTitleEng[today.month()]}}</span>
         {{today.year()}}

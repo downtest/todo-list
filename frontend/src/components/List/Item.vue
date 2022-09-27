@@ -1,5 +1,5 @@
 <template>
-    <div :class="{item: true, active: isActive, hover: hover, updated: !modelValue.updated && !modelValue.isNew}" :data-id="modelValue.id">
+    <div :class="{item: true, active: isActive, hover: hover, updated: !isChanged && !isNew}" :data-id="modelValue.id">
 
         <swiper
             :slides-per-view="'auto'"
@@ -70,11 +70,22 @@
             </div>
         </div>
 
-        <nested v-model="children"
-                @input="emitter"
-                @change="onChange"
-                :parentId="modelValue.id"
-        />
+        <template v-if="children.length > 0">
+            <div class="item--children" v-if="!showChildren" @click="toggleShowChildren">
+                <div class="children--title">Вложенных: {{children.length}}</div>
+            </div>
+            <div class="item--children" v-else @click="toggleShowChildren">
+                <div class="children--title">Скрыть</div>
+            </div>
+
+            <nested v-if="showChildren"
+                    v-model="children"
+                    @input="emitter"
+                    @change="onChange"
+                    :parentId="modelValue.id"
+            />
+        </template>
+
     </div>
 </template>
 
@@ -119,11 +130,36 @@ import Labels from "../Item/Labels"
             },
         },
         computed: {
+            isNew() {
+                return this.modelValue.isNew
+            },
             isActive() {
                 return this.$store.state.todos.focusId === this.modelValue.id
             },
             isChanged() {
-                return this.modelValue.updated
+                if (!this.modelValue.updated) {
+                    return false
+                }
+
+                // Ключи, которые проверяются. И если они изменились, то таска считается изменённой
+                let searchableKeys = [
+                    'message',
+                    'labels',
+                    'date',
+                    'time',
+                ]
+                let intersections = Object.keys(this.modelValue.updated).filter(value => searchableKeys.includes(value))
+
+                return intersections.length > 0
+            },
+            showChildren() {
+                if (this.modelValue.updated && this.modelValue.updated.hasOwnProperty('showChildren')) {
+                    return this.modelValue.updated.showChildren
+                } else if (this.modelValue.hasOwnProperty('showChildren')) {
+                    return this.modelValue.showChildren
+                }
+
+                return false
             },
             isMoreOpened() {
                 return this.$store.state.todos.moreId === this.modelValue.id
@@ -267,6 +303,14 @@ import Labels from "../Item/Labels"
                 } else {
                     this.showMore = false
                 }
+            },
+            toggleShowChildren() {
+                this.$store.dispatch('todos/updateItem', {
+                    id: this.modelValue.id,
+                    payload: {
+                        showChildren: !this.showChildren,
+                    },
+                })
             },
         },
         activated() {

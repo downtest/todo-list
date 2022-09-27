@@ -154,6 +154,21 @@
     }
   }
 
+  .item--children {
+    padding: 5px;
+
+    .children--title {
+      border-top: 1px solid $colorDark;
+      margin-left: 33%;
+      text-align: right;
+      text-decoration: underline;
+
+      &:hover {
+
+      }
+    }
+  }
+
   //.btn {
   //  display: inline-block;
   //  margin: 0 5px;

@@ -281,6 +281,7 @@ export default {
   border: 1px solid darkgrey;
   text-align: left;
   margin: 0 10px;
+  padding: 5px;
 }
 
 .word {

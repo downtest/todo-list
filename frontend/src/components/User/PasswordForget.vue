@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="list">
         <h3>Восстановление пароля</h3>
 
         <div v-if="currentUser.id">

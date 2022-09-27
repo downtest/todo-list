@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="list">
         <h3>Регистрация</h3>
 
         <ul class="errors">

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="list">
         <div v-if="currentUser.id">
             <h3>Добро пожаловать!</h3>
 

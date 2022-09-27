@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="list">
         <h3>Password reset</h3>
 
         <div v-if="currentUser.id">

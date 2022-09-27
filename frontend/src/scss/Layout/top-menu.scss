@@ -1,5 +1,13 @@
 .top {
+  position: fixed;
   height: 40px;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: $colorWhite;
+  border-bottom: 1px solid #2c3e50;
+  z-index: 10;
 
   .top--logo {
     display: block;
@@ -13,12 +21,8 @@
   .top-menu {
     display: flex;
     flex-direction: row-reverse;
-    position: fixed;
-    border-bottom: 1px solid #2c3e50;
     top: 0;
     left: 0;
-    z-index: 10;
-    width: 100%;
 
     .menu--icon-btn {
       padding: 5px;

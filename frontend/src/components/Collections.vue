@@ -1,5 +1,5 @@
 <template>
-    <div class="collections">
+    <div class="list collections">
         <div class="collection" v-for="collection in collections">
             <small class="collection--id">#{{collection.id}}</small>
             <router-link class="collection--name" :to="{name: 'task-list', params: {collectionId: collection.id}}">

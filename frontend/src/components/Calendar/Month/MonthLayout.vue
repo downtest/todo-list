@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="list">
         <h1>{{monthsTitleEng[today.month()]}} {{today.year()}}</h1>
         <button @click="scrollToCurrent()">scrollToCurrent</button>
 
