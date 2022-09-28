@@ -47,7 +47,7 @@ class WebPushes extends BaseAction
                 $this->loadCollections($step++);
             }
 
-            if (time() - $start <= 0) {
+            if (time() - $start >= $this->params['ttl']) {
                 exit();
             }
 
