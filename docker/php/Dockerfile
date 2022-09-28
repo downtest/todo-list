@@ -6,12 +6,12 @@ ARG GROUP_ID=1000
 WORKDIR /var/www/html
 
 RUN apt update \
+    && apt-get install -y wget libpq-dev libcurl4-openssl-dev pkg-config libssl-dev \
     # Создаём такого же пользователя, как и на хосте \
     && addgroup --gid $GROUP_ID --force-badname $GROUP_ID \
     && adduser --gid $GROUP_ID --force-badname $USER_ID \
 
     # Устанавливаем расширения php
-    && apt-get install -y libpq-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && pecl install redis-5.3.7 mongodb-1.14.0 \
     # Включаем расширения
@@ -19,7 +19,7 @@ RUN apt update \
     && echo "extension=mongodb.so" > $PHP_INI_DIR/conf.d/mongo.ini \
 
     # Git
-    && apt install git-all \
+    && apt install -y git-all \
 
     # Use the default production configuration
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \

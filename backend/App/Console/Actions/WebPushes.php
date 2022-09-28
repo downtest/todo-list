@@ -5,23 +5,20 @@ namespace App\Console\Actions;
 
 use App\Console\Actions\Interfaces\BaseAction;
 use App\Models\Collection;
-use App\Models\Model;
 use App\Models\User;
 use App\Services\FireBase;
-use DateTimeInterface;
 use Framework\Services\Config;
 use Framework\Services\DBMongo;
 use Framework\Services\DBPostgres;
-use Framework\Tools\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Laminas\Diactoros\Response\HtmlResponse;
 
 class WebPushes extends BaseAction
 {
     protected array $params = [
         'delay' => 3,
         'byStep' => 50, // limit, по сколько коллекций просматривать за шаг
+        'ttl' => 3600, // сколько секунд команда будет жить
     ];
 
     protected DBMongo $dbMongo;
@@ -36,6 +33,7 @@ class WebPushes extends BaseAction
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $start = time();
         echo (new \DateTime('now', new \DateTimeZone('Europe/Moscow')))->format('d.m.Y H:i:s')."\n";
 
         while (true) {
@@ -47,6 +45,10 @@ class WebPushes extends BaseAction
 
             while ($step < $stepsAmount) {
                 $this->loadCollections($step++);
+            }
+
+            if (time() - $start <= 0) {
+                exit();
             }
 
             sleep($this->params['delay']);
