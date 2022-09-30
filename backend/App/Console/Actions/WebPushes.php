@@ -18,7 +18,7 @@ class WebPushes extends BaseAction
     protected array $params = [
         'delay' => 3,
         'byStep' => 50, // limit, по сколько коллекций просматривать за шаг
-        'ttl' => 3600, // сколько секунд команда будет жить
+        'ttl' => 1800, // сколько секунд команда будет жить
     ];
 
     protected DBMongo $dbMongo;
