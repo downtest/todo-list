@@ -91,9 +91,17 @@ export default {
     },
     computed: {
         isNew() {
+            if (!this.item) {
+                return false
+            }
+
             return this.item.isNew
         },
         isActive() {
+            if (!this.item) {
+                return false
+            }
+
             return this.$store.state.todos.focusId === this.item.id
         },
         isChanged() {

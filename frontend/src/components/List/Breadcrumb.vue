@@ -9,12 +9,12 @@
         <div class="breadcrumb--item" :key="index" v-for="(parent, index) in $store.getters['todos/parents'](id)">
             <div v-if="index + 1 < $store.getters['todos/parents'](id).length">
                 <router-link :to="{name: 'task-item', params: {itemId: parent.id}}">
-                    {{parent.message ? parent.message.split("\n")[0] : ''}}
+                    {{this.getTitle(parent)}}
                 </router-link>
             </div>
 
             <div v-else-if="parent">
-                {{parent.message ? parent.message.split("\n")[0] : ''}}
+                {{this.getTitle(parent)}}
             </div>
         </div>
     </div>
@@ -34,6 +34,17 @@
         computed: {
         },
         methods: {
+            getTitle(item) {
+                let result = ''
+
+                if (item.updated && item.updated.message) {
+                    result = item.updated.message
+                } else {
+                    result = item.message || ''
+                }
+
+                return result.split("\n")[0].substr(0, 20)
+            },
         },
     };
 </script>
