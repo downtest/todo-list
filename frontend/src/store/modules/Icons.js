@@ -19,6 +19,11 @@ import Plus from '../../../assets/icons/temp/plus.svg'
 import PlusWhite from '../../../assets/icons/temp/plus-white.svg'
 import Profile from '../../../assets/icons/menu/profile.svg'
 import ProfileWhite from '../../../assets/icons/menu/profile-white.svg'
+import NotesCloud from '../../../assets/icons/notes/cloud.svg'
+import NotesCloudCrossed from '../../../assets/icons/notes/cloud-crossed.svg'
+import NotesCloudCrossedNo2 from '../../../assets/icons/notes/cloud-crossed-no2.svg'
+import NotesPen from '../../../assets/icons/notes/pen.svg'
+import NotesPenWithLine from '../../../assets/icons/notes/pen-with-line.svg'
 import RightArrow from '../../../assets/icons/temp/right_arrow.svg'
 import Search from '../../../assets/icons/temp/search.svg'
 import Trash from '../../../assets/icons/temp/trash.svg'
@@ -55,6 +60,11 @@ const icons = {
         PlusWhite: () => PlusWhite,
         Profile: () => Profile,
         ProfileWhite: () => ProfileWhite,
+        NotesCloud: () => NotesCloud,
+        NotesCloudCrossed: () => NotesCloudCrossed,
+        NotesCloudCrossedNo2: () => NotesCloudCrossedNo2,
+        NotesPen: () => NotesPen,
+        NotesPenWithLine: () => NotesPenWithLine,
         RightArrow: () => RightArrow,
         Search: () => Search,
         Trash: () => Trash,

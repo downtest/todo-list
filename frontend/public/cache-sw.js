@@ -15,6 +15,7 @@ const CONTENT_TO_CACHE = [
     '/img/profile-white.bc58212a.svg',
     '/img/clock.bbe3dfe6.svg',
     '/img/trash.c02477fa.svg',
+    '/img/cloud-crossed-no2.93a75f45.svg',
     '/listodo-logo.svg',
 
     '/js/chunk-vendors.js',

@@ -9,8 +9,8 @@
                 <span class="collections-link--name">{{$store.getters['collections/current']['name']}}</span>
             </router-link>
 
-            <button v-if="$store.getters['todos/loading'] || this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/resetAllChanges')">Сбросить</button>
-            <button v-if="$store.getters['todos/loading'] || this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">Сохранить ({{$store.getters['todos/getChanges'].length}})</button>
+            <button v-if="$store.getters['todos/loading'] || this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/resetAllChanges')">Сбросить изменения</button>
+            <button v-if="$store.getters['todos/loading'] || this.$store.getters['todos/getChanges'].length" @click="this.$store.dispatch('todos/save')">Сохранить все изменения ({{$store.getters['todos/unconfirmed'].length}})</button>
 
 
             <div v-if="$store.getters['todos/loading']">

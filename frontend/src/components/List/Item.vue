@@ -14,6 +14,10 @@
                 </div>
 
                 <div class="item--name" :title="modelValue.message" @click="$router.push({name: 'task-item', params: {itemId: modelValue.id}})">
+                    <span v-if="isChanged || isNew">
+                        <img class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
+                    </span>
+
                     {{ name }}
 
                     <div class="item--time-block">

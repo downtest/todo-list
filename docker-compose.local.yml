@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  web-pushes:
-    restart: 'no'
-    command: echo 'exit (only for prod)'
+#  web-pushes:
+#    restart: 'no'
+#    command: echo 'exit (only for prod)'
 
   postgres:
     ports:
