@@ -19,7 +19,7 @@ class Logger extends Service
 
     protected function getDirectoryPath(): string
     {
-        return './../resources/logs';
+        return './../storage/logs';
     }
 
     protected function getFullPath(): string
