@@ -3,7 +3,7 @@
         <div class="item-row" @mouseover="hover = true" @mouseleave="hover = false">
             <div class="item--handle">=</div>
 
-            <div class="item--name" :title="modelValue.message" @click="toggleFocus(modelValue.id)">
+            <div class="item--name" :title="modelValue.message">
                 {{ name }}
 
                 <span v-if="modelValue.datetime">
@@ -40,7 +40,7 @@
                 Новый лейбл: <input type="text" v-model="labelInput">
             </label>
 
-            <span class="close-btn" @click="toggleFocus(null)">
+            <span class="close-btn">
                 <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="close" title="Close edit window">
             </span>
         </div>
@@ -160,9 +160,6 @@ export default {
         emitter(value) {
             // console.log(value, `emitter in ${this.modelValue.id}`)
             this.$emit("input", value);
-        },
-        toggleFocus (value) {
-            this.$store.commit('todos/setFocusId', value)
         },
         reset () {
             this.$store.dispatch('todos/resetChanges', this.modelValue.id)

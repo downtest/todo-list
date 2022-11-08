@@ -33,6 +33,8 @@ class Current extends Action
             ->setUser($user)
             ->getLoginData();
 
+        $loginData['user'] = (new UserResource($loginData['user']))->toArray();
+
         return new JsonResponse($loginData + [
 //            'status' => true,
 //            'user' => (new UserResource($user))->toArray(),

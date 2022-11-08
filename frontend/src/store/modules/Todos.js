@@ -24,6 +24,12 @@ const todos = {
         all(state){
             return state.items
         },
+        focusId(state){
+            return state.focusId
+        },
+        moreId(state){
+            return state.moreId
+        },
         children: (state, getters) => id => {
             return state.items.filter(item => ((id === null && item.parentId === undefined) || item.parentId === id)).sort((a,b) => a.index - b.index)
         },
@@ -286,7 +292,7 @@ const todos = {
 
                 window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
 
-                // commit('setFocusId', tempId)
+                commit('setFocusId', null)
 
                 resolve(newTaskData)
             })
@@ -568,6 +574,9 @@ const todos = {
         },
         resetFocus({commit}) {
             commit('setFocusId', null)
+        },
+        setMoreId({commit, state, getters, dispatch}, moreId) {
+            commit('setMoreId', moreId)
         },
     }
 };

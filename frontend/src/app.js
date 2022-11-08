@@ -5,7 +5,7 @@ import VueAxios from "vue-axios";
 import Item from "./components/List/Item"
 import Nested from './components/List/Nested'
 import moment from 'moment';
-import firebase from "./web-pushes/firebase";
+// import firebase from "./web-pushes/firebase";
 
 // Vue.config.productionTip = false;
 
@@ -58,7 +58,7 @@ window.$router = router
 app.use(VueAxios, axios)
 
 app.config.globalProperties.$moment=moment
-app.config.globalProperties.$firebase=firebase
+// app.config.globalProperties.$firebase=firebase
 
 // effectively adding the router to every component instance
 // app.config.globalProperties.$router = router

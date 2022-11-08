@@ -1,9 +1,8 @@
 <template>
-    <div :class="{item: true, active: isActive, hover: hover, updated: !isChanged && !isNew}" :data-id="modelValue.id">
+    <div :class="{item: true, hover: hover, updated: !isChanged && !isNew}" :data-id="modelValue.id">
 
         <swiper
             :slides-per-view="'auto'"
-            :initial-slide="0"
             @swiper="onSwiper"
             @snapIndexChange="onSlideChange"
         >
@@ -39,9 +38,9 @@
                     </div>
                 </div>
 
-                <span class="btn" @click="toggleMore">
-                    <img class="btn__icon" v-if="!showMore" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
-                    <img class="btn__icon" v-else :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
+                <span class="btn">
+                    <img class="btn__icon" v-if="!isMoreOpened" @click="slideNext()" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
+                    <img class="btn__icon" v-else @click="slidePrev()" :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
                 </span>
             </swiper-slide>
 
@@ -63,8 +62,7 @@
             </swiper-slide>
         </swiper>
 
-
-        <div class="item--edit" v-if="isActive">
+        <div class="item--edit" v-if="false">
             <labels :task="modelValue"></labels>
 
             <div style="display: flex; align-items: center;">
@@ -122,7 +120,6 @@ import Labels from "../Item/Labels"
                 localData: {},
                 hover: false,
                 swiper: null,
-                showMore: false,
             };
         },
         watch: {
@@ -136,9 +133,6 @@ import Labels from "../Item/Labels"
         computed: {
             isNew() {
                 return this.modelValue.isNew
-            },
-            isActive() {
-                return this.$store.state.todos.focusId === this.modelValue.id
             },
             isChanged() {
                 if (!this.modelValue.updated) {
@@ -166,7 +160,7 @@ import Labels from "../Item/Labels"
                 return false
             },
             isMoreOpened() {
-                return this.$store.state.todos.moreId === this.modelValue.id
+                return this.$store.getters['todos/moreId'] === this.modelValue.id
             },
             labels() {
                 if (this.modelValue.updated && this.modelValue.updated.labels) {
@@ -293,19 +287,26 @@ import Labels from "../Item/Labels"
                 this.swiper = swiper
             },
             toggleMore() {
-                if (!this.showMore) {
-                    this.swiper.slideNext()
+                if (!this.isMoreOpened) {
+                    this.slideNext()
                 } else {
-                    this.swiper.slidePrev()
+                    this.slidePrev()
                 }
+            },
+            slidePrev() {
+                this.swiper.slidePrev()
+            },
+            slideNext() {
+                this.swiper.slideNext()
             },
             // Событие от слайдера
             onSlideChange(swiper) {
                 if (swiper.progress > 0) {
-                    this.$store.commit('todos/setMoreId', this.modelValue.id)
-                    this.showMore = true
+                    this.$store.dispatch('todos/setMoreId', this.modelValue.id)
                 } else {
-                    this.showMore = false
+                    if (this.isMoreOpened) {
+                        this.$store.dispatch('todos/setMoreId', null)
+                    }
                 }
             },
             toggleShowChildren() {
@@ -318,9 +319,10 @@ import Labels from "../Item/Labels"
             },
         },
         activated() {
-            // Сбрасываем свайп записи
-            this.showMore = false
-            this.swiper.slidePrev()
+            // Костыль: При создании записи и возврате к списку, Сбрасываем свайп записи
+            setTimeout(() => {
+                this.swiper.slidePrev(0)
+            }, 0)
         },
     };
 </script>

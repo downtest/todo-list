@@ -5,27 +5,29 @@
             <span v-if="!current" class="bell__cross"></span>
         </span>
 
-<!--        <button @click="testPushHandler">Test</button>-->
+        <!--        <button @click="testPushHandler">Test</button>-->
     </div>
 </template>
 
 <script>
-import {getToken, getMessaging, onMessage} from "firebase/messaging";
-import firebase from "../web-pushes/firebase";
+if (location.protocol === 'https:') {
+    import("../web-pushes/firebase")
+    import("firebase/messaging").then(({getMessaging, onMessage}) => {
+        const messaging = getMessaging()
 
-const messaging = getMessaging()
+        /**
+         * Обработка push-уведомления
+         */
+        onMessage(messaging, (payload) => {
+            console.log('Message received. ', payload);
+            // ...
 
-/**
- * Обработка push-уведомления
- */
-onMessage(messaging, (payload) => {
-    console.log('Message received. ', payload);
-    // ...
-
-    navigator.serviceWorker.ready.then(function (serviceWorker) {
-        serviceWorker.showNotification(payload.notification.title, payload.notification);
-    });
-});
+            navigator.serviceWorker.ready.then(function (serviceWorker) {
+                serviceWorker.showNotification(payload.notification.title, payload.notification);
+            });
+        });
+    })
+}
 
 export default {
     name: "PushNotifications",
@@ -55,30 +57,39 @@ export default {
             }
         },
         getTokenHandler() {
+            if (location.protocol !== 'https:') {
+                this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, перейдите на https://listodo.ru'})
+                return;
+            }
+
             if (!this.$store.getters['user/current']['id']) {
                 this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, авторизуйтесь'})
                 console.log(`Пользователь не авторизован, нельзя принимать push-уведомления`)
                 return;
             }
 
-            getToken(firebase.messaging, {vapidKey: firebase.vapidKey}).then((currentToken) => {
-                if (currentToken) {
-                    // Send the token to your server
-                    this.$store.dispatch('firebase/store', {
-                        userId: this.$store.getters['user/current']['id'],
-                        firebaseToken: currentToken,
-                    }).then(() => {
-                        this.$store.dispatch('popupNotices/addSuccess', {text: 'Уведомления включены', duration: 3000})
+            import("firebase/messaging").then(({getToken}) => {
+                import('../web-pushes/firebase').then(firebase => {
+                    getToken(firebase.messaging, {vapidKey: firebase.vapidKey}).then((currentToken) => {
+                        if (currentToken) {
+                            // Send the token to your server
+                            this.$store.dispatch('firebase/store', {
+                                userId: this.$store.getters['user/current']['id'],
+                                firebaseToken: currentToken,
+                            }).then(() => {
+                                this.$store.dispatch('popupNotices/addSuccess', {text: 'Уведомления включены', duration: 3000})
+                            })
+                        } else {
+                            // Show permission request UI
+                            console.log('No registration token available. Request permission to generate one.');
+                            // ...
+                        }
+                    }).catch((err) => {
+                        console.log('An error occurred while retrieving token. ', err);
+                        // ...
                     })
-                } else {
-                    // Show permission request UI
-                    console.log('No registration token available. Request permission to generate one.');
-                    // ...
-                }
-            }).catch((err) => {
-                console.log('An error occurred while retrieving token. ', err);
-                // ...
-            });
+                })
+            })
         },
         deleteTokenHandler() {
             if (!this.$store.getters['firebase/current']) {
