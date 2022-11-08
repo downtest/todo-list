@@ -33,6 +33,9 @@
             </div>
 
         </div>
+
+        <button @click="showChanges = !showChanges" style="text-align: left">Показать изменения</button>
+        <pre v-if="showChanges" style="text-align: left; width: 100%;">{{$store.getters['todos/getChanges']}}</pre>
     </div>
 </template>
 
@@ -73,7 +76,7 @@ import draggable from "vuedraggable"
             },
         },
         data() {
-            return {}
+            return {showChanges: false,}
         },
         computed: {
             parentId() {
