@@ -213,7 +213,6 @@ export default {
             this.itemDatetime = value
         },
         updateMessage(value) {
-            console.log(value, `updateMessage in Task component`)
             this.itemMessage = value
         },
     },
@@ -221,7 +220,7 @@ export default {
         if (this.$store.getters['user/current']['id']) {
             this.$store.dispatch('todos/load', {clientId: this.$store.getters['user/current']['id']})
         }
-        this.$store.dispatch('todos/resetFocus')
+        // this.$store.dispatch('todos/resetFocus')
     },
 }
 </script>

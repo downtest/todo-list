@@ -1,7 +1,7 @@
 <template>
 <div class="nested">
     <draggable
-        v-model="modelValue"
+        v-model="nodes"
         item-key="id"
         v-bind="dragOptions"
         tag="div"
@@ -55,6 +55,11 @@ import draggable from "vuedraggable"
                     delayOnTouchOnly: true,
                     forceFallback: true,
                 },
+            }
+        },
+        computed: {
+            nodes() {
+                return this.modelValue
             }
         },
         methods: {

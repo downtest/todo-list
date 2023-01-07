@@ -267,6 +267,7 @@ export default class Parser {
             let nextNode = nodes[index + 1] || null
 
             switch (node.nodeName) {
+                case 'text':
                 case '#text':
                     // result += node.nodeValue + '\n'
                     result += node.nodeValue

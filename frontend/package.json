@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "watch": "vue-cli-service build --watch --mode development"
+    "watch": "vue-cli-service build --watch --mode development",
+    "test": "mocha tests"
   },
   "dependencies": {
     "@modules/parser": "file:modules/parser",
@@ -25,10 +26,11 @@
   "devDependencies": {
     "@vue/cli": "^5.0.4",
     "@vue/cli-service": ">5.0.0",
-    "vue-loader": "^17.0.0",
     "@vue/compiler-sfc": "^3.2.33",
+    "mocha": "^10.2.0",
     "sass": "^1.51.0",
-    "sass-loader": "^10.2.1"
+    "sass-loader": "^10.2.1",
+    "vue-loader": "^17.0.0"
   },
   "eslintConfig": {
     "root": true,

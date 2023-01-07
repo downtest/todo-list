@@ -1,7 +1,7 @@
 <template>
 <div>
     <nested
-        v-model="value"
+        v-model="nodes"
     />
 
     <span class="btn add-btn" @click="createChild">
@@ -29,7 +29,11 @@ export default {
             type: Function,
         },
     },
-    computed: {},
+    computed: {
+        nodes() {
+            return this.value
+        }
+    },
     methods: {},
 }
 </script>

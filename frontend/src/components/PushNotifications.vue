@@ -70,7 +70,7 @@ export default {
 
             import("firebase/messaging").then(({getToken}) => {
                 import('../web-pushes/firebase').then(firebase => {
-                    getToken(firebase.messaging, {vapidKey: firebase.vapidKey}).then((currentToken) => {
+                    getToken(firebase.default.messaging, {vapidKey: firebase.default.vapidKey}).then((currentToken) => {
                         if (currentToken) {
                             // Send the token to your server
                             this.$store.dispatch('firebase/store', {
