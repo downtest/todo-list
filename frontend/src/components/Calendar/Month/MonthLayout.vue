@@ -1,7 +1,6 @@
 <template>
     <div class="list">
         <h1>{{monthsTitleEng[today.month()]}} {{today.year()}}</h1>
-        <button @click="scrollToCurrent()">scrollToCurrent</button>
 
         <div class="calendar-wrapper" @scroll="handleWheel">
             <div id="calendar">
@@ -18,7 +17,6 @@
                 </div>
             </div>
         </div>
-
 
     </div>
 </template>

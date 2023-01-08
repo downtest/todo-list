@@ -13,7 +13,7 @@
 
     <ul class="control-buttons">
         <li class="control">
-            <router-link :class="{'control--link': true, 'control--link__active': $route.name === 'calendarMonth'}" :to="{name: 'calendarMonth'}">
+            <router-link :class="{'control--link': true, 'control--link__active': $route.name === 'calendarMonth'}" :to="{name: 'calendarMonth'}" @click="$router.go()">
                 <img v-if="$route.name === 'calendarMonth'" class="link--icon" :src="$store.getters['icons/CalendarWhite']" alt="calendar">
                 <img v-else class="link--icon" :src="$store.getters['icons/Calendar']" alt="calendar">
                 <span class="link--name">Calendar</span>
