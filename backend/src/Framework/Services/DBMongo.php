@@ -42,7 +42,7 @@ class DBMongo extends Service
     }
 
     /**
-     * @param string|null $connection
+     * @param string $connection
      * @return self
      * @throws Exception
      */
@@ -64,6 +64,14 @@ class DBMongo extends Service
         );
     }
 
+    /**
+     * Возвращаем выборку из БД
+     *
+     * @param string|null $collectionName
+     * @param array $conditions
+     * @param array $options
+     * @return array
+     */
     public function find(?string $collectionName, array $conditions = [], array $options = []): array
     {
         $result = [];

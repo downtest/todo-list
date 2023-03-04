@@ -26,12 +26,13 @@ class TasksInMongo extends Service
 
     /**
      * @param string $collectionName
+     * @param string $taskId ID таски, которую передвинули
      * @param string|null $oldParentId
      * @param string|null $newParentId
      * @param int $oldIndex
      * @param int $newIndex
      */
-    public function updateParent(string $collectionName, ?string $oldParentId, ?string $newParentId, int $oldIndex, int $newIndex)
+    public function updateParent(string $collectionName, string $taskId, ?string $oldParentId, ?string $newParentId, int $oldIndex, int $newIndex)
     {
         if ($oldParentId !== $newParentId) {
             // Родитель был изменён
@@ -39,26 +40,13 @@ class TasksInMongo extends Service
             $this->addToParent($collectionName, $newParentId, $newIndex);
         } else {
             // Изменяем индекс внутри одного родителя
-            if ($newIndex === 0) {
-                // Перетащили в самое начало
-                $this->db->updateMany(
-                    $collectionName,
-                    [
-                        'parentId' => ['$eq' => $newParentId],
-                        '$or' => [
-                            ['index' => ['$gte' => 0],],
-                            ['index' => ['$type' => 'null'],],
-                        ],
-                    ],
-                    // Увеличиваем поле index на 1
-                    ['$inc' => ['index' => 1]]
-                );
-            } elseif ($oldIndex && $oldIndex > $newIndex) {
+            if ($oldIndex > $newIndex) {
                 // Увеличили индекс(опустил ниже)
                 $this->db->updateMany(
                     $collectionName,
                     [
                         'parentId' => ['$eq' => $newParentId],
+                        'id' => ['$ne' => $taskId],
                         'index' => [
                             '$gte' => $newIndex,
                             '$lt' => $oldIndex
@@ -73,6 +61,7 @@ class TasksInMongo extends Service
                     $collectionName,
                     [
                         'parentId' => ['$eq' => $newParentId],
+                        'id' => ['$ne' => $taskId],
                         'index' => [
                             '$gt' => $oldIndex,
                             '$lte' => $newIndex
@@ -154,7 +143,7 @@ class TasksInMongo extends Service
     {
         if (!$tasks) {
             $allTasks = $this->db->find($collectionName, [], [
-                //  Возвращаем только index
+                //  Возвращаем только parentId
                 'projection' => ['parentId' => 1],
             ]);
             $tasks = [];
@@ -288,6 +277,7 @@ class TasksInMongo extends Service
         if (isset($taskChanges['parentId']) || isset($taskChanges['index'])) {
             TasksInMongo::getInstance()->updateParent(
                 $collectionName,
+                $taskChanges['id'],
                 $taskTmp['parentId'] ?? null,
                 $taskChanges['parentId'] ?? null,
                 $taskTmp['index'] ?? 0,

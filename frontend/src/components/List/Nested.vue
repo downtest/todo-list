@@ -5,7 +5,7 @@
         item-key="id"
         v-bind="dragOptions"
         tag="div"
-        handle=".item--handle"
+        handle=".item--content"
         class="item-container"
         :data-parent-id="parentId"
         @input="emitter"
@@ -45,13 +45,13 @@ import draggable from "vuedraggable"
         data() {
             return {
                 dragOptions: {
-                    animation: 0,
+                    animation: 150,
                     group: "description",
                     disabled: false,
                     ghostClass: "item__ghost",
                     chosenClass: "item__chosen",
                     dragClass: "item__drag",
-                    // delay: 100,
+                    delay: 100,
                     delayOnTouchOnly: true,
                     forceFallback: true,
                 },
@@ -90,11 +90,15 @@ import draggable from "vuedraggable"
             onEnd(value) {
                 // Обновляем старого родителя
                 this.$store.dispatch("todos/updateChildren", {
-                    parentId: value.from.dataset.parentId,
-                    children: this.modelValue,
+                    id: value.item.dataset.id,
+                    oldParentId: value.from.dataset.parentId || null,
+                    newParentId: value.to.dataset.parentId || null,
+                    oldIndex: value.oldIndex,
+                    newIndex: value.newIndex,
                 });
 
                 if (value.from.dataset.parentId !== value.to.dataset.parentId) {
+                    // Обновляем нового родителя
                     this.$store.dispatch("todos/updateChildren", {
                         parentId: value.to.dataset.parentId,
                         children: Array.from(value.to.childNodes).map(node => this.$store.getters['todos/getById'](node.dataset.id)),
@@ -125,5 +129,13 @@ import draggable from "vuedraggable"
 .item-container {
     padding: 0;
     text-align: left;
+}
+
+.item__chosen {
+    background: #efefef;
+}
+
+.item__ghost {
+    opacity: .6;
 }
 </style>

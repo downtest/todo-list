@@ -7,10 +7,10 @@
             @snapIndexChange="onSlideChange"
         >
             <swiper-slide class="item--content">
-                <div class="item--handle" :style="`background-image: ${$store.getters['icons/Move']}`">
-                    <span class="handle--bg" :style="`background-image: url(${$store.getters['icons/Move']})`"></span>
-<!--                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">-->
-                </div>
+<!--                <div class="item&#45;&#45;handle" :style="`background-image: ${$store.getters['icons/Move']}`">-->
+<!--                    <span class="handle&#45;&#45;bg" :style="`background-image: url(${$store.getters['icons/Move']})`"></span>-->
+<!--&lt;!&ndash;                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">&ndash;&gt;-->
+<!--                </div>-->
 
                 <div class="item--name" :title="modelValue.message" @click="$router.push({name: 'task-item', params: {itemId: modelValue.id}})">
                     <span v-if="isChanged || isNew">

@@ -35,6 +35,7 @@ class Update extends Action
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        /** @var DBMongo $db */
         $db = DBMongo::getInstance();
         $collectionName = User::getDefaultCollectionForCurrentUser();
         $taskInput = $request->getAttribute('task');
@@ -45,6 +46,9 @@ class Update extends Action
             return $this->errorResponse(['Не удалось обновить запись: '.$exception->getMessage()]);
         }
 
-        return new JsonResponse($db->findById($collectionName, $taskInput['id']));
+        return new JsonResponse([
+            'indexes' => $db->find($collectionName,[], ['projection' => ['index' => 1]]),
+            'updatedItem' => $db->findById($collectionName, $taskInput['id']),
+        ]);
     }
 }

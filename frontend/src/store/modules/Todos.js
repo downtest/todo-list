@@ -278,13 +278,18 @@ const todos = {
             return new Promise((resolve, reject) => {
                 // Временный id, настоящий придёт с сервера
                 let tempId = (String(Date.now() + Math.random())).toString()
+                let maxIndex = Math.max(getters.all.filter(item => item.parentId === payload.parentId).map(item => item.index)) || -1
+
                 let newTaskData = {
                     id: tempId,
+                    parentId: null,
+                    index: maxIndex + 1,
                     date: null,
                     time: null,
                     labels: [],
                     children: [],
                     isNew: true,
+                    message: '',
                     ...payload
                 }
 
@@ -307,12 +312,54 @@ const todos = {
          * @param parentId
          * @param children
          */
-        updateChildren ({commit}, {parentId, children}) {
+        updateChildren ({commit, getters}, {id, oldParentId, newParentId, oldIndex, newIndex}) {
             let i = 0
 
-            children.forEach(child => {
-                commit('updateItem', {id: child.id, payload: {index: i++, parentId}, instant: true})
+            let item = getters.all.find((item) => item.id === id)
+
+            commit('updateItem', {
+                id: id,
+                instant: true,
+                payload: {parentId: newParentId, index: newIndex}
             })
+
+            console.log(`changing ${item.message} from ${oldParentId}:${oldIndex} to ${newParentId}:${newIndex}`)
+
+            if (newParentId !== oldParentId) {
+                // Изменился родитель
+                // Актуализируем index у старого родителя
+                getters.all
+                    .filter(item => item.parentId === oldParentId && item.id !== id && item.index > oldIndex)
+                    .forEach(child => {
+                        commit('updateItem', {id: child.id, payload: {index: child.index-1}, instant: true})
+                    })
+
+                // Актуализируем index у нового родителя
+                getters.all
+                    .filter(item => item.parentId === newParentId && item.id !== id && item.index >= newParentId)
+                    .forEach(child => {
+                        commit('updateItem', {id: child.id, payload: {index: child.index+1}, instant: true})
+                    })
+            } else {
+                // Родитель не менялся
+                if (newIndex < oldIndex) {
+                    // Перенесли выше по списку
+                    getters.all
+                        .filter(item => item.parentId === newParentId && item.id !== id && item.index >= newIndex && item.index < oldIndex)
+                        .forEach(child => {
+                            console.log(`++ to ${child.message}`)
+                            commit('updateItem', {id: child.id, payload: {index: child.index+1}, instant: true})
+                        })
+                } else {
+                    // Перенесли ниже по списку
+                    getters.all
+                        .filter(item => item.parentId === newParentId && item.id !== id && item.index <= newIndex && item.index > oldIndex)
+                        .forEach(child => {
+                            console.log(`-- to ${child.message}`)
+                            commit('updateItem', {id: child.id, payload: {index: child.index-1}, instant: true})
+                        })
+                }
+            }
         },
         /**
          * Action updateItem
