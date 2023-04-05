@@ -2,6 +2,7 @@ import Bell from '../../../assets/icons/user/bell.svg'
 import BellWhite from '../../../assets/icons/temp/bell-white.png'
 import Briefcase from '../../../assets/icons/temp/briefcase.png'
 import BriefcaseWhite from '../../../assets/icons/temp/briefcase-white.png'
+import Burger from '../../../assets/icons/menu/burger.svg'
 import Calendar from '../../../assets/icons/menu/calendar-2.svg'
 import CalendarWhite from '../../../assets/icons/menu/calendar-2-white.svg'
 import Checklist from '../../../assets/icons/menu/checkbox-list.svg'
@@ -43,6 +44,7 @@ const icons = {
         BellWhite: () => BellWhite,
         Briefcase: () => Briefcase,
         BriefcaseWhite: () => BriefcaseWhite,
+        Burger: () => Burger,
         Calendar: () => Calendar,
         CalendarWhite: () => CalendarWhite,
         Checklist: () => Checklist,

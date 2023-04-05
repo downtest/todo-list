@@ -19,6 +19,7 @@
 
         <div
               class="task-message contenteditable--message placeholder"
+              :class="{'half-screen': halfScreen}"
               v-html="message"
               :id="'contenteditable-message'"
               :contenteditable="true"
@@ -40,6 +41,11 @@ export default {
         task: {
             type: Object,
             required: true,
+        },
+        halfScreen: {
+            type: Boolean,
+            required: false,
+            default: false,
         },
     },
     data: function () {

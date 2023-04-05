@@ -6,6 +6,7 @@
 
             <div class="item-status-bar" v-if="isChanged || isNew">
                 <img class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
+                <task-menu v-if="item" v-model="item"/>
             </div>
 
             <div v-if="this.$store.getters['todos/getTaskChanges'](itemId)">
@@ -17,26 +18,13 @@
                 <div>
                     <contenteditable-component
                         :task="item"
+                        :half-screen="children.length > 0"
                         @update="updateMessage"
                         @setTime="setTimeHandler"
                     ></contenteditable-component>
                 </div>
 
-                <label class="label">
-                    <div class="label__name" :title="item.date_utc">Дата</div>
-                    <input class="label__input" type="date" v-model="itemDate">
-                    &nbsp;&nbsp;
-                    <img class="btn-icon" :src="$store.getters['icons/Trash']" @click="itemDate = null" alt="clear"
-                         title="Clear">
-                </label>
 
-                <label class="label">
-                    <div class="label__name" :title="item.time_utc">Время</div>
-                    <input class="label__input" type="time" v-model="itemTime">
-                    &nbsp;&nbsp;
-                    <img class="btn-icon" :src="$store.getters['icons/Trash']" @click="itemTime = null" alt="clear"
-                         title="Clear">
-                </label>
 
                 <div v-if="item.informed">
                     <small><i>Уведомление отправлено: {{ item.informed }}</i></small>
@@ -46,19 +34,12 @@
                     Посмотреть в календаре
                 </router-link>
 
-                <h3>Лейблы</h3>
-
-                <labels :task="item"></labels>
             </div>
 
             <nested
                 v-model="children"
                 :parentId="itemId"
             />
-
-            <div class="btn_add" @click="createChild">
-                <img class="btn__icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
-            </div>
 
         </div>
     </div>
@@ -69,9 +50,11 @@ import nested from "../List/Nested";
 import contenteditableComponent from "../Contenteditable";
 import Breadcrumb from "../List/Breadcrumb";
 import Labels from "./Labels";
+import TaskMenu from "./TaskMenu";
 
 export default {
     components: {
+        TaskMenu,
         nested,
         Breadcrumb,
         contenteditableComponent,
@@ -81,7 +64,7 @@ export default {
         itemId: {
             required: true,
             type: String,
-            default: ''
+            default: '',
         },
     },
     data() {
@@ -164,25 +147,25 @@ export default {
                 })
             },
         },
-        itemTime: {
-            get() {
-                if (this.item && this.item.updated && 'time' in this.item.updated) {
-                    return this.item.updated.time ?? null
-                } else if (this.item) {
-                    return this.item.time ?? null
-                } else {
-                    return null
-                }
-            },
-            set(time) {
-                this.$store.dispatch('todos/updateItem', {
-                    id: this.item.id,
-                    payload: {
-                        time: time,
-                    },
-                })
-            },
-        },
+        // itemTime: {
+        //     get() {
+        //         if (this.item && this.item.updated && 'time' in this.item.updated) {
+        //             return this.item.updated.time ?? null
+        //         } else if (this.item) {
+        //             return this.item.time ?? null
+        //         } else {
+        //             return null
+        //         }
+        //     },
+        //     set(time) {
+        //         this.$store.dispatch('todos/updateItem', {
+        //             id: this.item.id,
+        //             payload: {
+        //                 time: time,
+        //             },
+        //         })
+        //     },
+        // },
         children: {
             get() {
                 return this.$store.getters['todos/children'](this.itemId)
@@ -201,14 +184,6 @@ export default {
         },
     },
     methods: {
-        createChild() {
-            this.$store.dispatch('todos/createItem', {
-                parentId: this.itemId,
-                message: '',
-            }).then((task) => {
-                this.$router.push({name: 'task-item', params: {itemId: task.id}})
-            })
-        },
         setTimeHandler(value) {
             this.itemDatetime = value
         },

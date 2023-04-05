@@ -30,6 +30,17 @@
 
   .contenteditable--message {
     min-height: 100px;
+    height: calc(100vh - 300px);
+    border-left: 0;
+    border-right: 0;
+
+    &.half-screen {
+      height: calc(70vh - 300px);;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
   }
 }
 
