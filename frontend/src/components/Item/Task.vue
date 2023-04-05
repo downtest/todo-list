@@ -4,8 +4,8 @@
 
             <breadcrumb v-if="itemId" :id="itemId"></breadcrumb>
 
-            <div class="item-status-bar" v-if="isChanged || isNew">
-                <img class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
+            <div class="item-status-bar">
+                <img v-if="isChanged || isNew" class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
                 <task-menu v-if="item" v-model="item"/>
             </div>
 
