@@ -39,6 +39,7 @@
             <nested
                 v-model="children"
                 :parentId="itemId"
+                :subDots="$store.getters['todos/parents'](itemId).length + 1"
             />
 
         </div>

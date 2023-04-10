@@ -12,6 +12,14 @@
 <!--&lt;!&ndash;                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">&ndash;&gt;-->
 <!--                </div>-->
 
+                <div class="item--dots">
+                    <div
+                        v-if="$store.getters['todos/parents'](modelValue.id).length > 1"
+                        v-for="i in $store.getters['todos/parents'](modelValue.id).length - subDots"
+                        class="dot"
+                    ></div>
+                </div>
+
                 <div class="item--name" :title="modelValue.message" @click="$router.push({name: 'task-item', params: {itemId: modelValue.id}})">
                     <span v-if="isChanged || isNew">
                         <img class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
@@ -72,21 +80,23 @@
             </div>
         </div>
 
-        <template v-if="children.length > 0">
-            <div class="item--children" v-if="!showChildren" @click="toggleShowChildren">
-                <div class="children--title">Вложенных: {{children.length}}</div>
-            </div>
-            <div class="item--children" v-else @click="toggleShowChildren">
-                <div class="children--title">Скрыть</div>
-            </div>
+        <div>
+            <template v-if="children.length > 0">
+                <div class="item--children" v-if="!showChildren" @click="toggleShowChildren">
+                    <div class="children--title">Вложенных: {{children.length}}</div>
+                </div>
+                <div class="item--children" v-else @click="toggleShowChildren">
+                    <div class="children--title">Скрыть</div>
+                </div>
+            </template>
 
-            <nested v-if="showChildren"
-                    v-model="children"
+            <nested v-model="children"
                     @input="emitter"
                     @change="onChange"
                     :parentId="modelValue.id"
+                    :subDots="subDots"
             />
-        </template>
+        </div>
 
     </div>
 </template>
@@ -113,6 +123,11 @@ import Labels from "../Item/Labels"
                 required: false,
                 type: Boolean,
                 default: false,
+            },
+            subDots: {
+                required: false,
+                type: Number,
+                default: 1
             },
         },
         data() {

@@ -7,6 +7,27 @@
 
   $itemHeight: 80px;
 
+  .item--dots {
+    display: flex;
+    gap: 7px;
+    margin: 0 5px;
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+
+
+      &:nth-child(odd) {
+        background-color: $colorMain;
+      }
+
+      &:nth-child(even) {
+        background-color: $colorDark;
+      }
+    }
+  }
+
   .item--content {
     display: flex;
     //height: $itemHeight;
@@ -179,7 +200,7 @@
   }
 
   &__chosen {
-    animation: shaker .5s ease-in-out;
+    //animation: shaker .5s ease-in-out;
   }
 
   &__drag {
@@ -196,7 +217,6 @@
   }
 
   .nested {
-    text-align: center;
     margin-left: 20px;
   }
 }
@@ -211,14 +231,4 @@
   .btn-icon {
     transform: rotate(45deg);
   }
-}
-
-@keyframes shaker {
-  from,
-  to {
-    transform: none
-  }
-  25% {transform: rotate(+1deg)}
-  50% {transform: rotate(-.7deg)}
-  75% {transform: rotate(.4deg)}
 }

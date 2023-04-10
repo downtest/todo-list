@@ -19,3 +19,13 @@
     opacity: 0;
   }
 }
+
+@keyframes shaker {
+  from,
+  to {
+    transform: none
+  }
+  25% {transform: rotate(+1deg)}
+  50% {transform: rotate(-.7deg)}
+  75% {transform: rotate(.4deg)}
+}

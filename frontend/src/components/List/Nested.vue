@@ -16,6 +16,7 @@
         <template #item="{element}">
             <item
                 :modelValue="element"
+                :subDots="subDots"
             />
         </template>
     </draggable>
@@ -40,6 +41,11 @@ import draggable from "vuedraggable"
                 required: false,
                 type: String,
                 default: null
+            },
+            subDots: {
+                required: false,
+                type: Number,
+                default: 1
             },
         },
         data() {
@@ -129,6 +135,7 @@ import draggable from "vuedraggable"
 .item-container {
     padding: 0;
     text-align: left;
+    min-height: 1px;
 }
 
 .item__chosen {
