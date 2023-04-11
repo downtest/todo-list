@@ -94,6 +94,7 @@
                     @input="emitter"
                     @change="onChange"
                     :parentId="modelValue.id"
+                    :show="showChildren"
                     :subDots="subDots"
             />
         </div>

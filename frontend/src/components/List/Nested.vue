@@ -47,6 +47,11 @@ import draggable from "vuedraggable"
                 type: Number,
                 default: 1
             },
+            show: {
+                required: false,
+                type: Boolean,
+                default: true
+            },
         },
         data() {
             return {
@@ -65,7 +70,11 @@ import draggable from "vuedraggable"
         },
         computed: {
             nodes() {
-                return this.modelValue
+                if (this.show) {
+                    return this.modelValue
+                }
+
+                return []
             }
         },
         methods: {
