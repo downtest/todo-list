@@ -153,5 +153,13 @@ import draggable from "vuedraggable"
 
 .item__ghost {
     opacity: .6;
+
+    .item--dots {
+        display: none;
+    }
+
+    .item--name {
+        padding-left: 10px;
+    }
 }
 </style>

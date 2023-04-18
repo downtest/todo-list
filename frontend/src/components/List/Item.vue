@@ -6,50 +6,80 @@
             @swiper="onSwiper"
             @snapIndexChange="onSlideChange"
         >
-            <swiper-slide class="item--content">
+            <swiper-slide>
 <!--                <div class="item&#45;&#45;handle" :style="`background-image: ${$store.getters['icons/Move']}`">-->
 <!--                    <span class="handle&#45;&#45;bg" :style="`background-image: url(${$store.getters['icons/Move']})`"></span>-->
 <!--&lt;!&ndash;                    <img :src="$store.getters['icons/Move']" alt="=" :title="date" @click.prevent="" @touchend.prevent="" @touchstart.prevent="">&ndash;&gt;-->
 <!--                </div>-->
 
-                <div class="item--dots">
-                    <div
-                        v-if="$store.getters['todos/parents'](modelValue.id).length > 1"
-                        v-for="i in $store.getters['todos/parents'](modelValue.id).length - subDots"
-                        class="dot"
-                    ></div>
-                </div>
+                <div class="item--content">
+<!--                    <div class="item&#45;&#45;dots">-->
+<!--                        <div-->
+<!--                            v-if="$store.getters['todos/parents'](modelValue.id).length > 1"-->
+<!--                            v-for="i in $store.getters['todos/parents'](modelValue.id).length - subDots"-->
+<!--                            class="dot"-->
+<!--                        ></div>-->
+<!--                    </div>-->
 
-                <div class="item--name" :title="modelValue.message" @click="$router.push({name: 'task-item', params: {itemId: modelValue.id}})">
-                    <span v-if="isChanged || isNew">
-                        <img class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
-                    </span>
+                    <div style="width: 100%;">
+                        <div style="display: flex;">
+                            <div class="item--name" :title="modelValue.message" @click="$router.push({name: 'task-item', params: {itemId: modelValue.id}})">
+                            <span v-if="isChanged || isNew">
+                                <img class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
+                            </span>
 
-                    {{ name }}
+                                {{ name }}
 
-                    <div class="item--time-block">
-                        <span v-if="date" class="time-block--date">
-                            <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
-                            {{date.format('DD.MM.YYYY')}}
-                        </span>
+                                <div class="item--time-block">
+                                <span v-if="date" class="time-block--date">
+                                    <img class="btn-icon" :src="$store.getters['icons/Calendar']" alt="datetime" :title="date">
+                                    {{date.format('DD.MM.YYYY')}}
+                                </span>
 
-                        <span v-if="time" class="time-block--time">
-                            <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
-                            {{time}}
-                        </span>
+                                    <span v-if="time" class="time-block--time">
+                                    <img class="btn-icon" :src="$store.getters['icons/Clock']" alt="datetime" :title="time">
+                                    {{time}}
+                                </span>
+                                </div>
+                            </div>
+
+                            <div class="item--labels" v-if="labels">
+                                <div class="label" key="index" v-for="(label, index) in labels" :style="`border: 1px solid ${label.color.border}; background-color: ${label.color.background};`">
+                                    <span class="label-name">{{label.name}}</span>
+                                </div>
+                            </div>
+
+                            <span class="btn">
+                                <img class="btn__icon" v-if="!isMoreOpened" @click="slideNext()" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
+                                <img class="btn__icon" v-else @click="slidePrev()" :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
+                            </span>
+                        </div>
+
+
                     </div>
                 </div>
 
-                <div class="item--labels" v-if="labels">
-                    <div class="label" key="index" v-for="(label, index) in labels" :style="`border: 1px solid ${label.color.border}; background-color: ${label.color.background};`">
-                        <span class="label-name">{{label.name}}</span>
-                    </div>
+
+                <div>
+                    <template v-if="children.length > 0">
+                        <div class="item--children" v-if="!showChildren" @click="toggleShowChildren">
+                            <div class="children--title">Вложенных: {{children.length}}</div>
+                        </div>
+                        <div class="item--children" v-else @click="toggleShowChildren">
+                            <div class="children--title">Скрыть</div>
+                        </div>
+                    </template>
+
+                    <nested v-model="children"
+                            @input="emitter"
+                            @change="onChange"
+                            :parentId="modelValue.id"
+                            :show="showChildren"
+                            :subDots="subDots"
+                    />
                 </div>
 
-                <span class="btn">
-                    <img class="btn__icon" v-if="!isMoreOpened" @click="slideNext()" :src="$store.getters['icons/DotsWhite']" alt="reset" title="Undo made changes">
-                    <img class="btn__icon" v-else @click="slidePrev()" :src="$store.getters['icons/Dots']" alt="reset" title="Undo made changes">
-                </span>
+
             </swiper-slide>
 
             <swiper-slide class="item--buttons">
@@ -78,25 +108,6 @@
                     <img class="btn-icon" :src="$store.getters['icons/Plus']" alt="close" title="Close edit window">
                 </span>
             </div>
-        </div>
-
-        <div>
-            <template v-if="children.length > 0">
-                <div class="item--children" v-if="!showChildren" @click="toggleShowChildren">
-                    <div class="children--title">Вложенных: {{children.length}}</div>
-                </div>
-                <div class="item--children" v-else @click="toggleShowChildren">
-                    <div class="children--title">Скрыть</div>
-                </div>
-            </template>
-
-            <nested v-model="children"
-                    @input="emitter"
-                    @change="onChange"
-                    :parentId="modelValue.id"
-                    :show="showChildren"
-                    :subDots="subDots"
-            />
         </div>
 
     </div>
@@ -173,7 +184,7 @@ import Labels from "../Item/Labels"
                     return this.modelValue.showChildren
                 }
 
-                return false
+                return true
             },
             isMoreOpened() {
                 return this.$store.getters['todos/moreId'] === this.modelValue.id

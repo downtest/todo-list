@@ -5,8 +5,25 @@
             <breadcrumb v-if="itemId" :id="itemId"></breadcrumb>
 
             <div class="item-status-bar">
+                <div v-if="itemDate" @click="menuShown=true;menuShownItems=['datetime']">
+                    <img class="icon__small" :src="$store.getters['icons/Calendar']" alt="date" title="date">
+                    {{itemDate}}
+                </div>
+
+                <div v-if="itemTime" @click="menuShown=true;menuShownItems=['datetime']">
+                    <img class="icon__small" :src="$store.getters['icons/Clock']" alt="time" title="time">
+                    {{itemTime}}
+                </div>
+
                 <img v-if="isChanged || isNew" class="icon__small" :src="$store.getters['icons/NotesCloudCrossedNo2']" alt="modified" title="has unsaved changes">
-                <task-menu v-if="item" v-model="item"/>
+
+                <task-menu v-if="item"
+                           v-model="item"
+                           :menu-shown="menuShown"
+                           :shown-items="menuShownItems"
+                           @menuShown="menuShown = $event"
+                           @shownItems="menuShownItems = $event"
+                />
             </div>
 
             <div v-if="this.$store.getters['todos/getTaskChanges'](itemId)">
@@ -23,8 +40,6 @@
                         @setTime="setTimeHandler"
                     ></contenteditable-component>
                 </div>
-
-
 
                 <div v-if="item.informed">
                     <small><i>Уведомление отправлено: {{ item.informed }}</i></small>
@@ -71,6 +86,9 @@ export default {
     data() {
         return {
             itemDatetime: false,
+
+            menuShown: false,
+            menuShownItems: [],
         }
     },
     computed: {
@@ -148,25 +166,25 @@ export default {
                 })
             },
         },
-        // itemTime: {
-        //     get() {
-        //         if (this.item && this.item.updated && 'time' in this.item.updated) {
-        //             return this.item.updated.time ?? null
-        //         } else if (this.item) {
-        //             return this.item.time ?? null
-        //         } else {
-        //             return null
-        //         }
-        //     },
-        //     set(time) {
-        //         this.$store.dispatch('todos/updateItem', {
-        //             id: this.item.id,
-        //             payload: {
-        //                 time: time,
-        //             },
-        //         })
-        //     },
-        // },
+        itemTime: {
+            get() {
+                if (this.item && this.item.updated && 'time' in this.item.updated) {
+                    return this.item.updated.time ?? null
+                } else if (this.item) {
+                    return this.item.time ?? null
+                } else {
+                    return null
+                }
+            },
+            set(time) {
+                this.$store.dispatch('todos/updateItem', {
+                    id: this.item.id,
+                    payload: {
+                        time: time,
+                    },
+                })
+            },
+        },
         children: {
             get() {
                 return this.$store.getters['todos/children'](this.itemId)

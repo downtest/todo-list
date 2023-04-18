@@ -54,14 +54,38 @@ export default {
             type: Object,
             default: {},
         },
+        menuShown: {
+            required: false,
+            type: Boolean,
+            default: false,
+        },
+        shownItems: {
+            required: false,
+            type: Array,
+            default: [],
+        },
     },
     data() {
         return {
-            menuShown: false,
-            shownItems: [],
         }
     },
     computed: {
+        computedMenuShown: {
+            get() {
+                return this.menuShown
+            },
+            set(value) {
+                this.$emit('menuShown', value)
+            },
+        },
+        computedShownItems: {
+            get() {
+                return this.shownItems
+            },
+            set(value) {
+                this.$emit('shownItems', value)
+            },
+        },
         itemDate: {
             get() {
                 if (this.modelValue && this.modelValue.updated && 'date' in this.modelValue.updated) {

@@ -1,4 +1,6 @@
 .item-status-bar {
-  text-align: right;
   margin-right: 5px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
 }
