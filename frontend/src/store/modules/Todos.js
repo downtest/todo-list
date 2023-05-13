@@ -54,6 +54,9 @@ const todos = {
         unconfirmed: (state) => {
             return state.items.filter(task => task.updated || task.isNew)
         },
+        /**
+         * Получает изменения по всем заметкам
+         */
         getChanges: (state, getters) => {
             return getters.unconfirmed.map(task => {
                 if (task.isNew) {
@@ -63,6 +66,9 @@ const todos = {
                 return {...task.updated, id: task.id}
             })
         },
+        /**
+         * Получает изменения по конкретной заметке
+         */
         getTaskChanges: (state, getters) => id => {
             let task = getters.all.find(task => task.id === id)
 

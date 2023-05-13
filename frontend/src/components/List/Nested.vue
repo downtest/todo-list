@@ -62,7 +62,7 @@ import draggable from "vuedraggable"
                     ghostClass: "item__ghost",
                     chosenClass: "item__chosen",
                     dragClass: "item__drag",
-                    delay: 100,
+                    delay: 400,
                     delayOnTouchOnly: true,
                     forceFallback: true,
                 },

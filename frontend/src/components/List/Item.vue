@@ -60,15 +60,13 @@
                 </div>
 
 
-                <div>
-                    <template v-if="children.length > 0">
-                        <div class="item--children" v-if="!showChildren" @click="toggleShowChildren">
-                            <div class="children--title">Вложенных: {{children.length}}</div>
-                        </div>
-                        <div class="item--children" v-else @click="toggleShowChildren">
-                            <div class="children--title">Скрыть</div>
-                        </div>
-                    </template>
+                <div class="item--children">
+                    <div v-if="children.length > 0" class="children--buttons">
+                        <span @click="toggleShowChildren" class="children--button">
+                            <template v-if="!showChildren">Вложенных: {{children.length}}</template>
+                            <template v-else>Скрыть</template>
+                        </span>
+                    </div>
 
                     <nested v-model="children"
                             @input="emitter"

@@ -13,6 +13,9 @@ use Framework\Services\DBPostgres;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Смотрит все ноды и за 10 минут до даты отправляет пуш-уведомление клиенту
+ */
 class WebPushes extends BaseAction
 {
     protected array $params = [
