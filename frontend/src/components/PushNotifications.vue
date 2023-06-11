@@ -120,7 +120,7 @@ export default {
         this.$store.dispatch('firebase/load').then(tokens => {
             console.log(tokens, `tokens loaded`)
 
-            if (tokens.length === 0) {
+            if (!this.$store.getters['firebase/current']) {
                 this.getTokenHandler(true)
             }
         })
