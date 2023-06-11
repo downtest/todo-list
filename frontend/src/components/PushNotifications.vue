@@ -56,15 +56,19 @@ export default {
                 this.getTokenHandler()
             }
         },
-        getTokenHandler() {
+        getTokenHandler(silent = false) {
             if (location.protocol !== 'https:') {
-                this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, перейдите на https://listodo.ru'})
+                if (!silent)
+                    this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, перейдите на https://listodo.ru'})
+
                 return;
             }
 
             if (!this.$store.getters['user/current']['id']) {
-                this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, авторизуйтесь'})
-                console.log(`Пользователь не авторизован, нельзя принимать push-уведомления`)
+                if (!silent)
+                    this.$store.dispatch('popupNotices/addWarning', {text: 'Для того, чтобы принимать push-уведомления, пожалуйста, авторизуйтесь'})
+
+                // console.log(`Пользователь не авторизован, нельзя принимать push-уведомления`)
                 return;
             }
 
@@ -77,7 +81,8 @@ export default {
                                 userId: this.$store.getters['user/current']['id'],
                                 firebaseToken: currentToken,
                             }).then(() => {
-                                this.$store.dispatch('popupNotices/addSuccess', {text: 'Уведомления включены', duration: 3000})
+                                if (!silent)
+                                    this.$store.dispatch('popupNotices/addSuccess', {text: 'Уведомления включены', duration: 3000})
                             })
                         } else {
                             // Show permission request UI
@@ -112,7 +117,13 @@ export default {
         },
     },
     mounted() {
-        this.$store.dispatch('firebase/load')
+        this.$store.dispatch('firebase/load').then(tokens => {
+            console.log(tokens, `tokens loaded`)
+
+            if (tokens.length === 0) {
+                this.getTokenHandler(true)
+            }
+        })
     },
 }
 </script>

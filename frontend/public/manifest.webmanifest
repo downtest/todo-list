@@ -15,5 +15,5 @@
     }
   ],
   "start_url": "/list",
-  "display": "fullscreen"
+  "display": "standalone"
 }
