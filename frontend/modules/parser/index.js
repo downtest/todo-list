@@ -309,9 +309,10 @@ export default class Parser {
                 case 'H6':
                     result += `###### ${node.innerText}\n`
                     break;
+                case 'LI':
                 case 'INPUT':
                     if (node.className === 'contenteditable-checkbox') {
-                        result += `[]`
+                        result += `[] ${node.childNodes[1].nodeValue}\n`
                     } else {
                         result += node.innerHTML + '\n'
                     }

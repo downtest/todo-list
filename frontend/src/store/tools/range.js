@@ -9,6 +9,7 @@ const range = {
         endContainerIndex: null,
         startPosition: null,
         endPosition: null,
+        nodes: [],
     },
     mutations: {
         setSelector(state, value) {
@@ -32,6 +33,9 @@ const range = {
         setEndPosition(state, value) {
             state.endPosition = value
         },
+        setNodes(state, value) {
+            state.nodes = value
+        },
     },
 
     getters: {
@@ -42,10 +46,7 @@ const range = {
             return state.container
         },
         nodes(state) {
-            return Array.prototype.slice.call(state.container.childNodes)
-        },
-        nodeList(state) {
-            return state.container.childNodes
+            return state.nodes
         },
         range(state) {
             return state.range
@@ -68,29 +69,37 @@ const range = {
         init({getters, commit}, selector) {
             commit('setSelector', selector)
             commit('setContainer', document.querySelector(getters.selector))
+            commit('setNodes', Array.prototype.slice.call(getters.container.childNodes))
         },
-        refreshNodes({getters, commit}) {
-            commit('setContainer', document.querySelector(getters.selector))
+        refreshNodes({getters, commit, dispatch}) {
+            dispatch('init', getters.selector)
         },
         save({getters, commit}) {
             let range = window.getSelection().getRangeAt(0)
 
-            let startContainer,endContainer
+            let startContainer,endContainer,startPosition,endPosition
 
             if (range.startContainer.classList && range.startContainer.classList.contains('contenteditable--message')) {
-                startContainer = range.startContainer.childNodes[range.startOffset - 1]
+                // Выбрана нода самого верхнего уровня
+                startContainer = range.startContainer.childNodes[range.startOffset]
+                startPosition = 0
             } else if (range.startContainer.parentNode.classList && range.startContainer.parentNode.classList.contains('contenteditable--message')) {
                 startContainer = range.startContainer
+                startPosition = range.startOffset
             } else {
                 startContainer = range.startContainer.parentNode
+                startPosition = range.startOffset
             }
 
             if (range.endContainer.classList && range.endContainer.classList.contains('contenteditable--message')) {
-                endContainer = range.endContainer.childNodes[range.endOffset - 1]
+                endContainer = range.endContainer.childNodes[range.endOffset]
+                endPosition = 0
             } else if (range.endContainer.parentNode.classList && range.endContainer.parentNode.classList.contains('contenteditable--message')) {
                 endContainer = range.endContainer
+                endPosition = range.endPosition
             } else {
                 endContainer = range.endContainer.parentNode
+                endPosition = range.endPosition
             }
 
             // let startContainer = range.startContainer.classList && range.startContainer.classList.contains('contenteditable--message') ? range.startContainer.childNodes[range.startOffset] : range.startContainer
@@ -103,15 +112,11 @@ const range = {
             let startContainerIndex = getters.nodes.indexOf(startContainer)
             let endContainerIndex = getters.nodes.indexOf(endContainer)
 
-            console.log(getters.nodes, `nodes`)
-            console.log(startContainer, `startContainer, index ${startContainerIndex}`)
-            console.log(endContainer, `endContainer, index ${endContainerIndex}`)
-
             commit('setRange', range)
             commit('setStartContainerIndex', startContainerIndex)
             commit('setEndContainerIndex', endContainerIndex)
-            commit('setStartPosition', range.startOffset)
-            commit('setEndPosition', range.endOffset)
+            commit('setStartPosition', startPosition)
+            commit('setEndPosition', endPosition)
         },
         load({getters, dispatch}, payload) {
             if (!payload) payload = {}
@@ -122,30 +127,30 @@ const range = {
 
             // range.setStart(getters.nodes[getters.startContainerIndex], getters.startPosition)
 
-            if (payload.child) {
+            if (payload.child && getters.nodes[getters.startContainerIndex].childNodes.length > 0) {
                 range.setStart(getters.nodes[getters.startContainerIndex].childNodes[payload.child], getters.startPosition)
-                range.setEnd(getters.nodes[getters.endContainerIndex].childNodes[payload.child], getters.endPosition)
+                range.setEnd(getters.nodes[getters.endContainerIndex].childNodes[payload.child], getters.endPosition || getters.startPosition)
             } else {
-                if (['Text', 'Comment', 'CDataSection'].indexOf(typeof getters.nodes[getters.startContainerIndex]) !== -1) {
+                if (['Text', 'Comment', 'CDataSection', 'BR'].indexOf(typeof getters.nodes[getters.startContainerIndex]) !== -1) {
                     // 2ой аргумент должен быть кол-вом символов в ноде
                     range.setStart(getters.nodes[getters.startContainerIndex], getters.startPosition)
                 } else if (getters.nodes[getters.startContainerIndex].childNodes.length > 0) {
                     // 2ой аргумент должен быть
-                    range.setStart(getters.nodes[getters.startContainerIndex].childNodes[0], getters.endPosition)
+                    range.setStart(getters.nodes[getters.startContainerIndex].childNodes[0], getters.startPosition)
                 } else {
                     // 2ой аргумент должен быть
-                    range.setStart(getters.nodes[getters.startContainerIndex], getters.endPosition)
+                    range.setStart(getters.nodes[getters.startContainerIndex], getters.startPosition)
                 }
 
                 if (['Text', 'Comment', 'CDataSection'].indexOf(typeof getters.nodes[getters.endContainerIndex]) !== -1) {
                     // 2ой аргумент должен быть кол-вом символов в ноде
-                    range.setStart(getters.nodes[getters.endContainerIndex], getters.endPosition)
+                    range.setEnd(getters.nodes[getters.endContainerIndex], getters.endPosition)
                 } else if (getters.nodes[getters.startContainerIndex].childNodes.length > 0) {
                     // 2ой аргумент должен быть
-                    range.setStart(getters.nodes[getters.startContainerIndex].childNodes[0], getters.endPosition)
+                    range.setEnd(getters.nodes[getters.startContainerIndex].childNodes[0], getters.endPosition)
                 } else {
                     // 2ой аргумент должен быть
-                    range.setStart(getters.nodes[getters.startContainerIndex], getters.endPosition)
+                    range.setEnd(getters.nodes[getters.startContainerIndex], getters.endPosition)
                 }
             }
 
@@ -155,6 +160,10 @@ const range = {
 
             window.getSelection().removeAllRanges()
             window.getSelection().addRange(range)
+        },
+        replaceNode({getters, dispatch}, payload) {
+            getters.nodes[payload.index].after(payload.newNode)
+            getters.nodes[payload.index].parentNode.removeChild(getters.nodes[payload.index])
         },
     },
 };

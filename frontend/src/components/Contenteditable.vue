@@ -214,11 +214,9 @@ export default {
                     let newNode = document.createTextNode(this.$store.getters['range/nodes'][i].innerText.trim())
                     // newNode.innerHTML = this.$store.getters['range/nodes'][i].innerText + '<br>'.trim()
 
-                    this.$store.getters['range/nodes'][i].after(newNode)
-                    this.$store.getters['range/nodes'][i].parentNode.removeChild(this.$store.getters['range/nodes'][i])
+                    this.$store.dispatch('range/replaceNode', {index: i, newNode})
                 } else if (!toText) {
                     // Преобразуем всё в чекбоксы
-
                     if (!this.$store.getters['range/nodes'][i]) {
                         console.log(this.$store.getters['range/nodes'][i], `node ${i} in interval ${startContainerIndex} ${endContainerIndex}`)
                         continue
@@ -227,23 +225,22 @@ export default {
                     let text = this.$store.getters['range/nodes'][i].nodeValue || this.$store.getters['range/nodes'][i].innerText
                     text = text.trim()
 
-                    if (text) {
-                        let newNode = document.createElement('li')
-                        newNode.classList.add('contenteditable-checkbox')
+                    let newNode = document.createElement('li')
+                    newNode.classList.add('contenteditable-checkbox')
 
-                        let inputNode = document.createElement('input')
-                        inputNode.type = 'checkbox'
+                    let inputNode = document.createElement('input')
+                    inputNode.type = 'checkbox'
 
-                        let textNode = document.createTextNode(text)
+                    let textNode = document.createTextNode(text)
 
-                        newNode.appendChild(inputNode)
-                        newNode.appendChild(textNode)
+                    newNode.appendChild(inputNode)
+                    newNode.appendChild(textNode)
 
-                        this.$store.getters['range/nodes'][i].after(newNode)
-                        this.$store.getters['range/nodes'][i].parentNode.removeChild(this.$store.getters['range/nodes'][i])
-                    }
+                    this.$store.dispatch('range/replaceNode', {index: i, newNode})
                 }
             }
+
+            this.$store.dispatch('range/refreshNodes')
 
             if (toText) {
                 this.$store.dispatch('range/load')
