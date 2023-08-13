@@ -251,12 +251,14 @@ const todos = {
                         }
                     })
                     .finally( async () => {
-                        if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
-                            for (let task of JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS))) {
+                        let itemsInLS = await dispatch('getItemsFromLS')
+
+                        if (itemsInLS) {
+                            for (let task of itemsInLS) {
                                 if (task.isNew && !getters.getById(task.id)) {
-                                    await dispatch('createItem', task)
+                                    await commit('createItem', task)
                                 } else {
-                                    await dispatch('updateItem', {
+                                    await commit('updateItem', {
                                         id: task.id,
                                         payload: task,
                                     })
@@ -271,14 +273,17 @@ const todos = {
                     })
             })
         },
-        loadFromStorage ({state, commit}) {
+        loadFromStorage ({state, commit, dispatch}) {
             return new Promise((resolve, reject) => {
-                if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
-                    commit('setItems', JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)))
-                }
-
-                return resolve(state.items)
+                return dispatch('getItemsFromLS')
             })
+        },
+        getItemsFromLS ({state, commit}) {
+            if (window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS)) {
+                return JSON.parse(window.localStorage.getItem(LS_TODOS_UNCONFIRMED_ITEMS))
+            }
+
+            return []
         },
         createItem ({commit, state, getters}, payload) {
             return new Promise((resolve, reject) => {

@@ -37,6 +37,9 @@
 
         <!-- Дочерняя запись -->
         <div class="menu-item" @click="createChild">Создать дочернюю запись</div>
+
+        <!-- Удалить -->
+        <div class="menu-item" @click="deleteItem">Удалить</div>
     </div>
 </template>
 
@@ -136,6 +139,23 @@ export default {
             }).then(() => {
                 this.menuShown = false
             })
+        },
+        deleteItem() {
+            if (this.modelValue.message.length > 2) {
+                if (!window.confirm(`Удалить запись?\n${this.modelValue.message}`)) {
+                    return
+                }
+            }
+
+            let taskIdToFocus = this.modelValue.parentId
+
+            this.$store.dispatch('todos/deleteItem', this.modelValue.id)
+
+            if (taskIdToFocus) {
+                this.$router.push({name: 'task-item', params: {itemId: taskIdToFocus}})
+            } else {
+                this.$router.push({name: 'task-list'})
+            }
         },
     },
 }

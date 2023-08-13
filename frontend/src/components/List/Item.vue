@@ -182,7 +182,7 @@ import Labels from "../Item/Labels"
                     return this.modelValue.showChildren
                 }
 
-                return true
+                return false
             },
             isMoreOpened() {
                 return this.$store.getters['todos/moreId'] === this.modelValue.id
