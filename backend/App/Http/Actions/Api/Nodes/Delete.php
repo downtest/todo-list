@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Actions\Api\Tasks;
+namespace App\Http\Actions\Api\Nodes;
 
 
 use App\Services\TasksInMongo;

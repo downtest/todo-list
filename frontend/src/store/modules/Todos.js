@@ -220,13 +220,13 @@ const todos = {
                 return new Promise((resolve, reject) => {
                     resolve(getters.all)
                 })
-            }
+            } 
 
             commit('setItems', [])
             commit('setLoading', true)
 
             return new Promise(async (resolve, reject) => {
-                this.axios.get('api/tasks/get', {params: {
+                this.axios.get('api/nodes/get', {params: {
                     clientId: payload.clientId,
                     collectionId: payload.collectionId,
                 }})
@@ -238,10 +238,10 @@ const todos = {
                         }
 
                         commit('setItems', data)
-                        window.localStorage.setItem(LS_TODOS_ITEMS_CACHE, JSON.stringify(data))
+                        // window.localStorage.setItem(LS_TODOS_ITEMS_CACHE, JSON.stringify(data))
                     })
                     .catch((response) => {
-                        dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
+                        dispatch('popupNotices/addError', {text: response.response.data.errors.join('<br>')}, { root: true })
                         console.error(response, `error on Tasks Load`)
 
                         if (window.localStorage.getItem(LS_TODOS_ITEMS_CACHE)) {
@@ -251,31 +251,36 @@ const todos = {
                         }
                     })
                     .finally( async () => {
-                        let itemsInLS = await dispatch('getItemsFromLS')
-
-                        if (itemsInLS) {
-                            for (let task of itemsInLS) {
-                                if (task.isNew && !getters.getById(task.id)) {
-                                    await commit('createItem', task)
-                                } else {
-                                    await commit('updateItem', {
-                                        id: task.id,
-                                        payload: task,
-                                    })
-                                }
-                            }
-                        }
-
-                        commit('setInitialized', true)
-                        commit('setLoading', false)
+                        await dispatch('loadFromStorage')
 
                         resolve(getters.all)
                     })
             })
         },
-        loadFromStorage ({state, commit, dispatch}) {
-            return new Promise((resolve, reject) => {
-                return dispatch('getItemsFromLS')
+        async loadFromStorage ({getters, commit, dispatch}) {
+            console.log(`loadFromStorage fafwer`)
+
+            return new Promise(async (resolve, reject) => {
+                commit('setLoading', true)
+
+                let itemsInLS = await dispatch('getItemsFromLS')
+
+                if (itemsInLS) {
+                    for (let task of itemsInLS) {
+                        if (task.isNew && !getters.getById(task.id)) {
+                            await commit('createItem', task)
+                        } else {
+                            await commit('updateItem', {
+                                id: task.id,
+                                payload: task,
+                            })
+                        }
+                    }
+                }
+
+                commit('setLoading', false)
+
+                resolve(getters.all)
             })
         },
         getItemsFromLS ({state, commit}) {
@@ -408,9 +413,9 @@ const todos = {
          * @param payload
          */
         dragItem({commit, state, getters, dispatch}, payload) {
-            this.axios.post('api/tasks/update', {
+            this.axios.post('api/nodes/update', {
                 collectionId: null,
-                task: payload,
+                items: payload,
             })
                 .then(async ({data}) => {
                     if (!data.id) {
@@ -443,7 +448,7 @@ const todos = {
                 return
             }
 
-            this.axios.post('api/tasks/delete', {
+            this.axios.post('api/nodes/delete', {
                 collectionId: null,
                 taskId: id,
             })
@@ -563,36 +568,40 @@ const todos = {
                 return
             }
 
-            this.axios.post('api/tasks/mass/update', {
-                collectionId: null,
-                tasks: getters.prepareUnconfirmedForServer
+            return new Promise((resolve, reject) => {
+                this.axios.post('api/nodes/mass/update', {
+                    collectionId: null,
+                    nodes: getters.prepareUnconfirmedForServer
+                })
+                    .then(({data}) => {
+                        // commit('updateItems', data.tasks)
+
+                        for (let item of data.nodes) {
+                            console.log(item, `updating ${item.id}`)
+
+                            commit('updateItem', {
+                                id: item.oldId || item.id,
+                                payload: {...item, updated: null, isNew: false,},
+                                instant: true,
+                            })
+                        }
+
+                        window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
+
+                        dispatch('popupNotices/addSuccess', {
+                            text: `Записи сохранены (${data.nodes.length})`,
+                            duration: 2000
+                        }, { root: true })
+
+                        resolve(data.nodes)
+                    })
+                    .catch((response) => {
+                        dispatch('popupNotices/addError', {text: response.response.data.errors.join('<br>')}, { root: true })
+                        console.error(response, `error on Update Task`)
+
+                        reject(response.response.data)
+                    })
             })
-                .then(({data}) => {
-                    // commit('updateItems', data.tasks)
-
-                    for (let task of data.tasks) {
-                        console.log(task, `updating ${task.id}`)
-
-                        commit('updateItem', {
-                            id: task.oldId || task.id,
-                            payload: {...task, updated: null, isNew: false,},
-                            instant: true,
-                        })
-                    }
-
-                    window.localStorage.setItem(LS_TODOS_UNCONFIRMED_ITEMS, JSON.stringify(getters.getChanges))
-
-                    dispatch('popupNotices/addSuccess', {
-                        text: `Записи сохранены (${data.tasks.length})`,
-                        duration: 2000
-                    }, { root: true })
-
-                    return data.tasks
-                })
-                .catch((response) => {
-                    dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
-                    console.error(response, `error on Update Task`)
-                })
         },
         /**
          * Action save - сохранение одной таски
@@ -602,10 +611,10 @@ const todos = {
          * @param dispatch
          * @param task
          */
-        saveOneTask({commit, state, getters, dispatch}, task) {
-            this.axios.post('api/tasks/update', {
+        saveOneTask({commit, state, getters, dispatch}, node) {
+            this.axios.post('api/nodes/update', {
                 collectionId: null,
-                task: {...task, ...task.updated},
+                node: {...node, ...node.updated},
             })
                 .then(({data}) => {
                     // commit('updateItems', data.tasks)

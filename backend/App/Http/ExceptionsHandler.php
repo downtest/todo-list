@@ -33,7 +33,7 @@ class ExceptionsHandler extends FrameworkDefaultExceptionHandler
 
             return new JsonResponse([
                 'status' => false,
-                'error' => "Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}",
+                'errors' => ["Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}"],
             ], 422);
         }
 
@@ -43,7 +43,7 @@ class ExceptionsHandler extends FrameworkDefaultExceptionHandler
         if ($exception instanceof ValidationException) {
             return new JsonResponse([
                 'status' => false,
-                'error' => "Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}",
+                'errors' => ["Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}"],
             ], 422);
         }
 
@@ -51,7 +51,7 @@ class ExceptionsHandler extends FrameworkDefaultExceptionHandler
 //            var_dump($exception);
             return new JsonResponse([
                 'status' => false,
-                'error' => "Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}",
+                'errors' => ["Exception! {$exception->getMessage()} in {$exception->getFile()} ON LINE: {$exception->getLine()}"],
                 'trace' => $exception->getTraceAsString()
             ], 422);
         }

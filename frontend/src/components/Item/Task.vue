@@ -27,8 +27,8 @@
             </div>
 
             <div v-if="this.$store.getters['todos/getTaskChanges'](itemId)">
-                <button @click="this.$store.dispatch('todos/resetChanges', itemId)">Сбросить изменения</button>
-                <button @click="this.$store.dispatch('todos/save')">Сохранить</button>
+                <button @click="$store.dispatch('todos/resetChanges', itemId)">Сбросить изменения</button>
+                <button @click="handleSave">Сохранить</button>
             </div>
 
             <div v-if="item">
@@ -195,6 +195,17 @@ export default {
                 //     children: payload.map(child => child.id)
                 // });
             },
+        },
+        handleSave() {
+            this.$store.dispatch('todos/save')
+                .then((savedNodes) => {
+                    let currentNode = savedNodes.find(node => node.oldId === this.$route.params.itemId)
+
+                    if (currentNode) {
+                        // Редирект на страницу с новым id
+                        this.$router.push({name: 'task-item', params: {itemId: currentNode.id}})
+                    }
+                })
         },
     },
     watch: {

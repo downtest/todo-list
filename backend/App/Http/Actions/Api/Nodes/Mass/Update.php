@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Http\Actions\Api\Tasks\Mass;
+namespace App\Http\Actions\Api\Nodes\Mass;
 
 
 use App\Services\TasksInMongo;
@@ -15,7 +15,7 @@ class Update extends Action
     public function validationRules(ServerRequestInterface $request): array
     {
         return [
-            'tasks' => ['required', 'array'],
+            'nodes' => ['required', 'array'],
         ];
     }
 
@@ -24,11 +24,11 @@ class Update extends Action
         $collectionName = User::getDefaultCollectionForCurrentUser();
 
         try {
-            $result = TasksInMongo::getInstance()->massUpdateOrCreate($collectionName, $request->getAttribute('tasks'));
+            $result = TasksInMongo::getInstance()->massUpdateOrCreate($collectionName, $request->getAttribute('nodes'));
         } catch (\Throwable $exception) {
             return $this->errorResponse(["{$exception->getMessage()} IN {$exception->getFile()} ON LINE {$exception->getLine()}"]);
         }
 
-        return $this->successResponse(['tasks' => $result]);
+        return $this->successResponse(['nodes' => $result]);
     }
 }

@@ -49,7 +49,7 @@ const collections = {
                         resolve(data)
                     })
                     .catch((response) => {
-                        dispatch('popupNotices/addError', {text: response.response.data.error}, { root: true })
+                        dispatch('popupNotices/addError', {text: response.response.data.errors.join('<br>')}, { root: true })
                     })
             })
 

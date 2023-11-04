@@ -131,6 +131,8 @@ const user = {
                 this.axios.post('/api/user/current')
                     .then(({data}) => {
                         if (!data.status) {
+                            dispatch('todos/loadFromStorage', null, {root: true})
+
                             return
                         }
 

@@ -1,39 +1,39 @@
 <?php
 
 
-namespace App\Http\Actions\Api\Tasks;
+namespace App\Http\Actions\Api\Nodes;
 
 
+use App\Services\TasksInMongo;
 use App\Http\Interfaces\Action;
-use App\Http\Resources\Tasks\TaskResource;
 use App\Models\User;
 use Framework\Services\DBMongo;
-use Framework\Services\Lang;
-use Framework\Services\Mailer;
-use Framework\Services\Templater;
+use Framework\Tools\Arr;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Laminas\Diactoros\Response\JsonResponse;
 
-class Get extends Action
+class Insert extends Action
 {
+
     public function validationRules(ServerRequestInterface $request): array
     {
         return [
             'collectionId' => ['nullable', 'string'],
+            'parentId' => ['nullable', 'string'],
+            'index' => ['nullable', 'number'],
+            'message' => ['nullable', 'string'],
         ];
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        if (!User::current()) {
-            return $this->errorResponse(['Unauthorised'], 403);
-        }
-
         $db = DBMongo::getInstance();
         $collectionName = User::getDefaultCollectionForCurrentUser();
-        $collection = $db->find($collectionName, []);
 
-        return new JsonResponse(TaskResource::collection($collection));
+        $newId = TasksInMongo::getInstance()->create($collectionName, $request->getAttributes());
+
+        return new JsonResponse($db->findById($collectionName, $newId));
     }
 }

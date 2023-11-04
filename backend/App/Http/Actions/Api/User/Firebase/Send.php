@@ -37,7 +37,7 @@ class Send extends Action
         } catch (\Throwable $e) {
             return $this->errorResponse([
                 'requestData' => $request->getAttributes(),
-                'error' => $e->getMessage(),
+                'errors' => [$e->getMessage()],
             ]);
         }
     }
