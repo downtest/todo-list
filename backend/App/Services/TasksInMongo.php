@@ -173,39 +173,47 @@ class TasksInMongo extends Service
      * Корректно работает только при первом создании, когда добавляем и первый уровень(parentId = null), и, если нужно, последующие
      *
      * @param string $collectionName
-     * @param array $tasks
+     * @param array $nodes
      * @param string|null $oldParentId Старый(временный) родительский ID, по которому ищем запись в массиве
      * @param string|null $newParentId Новый родительский ID, который
      * @return array
      * @throws \Exception
      */
-    public function massUpdateOrCreate(string $collectionName, array $tasks, ?string $oldParentId = null, ?string $newParentId = null): array
+    public function massUpdateOrCreate(string $collectionName, array $nodes, ?string $oldParentId = null, ?string $newParentId = null): array
     {
-        $children = array_filter($tasks, fn($task) => ($task['parentId'] ?? null) === $oldParentId);
+        $children = array_filter($nodes, fn($task) => $task['parentId'] === $oldParentId);
         $result = [];
         $handledTaskIds = [];
 
-        foreach ($children as $task) {
+        foreach ($children as $node) {
             // Заменяем временный ID на реальный
-            if (!empty($task['parentId']) && $newParentId) {
-                $task['parentId'] = $newParentId;
+            if (!empty($node['parentId']) && $newParentId) {
+                $node['parentId'] = $newParentId;
             }
 
-            $actualizedTask = $this->createOrUpdate($collectionName, $task);
+            $actualizedTask = $this->createOrUpdate($collectionName, $node);
 
             $result[] = $actualizedTask;
-            $handledTaskIds[] = $task['id'];
+            $handledTaskIds[] = $node['id'];
 
             // Рекурсивно добавляем всех дочек
-            if (count(array_filter($tasks, fn($taskInLoop) => ($taskInLoop['parentId'] ?? null) === $task['id'])) > 0) {
-                $result = array_merge($result, $this->massUpdateOrCreate($collectionName, $tasks, $actualizedTask['oldId'], $actualizedTask['id']));
+            if (count(array_filter($nodes, fn($nodeInLoop) => !empty($nodeInLoop['parentId']) && $nodeInLoop['parentId'] === $node['id'])) > 0) {
+                $result = array_merge($result, $this->massUpdateOrCreate($collectionName, $nodes, $actualizedTask['oldId'], $actualizedTask['id']));
+
+                foreach ($result as $item) {
+                    $handledTaskIds[] = $item['id'];
+                    $handledTaskIds[] = $item['oldId'];
+                }
             }
         }
 
-        $unhandledTasks = array_filter($tasks, fn($task) => !in_array($task['id'], $handledTaskIds, true));
+        // Только на 1ом уровне рекурсии нам надо сохранить все ранее не сохранённые строки (Когда мы добавляем только дочерние элементы)
+        if ($oldParentId === null) {
+            $unhandledTasks = array_filter($nodes, fn($node) => !in_array($node['id'], $handledTaskIds, true));
 
-        foreach ($unhandledTasks as $task) {
-            $this->createOrUpdate($collectionName, $task);
+            foreach ($unhandledTasks as $node) {
+                $this->createOrUpdate($collectionName, $node);
+            }
         }
 
         return $result;
