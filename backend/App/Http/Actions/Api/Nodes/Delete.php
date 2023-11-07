@@ -24,20 +24,24 @@ class Delete extends Action
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $db = DBMongo::getInstance();
-        $collectionName = User::getDefaultCollectionForCurrentUser();
+        try {
+            $db = DBMongo::getInstance();
+            $collectionName = User::getDefaultCollectionForCurrentUser();
 
-        if (!$task = $db->findById($collectionName, $request->getAttribute('taskId'))) {
-            return $this->errorResponse(["Не найдена таска {$request->getAttribute('taskId')}"]);
+            if (!$task = $db->findById($collectionName, $request->getAttribute('taskId'))) {
+                return $this->errorResponse(["Не найдена таска {$request->getAttribute('taskId')}"]);
+            }
+
+            $tasksToDelete = TasksInMongo::getInstance()->collectChildren($collectionName, $request->getAttribute('taskId'));
+
+            $deletedCnt = TasksInMongo::getInstance()->deleteByIds($collectionName, $tasksToDelete);
+
+            return $this->successResponse([
+                'deletedTasks' => $tasksToDelete,
+                'deletedCnt' => $deletedCnt,
+            ]);
+        } catch (\Throwable $exception) {
+            return $this->errorResponse([$exception->getMessage()]);
         }
-
-        $tasksToDelete = TasksInMongo::getInstance()->collectChildren($collectionName, $request->getAttribute('taskId'));
-
-        $deletedCnt = TasksInMongo::getInstance()->deleteByIds($collectionName, $tasksToDelete);
-
-        return $this->successResponse([
-            'deletedTasks' => $tasksToDelete,
-            'deletedCnt' => $deletedCnt,
-        ]);
     }
 }
