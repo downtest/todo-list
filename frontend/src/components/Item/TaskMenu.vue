@@ -35,9 +35,6 @@
             <labels :task="modelValue"></labels>
         </div>
 
-        <!-- Дочерняя запись -->
-        <div class="menu-item" @click="createChild">Создать дочернюю запись</div>
-
         <!-- Удалить -->
         <div class="menu-item" @click="deleteItem">Удалить</div>
     </div>
@@ -130,16 +127,6 @@ export default {
         },
     },
     methods: {
-        createChild() {
-            this.$store.dispatch('todos/createItem', {
-                parentId: this.modelValue.id,
-                message: '',
-            }).then((task) => {
-                this.$router.push({name: 'task-item', params: {itemId: task.id}})
-            }).then(() => {
-                this.menuShown = false
-            })
-        },
         deleteItem() {
             if (this.modelValue.message.length > 2) {
                 if (!window.confirm(`Удалить запись?\n${this.modelValue.message}`)) {

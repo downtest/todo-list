@@ -51,6 +51,13 @@
 
             </div>
 
+            <!-- Дочерняя запись -->
+            <div class="btn_add" @click="createChild">
+                <img class="btn__icon" :src="$store.getters['icons/PlusWhite']" alt="add" title="Add task">
+            </div>
+
+            <br>
+
             <nested
                 v-model="children"
                 :parentId="itemId"
@@ -219,6 +226,16 @@ export default {
         },
         updateMessage(value) {
             this.itemMessage = value
+        },
+        createChild() {
+            this.$store.dispatch('todos/createItem', {
+                parentId: this.itemId,
+                message: '',
+            }).then((task) => {
+                this.$router.push({name: 'task-item', params: {itemId: task.id}})
+            }).then(() => {
+                this.menuShown = false
+            })
         },
     },
     activated() {
